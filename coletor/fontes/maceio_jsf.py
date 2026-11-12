@@ -74,8 +74,11 @@ def coletar(ano: int):
             pag.goto(BASE, wait_until="domcontentloaded")
             pag.wait_for_timeout(4000)
             try:  # ano das consultas
-                pag.select_option('[id="form-anoAtual:selectAno"]', str(ano))
-                pag.wait_for_timeout(4000)
+                opcoes = pag.eval_on_selector_all('[id="form-anoAtual:selectAno"] option', "os => os.map(o => o.value)")
+                log.info("Maceió: anos disponíveis %s", opcoes)
+                if str(ano) in opcoes:
+                    pag.select_option('[id="form-anoAtual:selectAno"]', str(ano))
+                    pag.wait_for_timeout(5000)
             except Exception as e:  # noqa: BLE001
                 log.info("seleção de ano: %s", e)
             for form, aba, nome in ABAS:
@@ -83,16 +86,29 @@ def coletar(ano: int):
                     pag.click(f'ul[role="tablist"] >> text="{aba}"', timeout=15_000)
                     pag.wait_for_timeout(1500)
                     # os dois campos de data do formulário (ids terminados em _input com valor dd/mm/aaaa)
-                    n = pag.evaluate("""([form, ini, fim]) => {
-                        const f = document.getElementById(form);
-                        const cs = [...f.querySelectorAll('input[type=text]')].filter(i => /^\\d{2}\\/\\d{2}\\/\\d{4}$/.test(i.value));
-                        [ini, fim].forEach((v, k) => { if (cs[k]) { cs[k].value = v; cs[k].dispatchEvent(new Event('change', {bubbles: true}));
-                                                                    cs[k].dispatchEvent(new Event('blur', {bubbles: true})); } });
-                        return cs.map(c => c.id + '=' + c.value);
-                    }""", [form, f"01/01/{ano}", fim])
-                    log.info("Maceió %s: datas %s", nome, n)
+                    ids = pag.evaluate("""(form) => [...document.getElementById(form).querySelectorAll('input[type=text]')]
+                        .filter(i => /^\\d{2}\\/\\d{2}\\/\\d{4}$/.test(i.value)).map(i => i.id)""", form)
+                    for cid, valor in zip(ids[:2], (f"01/01/{ano}", fim)):
+                        campo = pag.locator(f'[id="{cid}"]')
+                        campo.click()
+                        campo.press("Control+A")
+                        campo.type(valor, delay=40)
+                        campo.press("Escape")
+                        pag.wait_for_timeout(300)
+                    lidos = [pag.locator(f'[id="{c}"]').input_value() for c in ids[:2]]
+                    ano_sel = pag.evaluate("() => { const s = document.getElementById('form-anoAtual:selectAno'); return s ? s.value : null }")
+                    log.info("Maceió %s: datas %s, ano %s", nome, lidos, ano_sel)
                     pag.click(f'[id="{form}"] button:has-text("Consultar")')
-                    pag.wait_for_timeout(8000)
+                    tid = form + ":" + {"tabs:form-despesas-orgao": "tabela-despesas-orgao", "tabs:form-despesas": "tabela-despesas",
+                                        "tabs:form-diarias": "tabela-diarias"}[form] + "_data"
+                    for _ in range(120):  # espera até 2 minutos pela resposta
+                        pag.wait_for_timeout(1000)
+                        txt = pag.evaluate("(id) => { const e = document.getElementById(id); return e ? e.innerText : '' }", tid)
+                        if txt and "Nenhum resultado" not in txt:
+                            break
+                    msg = pag.evaluate("(f) => { const e = document.querySelector('[id=\"' + f + '\"] .ui-messages, [id=\"' + f + '\"] .ui-message'); return e ? e.innerText : '' }", form)
+                    if msg:
+                        log.info("Maceió %s: mensagem do portal: %s", nome, msg[:200])
                     (pasta / f"tabela-{re.sub('[^a-z]+', '-', nome)}.html").write_text(pag.content()[:600_000], encoding="utf-8")
                     df = _ler_tabela(pag, form)
                     log.info("Maceió %s: %d linhas, colunas %s", nome, len(df), list(df.columns)[:10])
