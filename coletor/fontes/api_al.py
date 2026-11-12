@@ -55,7 +55,7 @@ def _valor(row: dict, fase: str) -> float:
     return 0.0
 
 
-def coletar(ano: int, http: Http, max_favorecidos: int = 400):
+def coletar(ano: int, http: Http, max_favorecidos: int = 250):
     st = StatusFonte("API do Portal da Transparência de Alagoas", BASE + "/portal/api")
     url_fonte = BASE + "/despesa/consulta-avancada"
     try:
