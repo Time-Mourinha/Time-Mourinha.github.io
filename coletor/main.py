@@ -107,7 +107,11 @@ def rodar_esfera(cfg, esf, ano, http, mun, so_portal=False) -> dict:
         st, det_api, tot_api, forn_api, forn_total_api = api_al.coletar(ano, http)
         status.append(st)
     tabelas = []
-    if det_api is None or det_api.empty:
+    if esf.get("api") == "maceio" and not so_portal:
+        from .fontes import maceio_jsf
+        st, tabelas = maceio_jsf.coletar(ano)
+        status.append(st)
+    if (det_api is None or det_api.empty) and not tabelas:
         cfg_portal = {**cfg, "portal": {**cfg["portal_comum"], **esf["portal"]}}
         st, tabelas = portal_al.coletar(cfg_portal, ano, http, esf["id"], f"Portal da Transparência — {esf['nome']}")
         status.append(st)

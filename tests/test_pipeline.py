@@ -59,7 +59,8 @@ def rodada(tmp_path, monkeypatch):
     monkeypatch.setattr(portal_al, "coletar", lambda c, a, h, e, n: (ok("portal"), [("despesas_2026.csv", "http://p/d", tabela_despesas()),
                                                                                ("orcamento_orgao_2026.csv", "http://p/o", tabela_totais())]))
     monkeypatch.setattr(ckan_al, "coletar", lambda c, a, h: (ok("ckan"), []))
-    from coletor.fontes import api_al
+    from coletor.fontes import api_al, maceio_jsf
+    monkeypatch.setattr(maceio_jsf, "coletar", lambda a: (StatusFonte("m", "x", status="erro"), []))
     monkeypatch.setattr(api_al, "coletar", lambda a, h, **k: (StatusFonte("api", "x", status="erro"), pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()))
     monkeypatch.setattr(unidades, "municipios", lambda c, h: {})
     monkeypatch.setattr(unidades, "saude", lambda c, h, m, e: (ok("cnes"), [

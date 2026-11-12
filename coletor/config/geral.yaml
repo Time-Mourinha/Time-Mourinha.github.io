@@ -39,6 +39,7 @@ esferas:
     nome: Prefeitura de Maceió
     curto: Prefeitura Maceió
     tipo: municipio
+    api: maceio        # preenche as telas de consulta do portal (Playwright); se falhar, navega pelo portal
     portal:
       base: https://transparencia.maceio.al.gov.br
       sementes:
