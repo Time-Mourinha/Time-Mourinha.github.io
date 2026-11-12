@@ -14,7 +14,9 @@ Deno.serve(async (req) => {
   if (u.protocol !== "https:" && u.protocol !== "http:") return new Response("protocolo não permitido", { status: 400 });
   if (!PERMITIDOS.some((d) => u.hostname === d || u.hostname.endsWith("." + d))) return new Response("site não permitido", { status: 403 });
   try {
-    const r = await fetch(u, { headers: { "User-Agent": "TimeMourinha/1.0 (monitor de gestao publica)", "Accept-Language": "pt-BR" }, redirect: "follow" });
+    const cab: Record<string, string> = { "User-Agent": "TimeMourinha/1.0 (monitor de gestao publica)", "Accept-Language": "pt-BR" };
+    for (const k of ["x-requested-with", "accept"]) { const v = req.headers.get(k); if (v) cab[k] = v; }
+    const r = await fetch(u, { headers: cab, redirect: "follow" });
     const h = new Headers();
     for (const k of ["content-type", "content-disposition"]) { const v = r.headers.get(k); if (v) h.set(k, v); }
     return new Response(r.body, { status: r.status, headers: h });

@@ -12,6 +12,7 @@ esferas:
     nome: Governo de Alagoas
     curto: Governo AL
     tipo: estado
+    api: al            # usa a API oficial do portal (via ponte); se falhar, navega pelo portal
     portal:
       base: https://transparencia.al.gov.br
       sementes:

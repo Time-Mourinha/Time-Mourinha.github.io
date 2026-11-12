@@ -100,9 +100,17 @@ def rodar(so_portal: bool = False, so_esfera: str | None = None) -> int:
 
 def rodar_esfera(cfg, esf, ano, http, mun, so_portal=False) -> dict:
     status: list[StatusFonte] = []
-    cfg_portal = {**cfg, "portal": {**cfg["portal_comum"], **esf["portal"]}}
-    st, tabelas = portal_al.coletar(cfg_portal, ano, http, esf["id"], f"Portal da Transparência — {esf['nome']}")
-    status.append(st)
+    forn_api = forn_total_api = None
+    det_api = None
+    if esf.get("api") == "al" and not so_portal:
+        from .fontes import api_al
+        st, det_api, tot_api, forn_api, forn_total_api = api_al.coletar(ano, http)
+        status.append(st)
+    tabelas = []
+    if det_api is None or det_api.empty:
+        cfg_portal = {**cfg, "portal": {**cfg["portal_comum"], **esf["portal"]}}
+        st, tabelas = portal_al.coletar(cfg_portal, ano, http, esf["id"], f"Portal da Transparência — {esf['nome']}")
+        status.append(st)
     if so_portal:
         print(st.como_dict())
         return {"tem_dados": bool(tabelas)}
@@ -122,6 +130,9 @@ def rodar_esfera(cfg, esf, ano, http, mun, so_portal=False) -> dict:
             outros.append((tipo, nome, url, df))
     salvar_json(DOCS / f"inventario-tabelas-{esf['id']}.json", inventario, compacto=False)
     det, tot = juntar_despesas(despesas)
+    if det_api is not None and not det_api.empty:
+        det, tot = det_api, tot_api
+        det["historico"] = det["acao"]  # sem empenho a empenho: a ação descreve o gasto (ex.: "Reforma de escolas")
     orgaos = montar_orgaos(det, tot)
     log.info("Despesas: %d linhas detalhadas, %d órgãos", len(det), len(orgaos))
 
@@ -157,7 +168,9 @@ def rodar_esfera(cfg, esf, ano, http, mun, so_portal=False) -> dict:
 
     # ---- fornecedores: CNPJ e sanções
     cnpjs = []
-    if not det.empty:
+    if forn_api is not None and not forn_api.empty:
+        cnpjs = forn_api[forn_api["documento"].str.len() == 14].groupby("documento")["empenhado"].sum().sort_values(ascending=False).index.tolist()
+    elif not det.empty:
         cnpjs = (det[det["documento"].str.len() == 14].groupby("documento")["empenhado"].sum()
                  .sort_values(ascending=False).index.tolist())
     st_c, info_cnpj = externas.dados_cnpj(cfg, http, cnpjs)
@@ -168,7 +181,7 @@ def rodar_esfera(cfg, esf, ano, http, mun, so_portal=False) -> dict:
     hoje = agora()
     idx_unid = analise.indice_unidades(unidades)
     obras = analise.montar_obras(det, orgaos, idx_unid, cfg, hoje)
-    alertas = analise.gerar_alertas(det, orgaos, obras, info_cnpj, sanc, cfg)
+    alertas = analise.gerar_alertas(det, orgaos, obras, info_cnpj, sanc, cfg, forn_api)
 
     # ---- totais por órgão
     lista = []
@@ -236,7 +249,18 @@ def rodar_esfera(cfg, esf, ano, http, mun, so_portal=False) -> dict:
 
     # ---- fornecedores
     fornecedores = []
-    if not det.empty:
+    if forn_api is not None and not forn_api.empty:
+        oid = {n: o["id"] for n, o in orgaos.items()}
+        por_doc = forn_api.groupby("documento")
+        for _, f in forn_total_api.iterrows():
+            doc = f["documento"]
+            orgs = sorted({oid[x] for x in por_doc.get_group(doc)["orgao"] if x in oid}) if doc in por_doc.groups else []
+            fornecedores.append({"id": doc if len(doc) == 14 else analise.slug(f["favorecido"])[:40], "nome": f["favorecido"],
+                                 "documento": mascarar_doc(doc), "empenhado": round(f["empenhado"], 2), "pago": round(f["pago"], 2),
+                                 "registros": int(len(por_doc.get_group(doc))) if doc in por_doc.groups else 0, "orgaos": orgs,
+                                 "cnpj": info_cnpj.get(doc) if len(doc) == 14 else None, "sancoes": sanc.get(doc) or [] if len(doc) == 14 else []})
+        fornecedores = fornecedores[:3000]
+    elif not det.empty:
         d2 = det.copy()
         d2["chave"] = d2["documento"].where(d2["documento"].str.len() > 0, d2["favorecido"].map(norm))
         oid = {n: o["id"] for n, o in orgaos.items()}
@@ -264,7 +288,8 @@ def rodar_esfera(cfg, esf, ano, http, mun, so_portal=False) -> dict:
     publicar({"det": det, "tot": tot, "orgaos": orgaos, "lista_orgaos": lista, "unidades": unidades, "obras": obras,
               "alertas": alertas, "missoes": missoes, "melhorar": melhorar, "noticias": noticias,
               "noticias_por_org": noticias_por_org, "fornecedores": fornecedores, "outros_por_org": outros_por_org,
-              "folha_por_org": folha_por_org, "receitas_por_org": receitas_por_org, "meta": meta}, esf["id"])
+              "folha_por_org": folha_por_org, "receitas_por_org": receitas_por_org, "meta": meta,
+              "forn_por_orgao": forn_api}, esf["id"])
     log.info("Publicado %s: %d órgãos, %d alertas, %d obras, %d missões, %d unidades",
              esf["id"], len(lista), len(alertas), len(obras), len(missoes), len(unidades))
     return {"tem_dados": bool(len(lista)), "atualizado_em": meta["atualizado_em"], "totais": totais,

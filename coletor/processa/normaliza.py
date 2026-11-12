@@ -158,5 +158,9 @@ def sigla_de(nome: str) -> str:
     m = re.search(r"\(([A-Z]{2,12}(?:/AL)?)\)|[-–]\s*([A-Z]{2,12})\s*$", nome or "")
     if m:
         return (m.group(1) or m.group(2)).replace("/AL", "")
-    palavras = [p for p in norm(nome).split() if p not in {"DE", "DA", "DO", "DAS", "DOS", "E", "ESTADO", "SECRETARIA"}]
-    return "".join(p[0] for p in palavras[:5]) or norm(nome)[:6]
+    vazias = {"DE", "DA", "DO", "DAS", "DOS", "E", "ESTADO", "SECRETARIA", "ESTADUAL", "MUNICIPAL", "A", "O", "EM", "PARA"}
+    palavras = [p for p in re.sub(r"[^A-Z0-9 ]", " ", norm(nome)).split() if p not in vazias]
+    if len(palavras) >= 3:
+        return "".join(p[0] for p in palavras[:5])
+    # nomes curtos ("Secretaria de Estado da Saúde") viram o próprio tema: "Saude", "Educacao Esporte"
+    return " ".join(p.title() for p in palavras[:2]) or norm(nome)[:12]

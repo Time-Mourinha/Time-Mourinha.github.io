@@ -60,7 +60,15 @@ def publicar(ctx: dict, esfera_id: str) -> None:
             m = g.dropna(subset=["data"]).groupby(g["data"].dt.month)[["empenhado", "liquidado", "pago"]].sum()
             mensal = [{"mes": int(k), **{c: round(v, 2) for c, v in r.items()}} for k, r in m.iterrows()]
         fav = []
-        if len(g):
+        fpo = ctx.get("forn_por_orgao")
+        if fpo is not None and not fpo.empty:
+            gfa = fpo[fpo["orgao"] == nome]
+            tot_e = float(g["empenhado"].sum()) if len(g) else float(gfa["empenhado"].sum()) or 1.0
+            for _, r in gfa.groupby(["favorecido", "documento"], as_index=False)[["empenhado", "pago"]].sum().sort_values("empenhado", ascending=False).head(30).iterrows():
+                fav.append({"nome": r["favorecido"], "documento": mascarar_doc(r["documento"]), "empenhado": round(r["empenhado"], 2),
+                            "pago": round(r["pago"], 2), "percentual": round(r["empenhado"] / (tot_e or 1) * 100, 1),
+                            "fornecedor_id": r["documento"] if len(r["documento"]) == 14 else None})
+        elif len(g):
             gf = g.groupby(["favorecido", "documento"])[["empenhado", "liquidado", "pago"]].sum().sort_values("empenhado", ascending=False)
             tot_e = gf["empenhado"].sum() or 1
             for (f, d), r in gf.head(30).iterrows():

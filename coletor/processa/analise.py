@@ -154,10 +154,13 @@ def _alerta(tipo, sev, titulo, explicacao, orgao_id, valor=None, favorecido=None
             "unidade_id": unidade_id, "fonte_url": fonte_url, "dados": dados or {}}
 
 
-def gerar_alertas(det: pd.DataFrame, orgaos: dict, obras: list, cnpj: dict, sancoes: dict, cfg) -> list[dict]:
+def gerar_alertas(det: pd.DataFrame, orgaos: dict, obras: list, cnpj: dict, sancoes: dict, cfg, forn=None) -> list[dict]:
     A = cfg["alertas"]
     al = []
-    if not det.empty:
+    if forn is not None and not forn.empty:
+        al += _alertas_fornecedores(forn, det, orgaos, cnpj, sancoes, A)
+    agregado = "agregado" in det.columns and bool(det["agregado"].any()) if not det.empty else False
+    if not det.empty and not agregado:
         d = det.copy()
         d["oid"] = d["orgao"].map(lambda o: orgaos[o]["id"] if o in orgaos else None)
         # 1. Possível fracionamento
@@ -249,6 +252,41 @@ def gerar_alertas(det: pd.DataFrame, orgaos: dict, obras: list, cnpj: dict, sanc
     return al
 
 
+def _alertas_fornecedores(forn, det, orgaos, cnpj, sancoes, A):
+    """Alertas a partir de 'quanto cada fornecedor recebeu de cada órgão' (quando não há empenho a empenho)."""
+    al = []
+    f = forn.copy()
+    f["oid"] = f["orgao"].map(lambda o: orgaos[o]["id"] if o in orgaos else None)
+    tot_org = det.groupby("orgao")["empenhado"].sum() if not det.empty else f.groupby("orgao")["empenhado"].sum()
+    for (orgao, oid), g in f.groupby(["orgao", "oid"]):
+        total = float(tot_org.get(orgao, 0)) or float(g["empenhado"].sum())
+        top = g.groupby(["documento", "favorecido"])["empenhado"].sum().sort_values(ascending=False)
+        if len(top) and total >= A["concentracao_minimo_reais"]:
+            (doc, fav), v = top.index[0], top.iloc[0]
+            if v / total >= A["concentracao_percentual"]:
+                al.append(_alerta("concentracao", "media", f"{fav} recebe {v/total:.0%} dos gastos do órgão",
+                                  f"Um único favorecido tem {fmt_reais(v)} de {fmt_reais(total)} empenhados no órgão. "
+                                  "Pode ser normal (ex.: repasse obrigatório), mas vale conferir o tipo de contrato.", oid, round(v, 2), fav, doc,
+                                  fonte_url=g["fonte_url"].iloc[0]))
+    hoje = pd.Timestamp.now()
+    for (doc, fav, oid), g in f[f["documento"].str.len() == 14].groupby(["documento", "favorecido", "oid"]):
+        emp = float(g["empenhado"].sum())
+        info = cnpj.get(doc) or {}
+        if info.get("abertura") and emp >= A["empresa_nova_minimo_reais"]:
+            meses = (hoje - pd.Timestamp(info["abertura"])).days / 30.4
+            if meses < A["empresa_nova_meses"]:
+                al.append(_alerta("empresa_nova", "media", f"{fav} tem só {meses:.0f} meses de CNPJ",
+                                  f"Aberta em {info['abertura']} e já tem {fmt_reais(emp)} empenhados neste órgão. Vale checar capacidade técnica e sede.",
+                                  oid, round(emp, 2), fav, doc))
+        if sancoes.get(doc):
+            s0 = sancoes[doc][0]
+            al.append(_alerta("sancionada", "alta", f"{fav} aparece no {s0['cadastro']}",
+                              f"Empresa com sanção ({s0.get('tipo') or 'ver detalhes'}) aplicada por {s0.get('orgao') or 'órgão público'}. "
+                              f"Tem {fmt_reais(emp)} empenhados neste órgão. Conferir se a sanção impedia contratar.", oid, round(emp, 2), fav, doc,
+                              dados={"sancoes": sancoes[doc]}))
+    return al
+
+
 # ------------------------------------------------------------------ índice
 def calcular_indice(orgaos: list[dict], det: pd.DataFrame, alertas: list, noticias_por_org: dict, cfg, mes: int):
     I = cfg["indice"]
@@ -263,7 +301,7 @@ def calcular_indice(orgaos: list[dict], det: pd.DataFrame, alertas: list, notici
             comp["ritmo_pagamento"] = round(min(1.0, o["pago"] / o["liquidado"]) * 100, 1)
         ent = len([n for n in noticias_por_org.get(o["id"], []) if n["tipo"] == "entrega"])
         comp["entregas"] = round(100 * math.log1p(ent) / math.log1p(max_ent), 1)
-        if not det.empty:
+        if not det.empty and not ("agregado" in det.columns and det["agregado"].any()):
             g = det[det["orgao"] == o["nome_portal"]]
             if len(g):
                 ok = ((g["favorecido"].str.len() > 0) & (g["historico"].str.len() > 0)).mean()

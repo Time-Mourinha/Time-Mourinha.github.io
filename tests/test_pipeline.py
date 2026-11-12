@@ -59,6 +59,8 @@ def rodada(tmp_path, monkeypatch):
     monkeypatch.setattr(portal_al, "coletar", lambda c, a, h, e, n: (ok("portal"), [("despesas_2026.csv", "http://p/d", tabela_despesas()),
                                                                                ("orcamento_orgao_2026.csv", "http://p/o", tabela_totais())]))
     monkeypatch.setattr(ckan_al, "coletar", lambda c, a, h: (ok("ckan"), []))
+    from coletor.fontes import api_al
+    monkeypatch.setattr(api_al, "coletar", lambda a, h, **k: (StatusFonte("api", "x", status="erro"), pd.DataFrame(), pd.DataFrame(), pd.DataFrame(), pd.DataFrame()))
     monkeypatch.setattr(unidades, "municipios", lambda c, h: {})
     monkeypatch.setattr(unidades, "saude", lambda c, h, m, e: (ok("cnes"), [
         {"id": "saude-1", "tipo": "saude", "codigo": "1", "nome": "Hospital Geral Do Teste", "subtipo": "Hospital",
@@ -103,3 +105,31 @@ def test_pipeline_completo(rodada):
     # CPF nunca aparece inteiro; CNPJ sim
     txt = (rodada / "orgaos" / "seduc.json").read_text()
     assert "11.111.111/0001-11" in txt
+
+
+def test_api_al_agregada(monkeypatch):
+    """Simula a API oficial do Portal de AL (consulta avançada, dotações e favorecidos)."""
+    from coletor.fontes import api_al
+
+    def paginas(http, caminho, params, limite=1000, max_paginas=600):
+        if "avancada" in caminho:
+            return [{"orgao_descricao": "SECRETARIA DE ESTADO DA SAUDE", "descricao_ug": "FUNDO ESTADUAL DE SAUDE", "ug": "200001",
+                     "mes": "3", "descricao_natureza6": "OBRAS E INSTALACOES", "projeto_atividade_id__projeto_descricao": "REFORMA DO HOSPITAL GERAL DO TESTE",
+                     "programa_id__programa_descricao": "SAUDE", "fonte_mae_id__descricao_fonte_mae": "SUS", "pt_funcao_id__descricao_funcao": "SAUDE",
+                     "valor_empenhado": "1.000.000,00", "valor_liquidado": "400.000,00", "valor_pago": "400.000,00"},
+                    {"orgao_descricao": "SECRETARIA DE ESTADO DA SAUDE", "descricao_ug": "FUNDO ESTADUAL DE SAUDE", "ug": "200001",
+                     "mes": "5", "descricao_natureza6": "MATERIAL DE CONSUMO", "projeto_atividade_id__projeto_descricao": "MANUTENCAO",
+                     "programa_id__programa_descricao": "SAUDE", "fonte_mae_id__descricao_fonte_mae": "TESOURO", "pt_funcao_id__descricao_funcao": "SAUDE",
+                     "valor_empenhado": "500.000,00", "valor_liquidado": "500.000,00", "valor_pago": "450.000,00"}]
+        if "dotacoes" in caminho:
+            return [{"ug": "200001", "descricao_ug": "FUNDO ESTADUAL DE SAUDE", "total_inicial": "10.000.000,00", "total_atualizado": "12.000.000,00"}]
+        if caminho.endswith("json-despesa-favorecido/"):
+            return [{"codigo_favorecido": "11111111000111", "nome_favorecido": "CONSTRUTORA ALFA", "total_empenhado": "1.000.000,00", "total_pago": "400.000,00"}]
+        return [{"ug": "200001", "descricao_ug": "FUNDO ESTADUAL DE SAUDE", "total_empenhado": "1.000.000,00", "total_liquidado": "400.000,00", "total_pago": "400.000,00"}]
+
+    monkeypatch.setattr(api_al, "_paginas", paginas)
+    st, det, tot, forn, forn_total = api_al.coletar(2026, None)
+    assert st.status == "ok" and len(det) == 2
+    assert det["empenhado"].sum() == 1_500_000
+    assert tot.loc[0, "atualizado"] == 12_000_000 and tot.loc[0, "orgao"] == "SECRETARIA DE ESTADO DA SAUDE"
+    assert forn.loc[0, "orgao"] == "SECRETARIA DE ESTADO DA SAUDE"
