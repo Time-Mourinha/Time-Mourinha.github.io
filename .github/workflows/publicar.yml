@@ -6,10 +6,7 @@ on:
     branches: [main]
     paths: ["site/**", ".github/workflows/publicar.yml"]
   workflow_run:
-    workflows: ["Configurar o Supabase"]
-    types: [completed]
-  workflow_run:
-    workflows: ["Coleta diária e publicação", "Notícias da mídia"]
+    workflows: ["Coleta diária e publicação", "Notícias da mídia", "Configurar o Supabase"]
     types: [completed]
   workflow_dispatch:
 
