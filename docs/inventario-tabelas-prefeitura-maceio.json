@@ -1,0 +1,28 @@
+[
+  {
+    "origem": "032a6115264c_Emendas_Parlamentares_Estaduais.csv",
+    "url": "/home/runner/work/Time-Mourinha-/Time-Mourinha-/dados/brutos/prefeitura-maceio/portal/arquivos/032a6115264c_Emendas_Parlamentares_Estaduais.csv",
+    "tipo": "nao_classificada",
+    "linhas": 4,
+    "colunas": [
+      "TIPO_EMENDA",
+      "NÚMERO_EMENDA",
+      "NOME_PARLAMENTAR",
+      "VALOR_EMENDA",
+      "DATA_LIBERACAO",
+      "ÁREA_TEMÁTICA",
+      "TIPO_DESPESA",
+      "OBJETO_EMENDA",
+      "ÓRGAO_FAVORECIDO",
+      "CNPJ_FAVORECIDO",
+      "NOME_PAGADOR",
+      "DOCUMENTO_OB",
+      "VALOR_DOCUMENTO_OB",
+      "ORGAO_FAVORECIDO",
+      "PLANO_AÇÃO",
+      "EMPENHO",
+      "LIQUIDAÇÃO",
+      "PAGAMENTO"
+    ]
+  }
+]

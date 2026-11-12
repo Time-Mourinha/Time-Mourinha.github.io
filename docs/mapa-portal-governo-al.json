@@ -1,0 +1,11 @@
+{
+  "ano": 2026,
+  "paginas": [
+    {
+      "url": "https://transparencia.al.gov.br/",
+      "erro": "Page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"https://transparencia.al.gov.br/\", waiting until \"networkidle\"\n"
+    }
+  ],
+  "downloads": {},
+  "apis": {}
+}

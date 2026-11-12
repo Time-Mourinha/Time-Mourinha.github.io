@@ -1,0 +1,17 @@
+{
+  "ano": 2026,
+  "paginas": [
+    {
+      "url": "https://transparencia.maceio.al.gov.br/",
+      "titulo": "Portal da Transparência",
+      "links": 82
+    }
+  ],
+  "downloads": {
+    "https://www.transparencia.maceio.al.gov.br/transparencia/resources/csv/Emendas_Parlamentares_Estaduais.csv": {
+      "texto": "Emenda Parlamentar Estadual",
+      "pagina": "https://transparencia.maceio.al.gov.br/"
+    }
+  },
+  "apis": {}
+}
