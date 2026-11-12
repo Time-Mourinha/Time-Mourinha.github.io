@@ -63,7 +63,7 @@ Se uma fonte bloquear robôs ou exigir navegação, usar Playwright (Chromium he
 ## 4. Arquitetura
 
 - **Hospedagem:** GitHub Pages (site estático).
-- **Coleta:** GitHub Actions agendado **1x por dia às 06:00 de Maceió** (`cron: "0 9 * * *"` em UTC) + botão manual (`workflow_dispatch`).
+- **Coleta:** GitHub Actions agendado **1x por dia às 18:00 de Maceió** (`cron: "0 21 * * *"` em UTC) + botão manual (`workflow_dispatch`).
 - **Coletor:** Python 3.12 em `coletor/` (requests, pandas, playwright, duckdb). Cada fonte em um módulo próprio.
 - **Dados:**
   - `dados/brutos/` — arquivos originais baixados (compactados, divididos por mês para ficar abaixo de 50 MB cada).

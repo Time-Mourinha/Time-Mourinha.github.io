@@ -14,7 +14,7 @@ com a área do time (cadastro com foto, atividades do dia com fotos e vídeos).
 | Pasta | O que tem |
 |---|---|
 | `site/` | O site (HTML, CSS e JavaScript). É o que vai para o GitHub Pages. |
-| `coletor/` | O robô em Python que coleta os dados todo dia às 6h. |
+| `coletor/` | O robô em Python que coleta os dados todo dia às 18h. |
 | `coletor/config/geral.yaml` | Endereços dos portais das duas esferas. Dá para acrescentar outra esfera aqui. |
 | `coletor/config/regras.yaml` | Regras dos alertas e pesos do Índice Mourinha. |
 | `docs/supabase.sql` | Banco de dados da área do time (rodar uma vez no Supabase). |
