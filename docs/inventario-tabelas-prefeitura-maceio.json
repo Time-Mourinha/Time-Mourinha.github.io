@@ -1,28 +1,47 @@
 [
   {
-    "origem": "032a6115264c_Emendas_Parlamentares_Estaduais.csv",
-    "url": "/home/runner/work/Time-Mourinha.github.io/Time-Mourinha.github.io/dados/brutos/prefeitura-maceio/portal/arquivos/032a6115264c_Emendas_Parlamentares_Estaduais.csv",
-    "tipo": "nao_classificada",
-    "linhas": 4,
+    "origem": "Maceió — despesas por órgão",
+    "url": "https://www.transparencia.maceio.al.gov.br/transparencia/pages/despesas.faces",
+    "tipo": "despesa",
+    "linhas": 40,
     "colunas": [
-      "TIPO_EMENDA",
-      "NÚMERO_EMENDA",
-      "NOME_PARLAMENTAR",
-      "VALOR_EMENDA",
-      "DATA_LIBERACAO",
-      "ÁREA_TEMÁTICA",
-      "TIPO_DESPESA",
-      "OBJETO_EMENDA",
-      "ÓRGAO_FAVORECIDO",
-      "CNPJ_FAVORECIDO",
-      "NOME_PAGADOR",
-      "DOCUMENTO_OB",
-      "VALOR_DOCUMENTO_OB",
-      "ORGAO_FAVORECIDO",
-      "PLANO_AÇÃO",
-      "EMPENHO",
-      "LIQUIDAÇÃO",
-      "PAGAMENTO"
+      "Órgão",
+      "Orçado (R$)",
+      "Orçado Atualizado (R$)",
+      "Empenhado (R$)",
+      "Liquidado (R$)",
+      "Pago (R$)"
+    ]
+  },
+  {
+    "origem": "Maceió — despesas (empenhos)",
+    "url": "https://www.transparencia.maceio.al.gov.br/transparencia/pages/despesas.faces",
+    "tipo": "despesa",
+    "linhas": 3,
+    "colunas": [
+      "",
+      "Elemento da Despesa",
+      "Conta Despesa",
+      "Orçado (R$)",
+      "Orçado Atualizado (R$)",
+      "Empenhado (R$)",
+      "Liquidado (R$)",
+      "Pago (R$)"
+    ]
+  },
+  {
+    "origem": "Maceió — diárias",
+    "url": "https://www.transparencia.maceio.al.gov.br/transparencia/pages/despesas.faces",
+    "tipo": "diaria",
+    "linhas": 38,
+    "colunas": [
+      "Órgão",
+      "Conta Despesa",
+      "Orçado (R$)",
+      "Orçado Atualizado (R$)",
+      "Empenho (R$)",
+      "Liquidado (R$)",
+      "Pago (R$)"
     ]
   }
 ]
