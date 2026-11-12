@@ -32,7 +32,11 @@ jobs:
         id: c1
         uses: actions/cache/restore@v4
         with:
-          path: site/dados
+          # tem que ser exatamente os mesmos caminhos usados ao salvar (senão o GitHub não acha)
+          path: |
+            site/dados
+            dados/brutos/cnpj_cache.json
+            dados/brutos/sancoes_cache.json
           key: dados-${{ github.run_id }}
           restore-keys: dados-
       - name: Esperar o GitHub registrar os dados recém-salvos
@@ -43,7 +47,11 @@ jobs:
         if: steps.c1.outputs.cache-matched-key == ''
         uses: actions/cache/restore@v4
         with:
-          path: site/dados
+          # tem que ser exatamente os mesmos caminhos usados ao salvar (senão o GitHub não acha)
+          path: |
+            site/dados
+            dados/brutos/cnpj_cache.json
+            dados/brutos/sancoes_cache.json
           key: dados-${{ github.run_id }}
           restore-keys: dados-
       - name: Conferir se há dados
