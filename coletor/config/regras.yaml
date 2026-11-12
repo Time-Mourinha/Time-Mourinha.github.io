@@ -1,0 +1,38 @@
+# Regras do Índice Mourinha e do Radar de Alertas. Tudo editável.
+
+indice:
+  pesos:
+    execucao: 30
+    ritmo_pagamento: 15
+    entregas: 25
+    transparencia: 15
+    atencao: 15
+  penalidade_alerta:
+    alta: 10
+    media: 4
+    baixa: 1
+  dias_entregas: 90
+
+alertas:
+  # Limites de dispensa da Lei 14.133/2021 (art. 75). São atualizados todo ano por decreto
+  # federal. CONFIRA o decreto vigente e atualize os valores abaixo.
+  limite_dispensa_compras: 62725.59
+  limite_dispensa_obras: 125451.15
+  fracionamento_janela_dias: 90
+  fracionamento_faixa_inferior: 0.80   # pagamentos entre 80% e 100% do limite
+  concentracao_percentual: 0.30
+  concentracao_minimo_reais: 500000
+  empresa_nova_meses: 12
+  empresa_nova_minimo_reais: 200000
+  fora_da_curva_fator_iqr: 3.0
+  fora_da_curva_minimo_reais: 100000
+  obra_parada_dias: 90
+
+obras:
+  elementos: ["4.4.90.51", "449051", "44905100", "OBRAS E INSTALA", "3.3.90.39.16", "MANUTENCAO E CONSERVACAO DE BENS IMOVEIS"]
+  palavras: [REFORMA, OBRA, CONSTRUCAO, AMPLIACAO, RECUPERACAO, REQUALIFICACAO, PAVIMENTACAO,
+             MANUTENCAO PREDIAL, RESTAURACAO, EDIFICACAO, ENGENHARIA]
+
+entregas:
+  palavras: [INAUGURA, ENTREGA, ENTREGOU, CONCLUI, CONCLUIU, INICIA ATENDIMENTO, PASSA A FUNCIONAR,
+             BENEFICIA, ATENDE, REFORMADA, REFORMADO, ABRE, LANCA, PAGA, DISTRIBUI]

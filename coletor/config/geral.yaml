@@ -1,0 +1,81 @@
+# Configuração geral do coletor do Time Mourinha.
+# Edite aqui sem mexer no código.
+
+ano: auto            # "auto" = ano corrente. Ou um número, ex.: 2026
+
+# ------------------------------------------------------------------
+# ESFERAS monitoradas. Cada uma vira um botão grande na página inicial.
+# Para acrescentar outra no futuro, copie um bloco e ajuste.
+# ------------------------------------------------------------------
+esferas:
+  - id: governo-al
+    nome: Governo de Alagoas
+    curto: Governo AL
+    tipo: estado
+    portal:
+      base: https://transparencia.al.gov.br
+      sementes:
+        - https://transparencia.al.gov.br/
+    ckan:
+      base: https://dados.al.gov.br/catalogo
+      buscas: [despesa, "execução orçamentária", orçamento, receita, LOA, contratos, obras]
+    escolas:
+      dependencia: "2"          # 2 = rede estadual (Censo Escolar)
+      municipio_ibge: null      # todo o estado
+    saude:
+      filtro: estadual
+      municipio_ibge: null
+      razao_contem: ["ESTADO DE ALAGOAS", "SECRETARIA DE ESTADO DA SAUDE", "SESAU"]
+    noticias:
+      - https://www.agenciaalagoas.al.gov.br/feed
+      - https://www.agenciaalagoas.al.gov.br/rss
+      - https://news.google.com/rss/search?q=site:agenciaalagoas.al.gov.br&hl=pt-BR&gl=BR&ceid=BR:pt-419
+
+  - id: prefeitura-maceio
+    nome: Prefeitura de Maceió
+    curto: Prefeitura Maceió
+    tipo: municipio
+    portal:
+      base: https://transparencia.maceio.al.gov.br
+      sementes:
+        - https://transparencia.maceio.al.gov.br/
+    ckan: null
+    escolas:
+      dependencia: "3"          # 3 = rede municipal
+      municipio_ibge: "2704302" # Maceió
+    saude:
+      filtro: municipal
+      municipio_ibge: "2704302"
+      razao_contem: ["MUNICIPIO DE MACEIO", "SECRETARIA MUNICIPAL DE SAUDE", "PREFEITURA MUNICIPAL DE MACEIO", "FUNDO MUNICIPAL DE SAUDE DE MACEIO"]
+    noticias:
+      - https://www.maceio.al.gov.br/feed
+      - https://news.google.com/rss/search?q=site:maceio.al.gov.br&hl=pt-BR&gl=BR&ceid=BR:pt-419
+
+# Parâmetros comuns às duas esferas
+portal_comum:
+  palavras_links: [despesa, orgao, órgão, secretaria, receita, contrato, diaria, diária, convenio, convênio,
+                   licitac, dados-abertos, dados abertos, download, empenho, pagamento, favorecido,
+                   fornecedor, folha, pessoal, obra]
+  max_paginas: 80
+  intervalo_segundos: 1.0
+
+cnes:
+  base: https://apidadosabertos.saude.gov.br/cnes/estabelecimentos
+  uf_codigo: 27
+
+ibge_municipios: https://servicodados.ibge.gov.br/api/v1/localidades/estados/27/municipios
+
+inep:
+  # Tenta do ano mais recente para trás até achar o arquivo publicado.
+  url_modelo: https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_{ano}.zip
+  anos_para_tentar: 4
+
+noticias_dias: 120
+
+cnpj:
+  url: https://brasilapi.com.br/api/cnpj/v1/{cnpj}
+  max_consultas_por_dia: 300
+
+cgu:
+  base: https://api.portaldatransparencia.gov.br/api-de-dados
+  # A chave vem do segredo CGU_API_KEY no GitHub. Sem chave, a checagem é pulada.

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Time Mourinha — Monitor da Gestão de Alagoas</title>
+<meta name="description" content="Time Mourinha: monitoramento da gestão do Governo de Alagoas, secretaria por secretaria, com dados públicos oficiais.">
+<meta name="theme-color" content="#0B3C8C">
+<link rel="icon" href="img/icone.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+<header class="topo">
+  <div class="topo-in">
+    <a class="marca" href="#/"><img src="img/marca.svg" alt=""><span><b>Time Mourinha</b><small>Monitor da gestão em Alagoas</small></span></a>
+    <a class="usuario sem" id="usuario" href="#/entrar">Entrar</a>
+  </div>
+  <div class="faixa"></div>
+</header>
+<nav class="menu"><div class="in" id="menu">
+  <a href="#/" data-r="">Início</a>
+  <a href="#/e/governo-al" data-r="e/governo-al">Governo de Alagoas</a>
+  <a href="#/e/prefeitura-maceio" data-r="e/prefeitura-maceio">Prefeitura de Maceió</a>
+  <a href="#/time" data-r="time">Time Mourinha</a>
+  <a href="#/hoje" data-r="hoje" class="acao">＋ Atividade do dia</a>
+  <a href="#/como-funciona" data-r="como-funciona">Como funciona</a>
+</div></nav>
+<main id="app"><div class="carregando">Carregando…</div></main>
+<footer>
+  Time Mourinha. Dados públicos oficiais do Governo de Alagoas, da Prefeitura de Maceió e de órgãos federais, coletados automaticamente todo dia.
+  Alertas são pontos de atenção para checagem, não acusações. O Índice Mourinha não é avaliação oficial.
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/time.js"></script>
+</body>
+</html>

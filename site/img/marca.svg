@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" role="img" aria-label="Escudo do Time Mourinha">
+  <defs>
+    <clipPath id="esc"><path d="M50 4 L93 15 V58 C93 87 73 106 50 116 C27 106 7 87 7 58 V15 Z"/></clipPath>
+  </defs>
+  <path d="M50 4 L93 15 V58 C93 87 73 106 50 116 C27 106 7 87 7 58 V15 Z" fill="#0A2F6B"/>
+  <g clip-path="url(#esc)">
+    <polygon points="0,66 50,46 100,66 100,82 50,62 0,82" fill="#FF6A13"/>
+    <rect x="0" y="0" width="100" height="5" fill="#FF6A13"/>
+  </g>
+  <path d="M50 9 L88 19 V58 C88 83 70 100 50 110 C30 100 12 83 12 58 V19 Z" fill="none" stroke="#fff" stroke-width="2.2"/>
+  <polygon points="50,14 52.4,19.2 58,19.6 53.7,23.2 55.1,28.6 50,25.6 44.9,28.6 46.3,23.2 42,19.6 47.6,19.2" fill="#FF6A13"/>
+  <text x="50" y="55" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow','Arial Black',sans-serif" font-weight="800" font-size="30" fill="#fff" letter-spacing="-1">TM</text>
+  <circle cx="47" cy="88" r="8.5" fill="none" stroke="#fff" stroke-width="3.2"/>
+  <line x1="53.2" y1="94.2" x2="60" y2="101" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+</svg>
