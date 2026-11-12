@@ -1,8 +1,8 @@
 // Time Mourinha — funciona como aplicativo instalado.
 // Sempre busca a versão nova na internet; o que ficou guardado só é usado sem conexão.
-const CACHE = "tm-v4";
-const BASICO = ["./", "index.html", "css/estilo.css", "js/config.js", "js/guias.js", "js/app.js", "js/time.js", "js/gestao.js?v=4",
-  "js/instalar.js?v=4", "img/marca.svg", "img/icone.svg", "img/app-192.png"];
+const CACHE = "tm-v5";
+const BASICO = ["./", "index.html", "css/estilo.css", "js/config.js", "js/guias.js", "js/app.js", "js/time.js", "js/gestao.js?v=5",
+  "js/instalar.js?v=5", "img/marca.svg", "img/icone.svg", "img/app-192.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(BASICO)).catch(() => {}));

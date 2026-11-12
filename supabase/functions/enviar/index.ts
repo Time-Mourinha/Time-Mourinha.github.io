@@ -55,6 +55,12 @@ async function usuario(req: Request) {
   if (!jwt) return null;
   const { data } = await sb.auth.getUser(jwt);
   if (!data.user) return null;
+  // só vale com o código de segurança do e-mail (mesma regra do banco)
+  try {
+    const b = jwt.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const amr = JSON.parse(atob(b + "===".slice((b.length + 3) % 4))).amr ?? [];
+    if (!amr.some((x: any) => ["otp", "magiclink", "email/signup"].includes(x?.method ?? x))) return null;
+  } catch { return null; }
   const { data: p } = await sb.from("perfis").select("id,nome,papel,poderes").eq("id", data.user.id).maybeSingle();
   if (!p || !(p.papel === "dono" || (p.papel === "admin" && (p.poderes ?? []).includes("cobrancas")))) return null;
   return p;
@@ -92,7 +98,7 @@ Deno.serve(async (req) => {
   }
 
   const eu = await usuario(req);
-  if (!eu) return json({ erro: "Só o dono e quem tem o poder de cobranças pode enviar." }, 403);
+  if (!eu) return json({ erro: "Só o dono e quem tem o poder de cobranças pode enviar (entre com o código de segurança do e-mail)." }, 403);
 
   if (corpo.acao === "cobrar") {
     const { data: t } = await sb.from("tarefas").select("*").eq("id", corpo.tarefa_id).maybeSingle();

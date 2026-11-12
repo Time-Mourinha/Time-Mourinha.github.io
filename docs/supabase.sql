@@ -235,17 +235,23 @@ alter table public.perfis add constraint perfis_papel_check check (papel in ('pe
 alter table public.perfis add column if not exists poderes text[] not null default '{}';
 update public.perfis set poderes = array['aprovar','agenda','cobrancas'] where papel = 'admin' and poderes = '{}';
 
+-- Sessão "forte": entrou com o código de 6 dígitos enviado por e-mail (não só com a senha).
+-- Dono e administradores só exercem os poderes numa sessão forte: quem descobrir a senha não manda em nada.
+create or replace function public.sessao_forte() returns boolean language sql stable as $$
+  select coalesce((select bool_or(coalesce(x->>'method', x#>>'{}') in ('otp','magiclink','email/signup'))
+                   from jsonb_array_elements(coalesce(auth.jwt()->'amr','[]'::jsonb)) x), false);
+$$;
 create or replace function public.eh_membro() returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from perfis where id = auth.uid() and papel in ('membro','admin','dono'));
+  select exists (select 1 from perfis where id = auth.uid() and (papel = 'membro' or (papel in ('admin','dono') and public.sessao_forte())));
 $$;
 create or replace function public.eh_admin() returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from perfis where id = auth.uid() and papel in ('admin','dono'));
+  select public.sessao_forte() and exists (select 1 from perfis where id = auth.uid() and papel in ('admin','dono'));
 $$;
 create or replace function public.eh_dono() returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from perfis where id = auth.uid() and papel = 'dono');
+  select public.sessao_forte() and exists (select 1 from perfis where id = auth.uid() and papel = 'dono');
 $$;
 create or replace function public.tem_poder(p text) returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from perfis where id = auth.uid() and (papel = 'dono' or (papel = 'admin' and p = any(poderes))));
+  select public.sessao_forte() and exists (select 1 from perfis where id = auth.uid() and (papel = 'dono' or (papel = 'admin' and p = any(poderes))));
 $$;
 
 create or replace view public.vitrine as
@@ -259,6 +265,12 @@ declare meu text;
 begin
   if auth.uid() is null then return new; end if;              -- ajustes feitos pelo próprio sistema
   select papel into meu from perfis where id = auth.uid();
+  if meu in ('admin','dono') and not public.sessao_forte() then
+    if new.papel is distinct from old.papel or new.esferas is distinct from old.esferas or new.poderes is distinct from old.poderes then
+      raise exception 'Confirme o código de segurança enviado por e-mail antes de mexer nos cadastros.';
+    end if;
+    return new;
+  end if;
   if meu = 'dono' then
     if old.id = auth.uid() and new.papel <> 'dono' then raise exception 'O dono não pode tirar o próprio poder.'; end if;
     return new;

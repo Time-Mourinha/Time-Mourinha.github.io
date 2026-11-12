@@ -13,9 +13,18 @@
   const iniciais = (n) => (n || "?").split(" ").map((x) => x[0]).slice(0, 2).join("").toUpperCase();
   const rosto = (foto, nome) => (foto ? `<img src="${esc(foto)}" alt="Foto de ${esc(nome)}" loading="lazy">` : esc(iniciais(nome)));
   const visitante = () => localStorage.getItem("mourinha_visitante") === "1";
-  const souMembro = () => eu?.perfil && ["membro", "admin", "dono"].includes(eu.perfil.papel);
-  const souAdmin = () => ["admin", "dono"].includes(eu?.perfil?.papel);
-  const souDono = () => eu?.perfil?.papel === "dono";
+  // Dono e administradores só ganham os poderes depois do código enviado por e-mail (sessão "forte")
+  const precisaCodigo = () => ["admin", "dono"].includes(eu?.perfil?.papel) && !eu?.forte;
+  const souMembro = () => eu?.perfil && (eu.perfil.papel === "membro" || (["admin", "dono"].includes(eu.perfil.papel) && eu.forte));
+  const souAdmin = () => ["admin", "dono"].includes(eu?.perfil?.papel) && eu?.forte;
+  const souDono = () => eu?.perfil?.papel === "dono" && eu?.forte;
+  function sessaoForte(sessao) {
+    try {
+      const b = sessao.access_token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+      const amr = JSON.parse(decodeURIComponent(escape(atob(b + "===".slice((b.length + 3) % 4))))).amr || [];
+      return amr.some((x) => ["otp", "magiclink", "email/signup"].includes(x.method || x));
+    } catch { return false; }
+  }
   // dono pode tudo; administrador só o que o dono liberou (aprovar, agenda, cobrancas)
   const temPoder = (p) => souDono() || (eu?.perfil?.papel === "admin" && (eu.perfil.poderes || []).includes(p));
   const PODERES = { aprovar: "Aprovar cadastros", agenda: "Agenda do Mourinha", cobrancas: "Tarefas e cobranças pelo WhatsApp" };
@@ -28,7 +37,7 @@
     const user = data.session?.user;
     if (!user) { eu = null; return null; }
     const { data: perfil } = await sb.from("perfis").select("*").eq("id", user.id).maybeSingle();
-    eu = { user, perfil };
+    eu = { user, perfil, forte: sessaoForte(data.session) };
     const pend = localStorage.getItem("mourinha_foto_pendente");
     if (pend && perfil && !perfil.foto_path) { await salvarFotoPerfil(await (await fetch(pend)).blob()); localStorage.removeItem("mourinha_foto_pendente"); }
     return eu;
@@ -310,7 +319,7 @@
     app.innerHTML = `${trilha([["Início", "#/"], ["Meu perfil"]])}${cabeca("Meu perfil", "Seu WhatsApp e e-mail ficam guardados só no banco do time, nunca no site público.")}<div id="pf"></div>`;
     if (!sb || !eu) { $("#pf").innerHTML = sb ? `<div class="aviso"><a href="#/entrar">Entre</a> para ver seu perfil.</div>` : semSupabase; return; }
     const p = eu.perfil;
-    $("#pf").innerHTML = `<div class="bloco"><form class="form" id="f">
+    $("#pf").innerHTML = `${/boasvindas/.test(location.hash) ? `<div class="aviso azul"><b>Bem-vindo, dono do Time Mourinha!</b> Confirme seu WhatsApp abaixo e toque em Salvar: é por ele que chegam os lembretes e as respostas do time.</div>` : ""}<div class="bloco"><form class="form" id="f">
       <label class="foto-cadastro" id="fc">${p.foto_path ? `<img src="${esc(fotoPublica(p.foto_path))}" alt="Sua foto">` : "Toque para tirar sua foto"}<input type="file" accept="image/*" capture="user" hidden name="foto"></label>
       <label>WhatsApp com DDD<input name="telefone" inputmode="tel" placeholder="82 9 9999-9999" value="${esc(p.telefone || "")}"></label>
       <div class="opcoes"><label><input type="checkbox" name="ne" ${p.notificar_email !== false ? "checked" : ""}> Lembrete por e-mail</label>
@@ -460,10 +469,12 @@
     const f = $("#f");
     if (f) f.onsubmit = async (ev) => {
       ev.preventDefault();
-      const { error } = await sb.auth.signInWithPassword({ email: f.email.value.trim(), password: f.senha.value });
+      const email = f.email.value.trim();
+      const { error } = await sb.auth.signInWithPassword({ email, password: f.senha.value });
       if (error) return alertaErro({ message: error.message === "Invalid login credentials" ? "E-mail ou senha errados." : error.message });
       localStorage.removeItem("mourinha_visitante");
       await carregarEu(); chip();
+      if (precisaCodigo()) return pedirCodigo(email);
       location.hash = souMembro() ? "#/hoje" : "#/time";
     };
     const es = $("#esqueci");
@@ -474,6 +485,34 @@
       alert("Se o e-mail estiver cadastrado, chega um link para criar nova senha.");
     };
   }
+  /* Segunda trava do dono e dos administradores: código de 6 dígitos no e-mail a cada aparelho novo */
+  async function pedirCodigo(email) {
+    email = email || eu?.user?.email;
+    app.innerHTML = `${trilha([["Início", "#/"], ["Código de segurança"]])}${cabeca("Código de segurança", "Para proteger a conta de quem administra o time.")}
+      <div class="bloco"><div class="aviso azul" id="cod-aviso">Enviando um código para <b>${esc(email)}</b>…</div>
+      <form class="form" id="fc"><label>Código que chegou no e-mail<input name="codigo" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" maxlength="8" placeholder="000000" style="font-size:28px;letter-spacing:6px;text-align:center"></label>
+      <button class="btn">Confirmar</button></form>
+      <p class="meta">Não chegou? Olhe o spam ou <a href="javascript:void 0" id="reenviar">mande de novo</a>. Neste aparelho o código só é pedido de novo se você sair.</p></div>`;
+    const enviar = async () => {
+      await sb.auth.signOut();             // a sessão só com senha não vale para quem administra
+      const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+      $("#cod-aviso").innerHTML = error
+        ? `<b>Não deu para mandar o código agora.</b> ${esc(/rate|seconds|limit/i.test(error.message) ? "Espere um minuto e toque em mandar de novo." : error.message)}`
+        : `Mandamos um código de segurança para <b>${esc(email)}</b>. Ele vale por 10 minutos.`;
+    };
+    await enviar();
+    $("#reenviar").onclick = enviar;
+    $("#fc").onsubmit = async (ev) => {
+      ev.preventDefault();
+      const b = ev.target.querySelector("button"); b.disabled = true;
+      const { error } = await sb.auth.verifyOtp({ email, token: ev.target.codigo.value.trim(), type: "email" });
+      if (error) { b.disabled = false; return alertaErro({ message: "Código errado ou vencido. Confira ou peça outro." }); }
+      await carregarEu(); chip();
+      sinal("Entrou com código de segurança", "outro");
+      location.hash = souDono() && !eu.perfil.telefone ? "#/perfil?boasvindas=1" : "#/time";
+    };
+  }
+
   async function salvarFotoPerfil(blob) {
     const path = `${eu.user.id}/rosto-${Date.now()}.jpg`;
     const up = await sb.storage.from("perfis").upload(path, blob, { contentType: "image/jpeg", upsert: true });
@@ -555,7 +594,8 @@
     if (p[0] === "time") { if (!p[1]) await pgTime(params); else await pgMembro(p[1], p[2], p[3] && p[3] !== "-" ? p[3] : null); return true; }
     if (p[0] === "hoje") { await pgHoje(params); return true; }
     if (p[0] === "atividade") { await pgAtividade(p[1]); return true; }
-    if (p[0] === "entrar") { pgEntrar(); return true; }
+    if (p[0] === "entrar") { precisaCodigo() ? await pedirCodigo() : pgEntrar(); return true; }
+    if (precisaCodigo() && !["sair", "cadastro"].includes(p[0])) { await pedirCodigo(); return true; }
     if (p[0] === "cadastro") { pgCadastro(); return true; }
     if (p[0] === "admin") { await pgAdmin(); return true; }
     if (p[0] === "ao-vivo") { await pgAoVivo(); return true; }
