@@ -39,8 +39,9 @@ jobs:
           supabase secrets set --yes --project-ref "$SUPABASE_REF" PONTE_CHAVE="$PONTE_CHAVE"
           supabase functions deploy ponte --project-ref "$SUPABASE_REF" --no-verify-jwt --use-api --yes
           supabase functions deploy whatsapp --project-ref "$SUPABASE_REF" --no-verify-jwt --use-api --yes
-      - name: Testar a ponte (portal do Governo de Alagoas, a partir de São Paulo)
+      - name: Testar a ponte (rodando em São Paulo) nos sites do governo
         run: |
-          code=$(curl -s -o /tmp/p.html -w "%{http_code}" -H "x-chave: $PONTE_CHAVE" "$PONTE_URL?url=https://transparencia.al.gov.br/")
-          echo "Resposta do portal pela ponte: HTTP $code, $(wc -c < /tmp/p.html) bytes"
-          head -c 300 /tmp/p.html | tr '\n' ' '; echo
+          for alvo in https://transparencia.al.gov.br/ https://dados.al.gov.br/catalogo/api/3/action/package_search?rows=1 https://servicodados.ibge.gov.br/api/v1/localidades/estados/27 https://www.agenciaalagoas.al.gov.br/ https://transparencia.maceio.al.gov.br/; do
+            code=$(curl -s -m 90 -o /tmp/p.html -w "%{http_code}" -H "x-chave: $PONTE_CHAVE" -H "x-region: sa-east-1" --get --data-urlencode "url=$alvo" "$PONTE_URL")
+            echo "PONTE $alvo -> HTTP $code, $(wc -c < /tmp/p.html) bytes: $(head -c 160 /tmp/p.html | tr '\n' ' ')"
+          done
