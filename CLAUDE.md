@@ -63,7 +63,7 @@ Se uma fonte bloquear robôs ou exigir navegação, usar Playwright (Chromium he
 ## 4. Arquitetura
 
 - **Hospedagem:** GitHub Pages (site estático).
-- **Coleta:** GitHub Actions agendado **1x por dia às 18:00 de Maceió** (`cron: "0 21 * * *"` em UTC) + botão manual (`workflow_dispatch`).
+- **Coleta:** GitHub Actions agendado **1x por dia à meia-noite (00:00) de Maceió** (`cron: "0 3 * * *"` em UTC), portais e notícias da mídia juntos + botão manual (`workflow_dispatch`).
 - **Coletor:** Python 3.12 em `coletor/` (requests, pandas, playwright, duckdb). Cada fonte em um módulo próprio.
 - **Dados:**
   - `dados/brutos/` — arquivos originais baixados (compactados, divididos por mês para ficar abaixo de 50 MB cada).
@@ -181,7 +181,7 @@ Cada regra fica em `coletor/alertas/` com nome, descrição simples, severidade 
 ## 8A. Na mídia (72 horas) e Manual do fiscal
 
 - **Na mídia:** notícias **negativas** da imprensa (sem sites oficiais) das últimas 72 horas, por secretaria, nas duas esferas
-  (`coletor/midia.py`, workflow `midia.yml` às 7h, 12h e 17h). Botão "Na mídia" na esfera e em cada secretaria.
+  (`coletor/midia.py`, junto com a coleta diária da meia-noite; `midia.yml` só para rodar na hora). Botão "Na mídia" na esfera e em cada secretaria.
   Cada notícia tem "O que cobrar", "O que fazer", situação da cobrança (a cobrar / cobrando / resolvido) e "Cobrar e registrar".
 - **Manual do fiscal** (`site/js/guias.js`): para cada tipo de problema (falta, fila, estrutura, obra parada, servidores,
   irregularidade, risco à vida, gasto fora do padrão, reclamação) diz o que cobrar, o passo a passo e a quem levar.

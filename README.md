@@ -14,7 +14,7 @@ com a área do time (cadastro com foto, atividades do dia com fotos e vídeos).
 | Pasta | O que tem |
 |---|---|
 | `site/` | O site (HTML, CSS e JavaScript). É o que vai para o GitHub Pages. |
-| `coletor/` | O robô em Python que coleta os dados todo dia às 18h. |
+| `coletor/` | O robô em Python que coleta os dados todo dia à meia-noite. |
 | `coletor/config/geral.yaml` | Endereços dos portais das duas esferas. Dá para acrescentar outra esfera aqui. |
 | `coletor/config/regras.yaml` | Regras dos alertas e pesos do Índice Mourinha. |
 | `docs/supabase.sql` | Banco de dados da área do time (rodar uma vez no Supabase). |
@@ -50,7 +50,7 @@ do Supabase custa US$ 25 por mês e dá 100 GB. Nada disso usa o armazenamento d
 
 ## Na mídia e Manual do fiscal
 
-- **Na mídia (72h):** notícias negativas da imprensa sobre cada secretaria, atualizadas às 7h, 12h e 17h.
+- **Na mídia (72h):** notícias negativas da imprensa sobre cada secretaria, atualizadas todo dia à meia-noite, junto com os portais.
   Cada uma mostra o que cobrar, o que fazer e a situação da cobrança.
 - **Manual do fiscal:** página com o que cobrar e o que fazer em cada tipo de problema.
 

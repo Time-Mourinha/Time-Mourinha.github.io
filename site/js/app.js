@@ -46,7 +46,7 @@ function fonte(meta, url) {
 }
 function semDados(esf) {
   return `<div class="aviso azul"><b>Aguardando a primeira coleta.</b> Os dados de ${esc(ESFERAS[esf]?.nome || "")} chegam automaticamente
-  todo dia às 18h direto dos portais oficiais. Enquanto isso, veja <a href="#/como-funciona">como o Time Mourinha funciona</a>.</div>`;
+  todo dia à meia-noite direto dos portais oficiais. Enquanto isso, veja <a href="#/como-funciona">como o Time Mourinha funciona</a>.</div>`;
 }
 function barra(p) { return `<div class="barra"><i style="width:${Math.max(0, Math.min(100, p || 0))}%"></i></div>`; }
 function tag(txt, cls) { return `<span class="tag ${esc(cls || "")}">${esc(txt)}</span>`; }
@@ -109,7 +109,7 @@ async function pgInicio() {
         <div class="${e.n_obras_paradas ? "quente" : ""}"><b>${fmtN(e.n_obras_paradas)}</b><span>obras paradas</span></div>
         <div><b>${fmtN(e.n_missoes)}</b><span>missões</span></div>
       </div>
-      <div class="rod">${e.ultima_coleta_falhou ? `<b style="color:var(--vermelho)">A coleta de hoje falhou.</b> Mostrando os dados de ${new Date(e.atualizado_em).toLocaleString("pt-BR")}.` : e.atualizado_em ? `Atualizado em ${new Date(e.atualizado_em).toLocaleString("pt-BR")}` : "A coleta roda sozinha todo dia às 18h"}</div></a>`;
+      <div class="rod">${e.ultima_coleta_falhou ? `<b style="color:var(--vermelho)">A coleta de hoje falhou.</b> Mostrando os dados de ${new Date(e.atualizado_em).toLocaleString("pt-BR")}.` : e.atualizado_em ? `Atualizado em ${new Date(e.atualizado_em).toLocaleString("pt-BR")}` : "A coleta roda sozinha todo dia à meia-noite"}</div></a>`;
   };
   app.innerHTML = `<section class="heroi"><div class="heroi-in"><img src="img/marca.svg" alt="Escudo do Time Mourinha">
       <div><h1>Time<span>Mourinha</span></h1><p>Cada secretaria, cada escola, cada posto de saúde e cada real gasto, acompanhados de perto. Escolha onde jogar.</p></div></div></section>
@@ -382,14 +382,14 @@ async function pgLista(esf, tipo) {
     obras: "Reformas, construções e manutenções encontradas nos gastos. Parada = sem pagamento há mais de 90 dias.",
     radar: "Pontos de atenção. Não são acusações: cada um diz a regra que o gerou.",
     ranking: "Índice Mourinha de 0 a 100. Execução, pagamento em dia, entregas, dados completos e poucos alertas.",
-    midia: "Notícias negativas da imprensa sobre cada secretaria nas últimas 72 horas. Cada uma traz o que cobrar e o que fazer. Atualiza 3 vezes por dia.",
+    midia: "Notícias negativas da imprensa sobre cada secretaria nas últimas 72 horas. Cada uma traz o que cobrar e o que fazer. Atualiza todo dia à meia-noite.",
   }[tipo] || "";
   app.innerHTML = `${trilha([["Início", "#/"], [info.nome, `#/e/${esf}`], [tit]])}${cabeca(tit, sub)}<div id="l"></div>`;
   if (tipo === "midia") {
     const m = await dados(`${esf}/midia.json`);
     const orgaos = (await dados(`${esf}/orgaos.json`)) || [];
     const el = $("#l");
-    if (!m) { el.innerHTML = `<div class="aviso azul">A primeira busca na imprensa ainda não rodou. Ela roda sozinha às 7h, 12h e 17h.</div>`; return; }
+    if (!m) { el.innerHTML = `<div class="aviso azul">A primeira busca na imprensa ainda não rodou. Ela roda sozinha todo dia à meia-noite.</div>`; return; }
     const temas = [...new Set(m.itens.flatMap((n) => (n.orgaos.length ? n.orgaos : n.temas)))];
     el.innerHTML = `<p class="fonte">Atualizado em ${new Date(m.atualizado_em).toLocaleString("pt-BR")} · ${m.itens.length} notícias</p>
       <div class="ferramentas"><select id="ft"><option value="">Todas as secretarias</option>${temas.map((t) => `<option value="${esc(t)}">${esc(orgaos.find((o) => o.id === t)?.sigla || t)}</option>`).join("")}</select></div><div id="lm"></div>`;
@@ -510,7 +510,7 @@ function pgManual(chave) {
 
 function pgComoFunciona() {
   app.innerHTML = `${trilha([["Início", "#/"], ["Como funciona"]])}${cabeca("Como o Time Mourinha funciona")}
-  <div class="bloco"><h2>De onde vêm os dados</h2><p class="explica">Todo dia às 18h um robô visita os portais oficiais e baixa tudo de novo: Portal da Transparência de Alagoas, Portal da Transparência de Maceió, Alagoas em Dados,
+  <div class="bloco"><h2>De onde vêm os dados</h2><p class="explica">Todo dia à meia-noite um robô visita os portais oficiais e baixa tudo de novo: Portal da Transparência de Alagoas, Portal da Transparência de Maceió, Alagoas em Dados,
   Censo Escolar (INEP), CNES (unidades de saúde), notícias oficiais, dados de CNPJ e o cadastro federal de empresas punidas (CEIS/CNEP). Nenhum número é digitado à mão e nada é inventado.</p></div>
   <div class="bloco"><h2>Sem excluir nada</h2><p class="explica">Todas as despesas do ano entram, de qualquer valor. Itens repetidos no portal contam uma vez só. A soma é conferida com o total do portal e qualquer diferença aparece em "Saúde dos dados".</p></div>
   <div class="bloco"><h2>Alertas</h2><p class="explica">Compras divididas logo abaixo do limite de dispensa, um fornecedor concentrando o gasto, valores muito acima do normal, empresas com menos de um ano,

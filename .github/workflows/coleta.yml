@@ -2,7 +2,7 @@ name: Coleta diária e publicação
 
 on:
   schedule:
-    - cron: "0 21 * * *"    # 18:00 em Maceió
+    - cron: "0 3 * * *"     # 00:00 (meia-noite) em Maceió — portais + notícias da mídia
   workflow_dispatch:         # botão "Run workflow" para rodar na hora
   push:
     branches: [main]

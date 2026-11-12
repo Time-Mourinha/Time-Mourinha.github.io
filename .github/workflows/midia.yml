@@ -1,11 +1,8 @@
 name: Notícias da mídia
 
-# Notícias negativas da imprensa (últimas 72h) por secretaria: 7h, 12h e 17h de Maceió.
+# Notícias negativas da imprensa (últimas 72h) por secretaria.
+# A rodada automática acontece junto com a coleta diária da meia-noite; aqui fica só o botão para rodar na hora.
 on:
-  schedule:
-    - cron: "0 10 * * *"
-    - cron: "0 15 * * *"
-    - cron: "0 20 * * *"
   workflow_dispatch:
 
 permissions:
