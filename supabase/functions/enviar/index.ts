@@ -55,14 +55,15 @@ async function usuario(req: Request) {
   if (!jwt) return null;
   const { data } = await sb.auth.getUser(jwt);
   if (!data.user) return null;
-  // só vale com o código de segurança do e-mail (mesma regra do banco)
-  try {
-    const b = jwt.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    const amr = JSON.parse(atob(b + "===".slice((b.length + 3) % 4))).amr ?? [];
-    if (!amr.some((x: any) => ["otp", "magiclink", "email/signup"].includes(x?.method ?? x))) return null;
-  } catch { return null; }
+
   const { data: p } = await sb.from("perfis").select("id,nome,papel,poderes").eq("id", data.user.id).maybeSingle();
   if (!p || !(p.papel === "dono" || (p.papel === "admin" && (p.poderes ?? []).includes("cobrancas")))) return null;
+  if (p.papel === "dono") {
+    // o dono só manda depois do código de segurança do e-mail (mesma regra do banco)
+    const comoEle = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: `Bearer ${jwt}` } } });
+    const { data: forte } = await comoEle.rpc("sessao_forte");
+    if (!forte) return null;
+  }
   return p;
 }
 

@@ -13,18 +13,11 @@
   const iniciais = (n) => (n || "?").split(" ").map((x) => x[0]).slice(0, 2).join("").toUpperCase();
   const rosto = (foto, nome) => (foto ? `<img src="${esc(foto)}" alt="Foto de ${esc(nome)}" loading="lazy">` : esc(iniciais(nome)));
   const visitante = () => localStorage.getItem("mourinha_visitante") === "1";
-  // Dono e administradores só ganham os poderes depois do código enviado por e-mail (sessão "forte")
-  const precisaCodigo = () => ["admin", "dono"].includes(eu?.perfil?.papel) && !eu?.forte;
-  const souMembro = () => eu?.perfil && (eu.perfil.papel === "membro" || (["admin", "dono"].includes(eu.perfil.papel) && eu.forte));
-  const souAdmin = () => ["admin", "dono"].includes(eu?.perfil?.papel) && eu?.forte;
+  // O dono só ganha os poderes depois do código enviado por e-mail (sessão confirmada)
+  const precisaCodigo = () => eu?.perfil?.papel === "dono" && !eu?.forte;
+  const souMembro = () => eu?.perfil && (["membro", "admin"].includes(eu.perfil.papel) || (eu.perfil.papel === "dono" && eu.forte));
+  const souAdmin = () => eu?.perfil?.papel === "admin" || (eu?.perfil?.papel === "dono" && eu?.forte);
   const souDono = () => eu?.perfil?.papel === "dono" && eu?.forte;
-  function sessaoForte(sessao) {
-    try {
-      const b = sessao.access_token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-      const amr = JSON.parse(decodeURIComponent(escape(atob(b + "===".slice((b.length + 3) % 4))))).amr || [];
-      return amr.some((x) => ["otp", "magiclink", "email/signup"].includes(x.method || x));
-    } catch { return false; }
-  }
   // dono pode tudo; administrador só o que o dono liberou (aprovar, agenda, cobrancas)
   const temPoder = (p) => souDono() || (eu?.perfil?.papel === "admin" && (eu.perfil.poderes || []).includes(p));
   const PODERES = { aprovar: "Aprovar cadastros", agenda: "Agenda do Mourinha", cobrancas: "Tarefas e cobranças pelo WhatsApp" };
@@ -37,7 +30,8 @@
     const user = data.session?.user;
     if (!user) { eu = null; return null; }
     const { data: perfil } = await sb.from("perfis").select("*").eq("id", user.id).maybeSingle();
-    eu = { user, perfil, forte: sessaoForte(data.session) };
+    eu = { user, perfil, forte: false };
+    if (perfil?.papel === "dono") eu.forte = Boolean((await sb.rpc("sessao_forte")).data);
     const pend = localStorage.getItem("mourinha_foto_pendente");
     if (pend && perfil && !perfil.foto_path) { await salvarFotoPerfil(await (await fetch(pend)).blob()); localStorage.removeItem("mourinha_foto_pendente"); }
     return eu;
@@ -474,7 +468,7 @@
       if (error) return alertaErro({ message: error.message === "Invalid login credentials" ? "E-mail ou senha errados." : error.message });
       localStorage.removeItem("mourinha_visitante");
       await carregarEu(); chip();
-      if (precisaCodigo()) return pedirCodigo(email);
+      if (precisaCodigo()) return pedirCodigo();
       location.hash = souMembro() ? "#/hoje" : "#/time";
     };
     const es = $("#esqueci");
@@ -485,28 +479,31 @@
       alert("Se o e-mail estiver cadastrado, chega um link para criar nova senha.");
     };
   }
-  /* Segunda trava do dono e dos administradores: código de 6 dígitos no e-mail a cada aparelho novo */
-  async function pedirCodigo(email) {
-    email = email || eu?.user?.email;
-    app.innerHTML = `${trilha([["Início", "#/"], ["Código de segurança"]])}${cabeca("Código de segurança", "Para proteger a conta de quem administra o time.")}
+  /* Segunda trava do dono: código no e-mail a cada aparelho ou entrada nova */
+  async function pedirCodigo() {
+    const email = eu?.user?.email || "";
+    app.innerHTML = `${trilha([["Início", "#/"], ["Código de segurança"]])}${cabeca("Código de segurança", "Só quem tem o seu e-mail consegue usar os poderes de dono.")}
       <div class="bloco"><div class="aviso azul" id="cod-aviso">Enviando um código para <b>${esc(email)}</b>…</div>
-      <form class="form" id="fc"><label>Código que chegou no e-mail<input name="codigo" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,8}" maxlength="8" placeholder="000000" style="font-size:28px;letter-spacing:6px;text-align:center"></label>
+      <form class="form" id="fc"><label>Código que chegou no e-mail<input name="codigo" required inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10" placeholder="Código" style="font-size:28px;letter-spacing:6px;text-align:center"></label>
       <button class="btn">Confirmar</button></form>
-      <p class="meta">Não chegou? Olhe o spam ou <a href="javascript:void 0" id="reenviar">mande de novo</a>. Neste aparelho o código só é pedido de novo se você sair.</p></div>`;
+      <p class="meta">O e-mail vem do Supabase, com o assunto "is your verification code". Não chegou? Olhe o spam ou <a href="javascript:void 0" id="reenviar">mande de novo</a>.
+      Neste aparelho o código só é pedido de novo se você sair da conta.</p>
+      <p><a href="#/sair">Sair</a></p></div>`;
     const enviar = async () => {
-      await sb.auth.signOut();             // a sessão só com senha não vale para quem administra
-      const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } });
+      const { error } = await sb.auth.reauthenticate();
       $("#cod-aviso").innerHTML = error
-        ? `<b>Não deu para mandar o código agora.</b> ${esc(/rate|seconds|limit/i.test(error.message) ? "Espere um minuto e toque em mandar de novo." : error.message)}`
-        : `Mandamos um código de segurança para <b>${esc(email)}</b>. Ele vale por 10 minutos.`;
+        ? `<b>Não deu para mandar o código agora.</b> ${/rate|seconds|limit|frequ/i.test(error.message) ? "Espere um minuto e toque em mandar de novo." : esc(error.message)}`
+        : `Mandamos um código de segurança para <b>${esc(email)}</b>. Ele vale por alguns minutos.`;
     };
-    await enviar();
+    if (!sessionStorage.getItem("tm_codigo_enviado")) { sessionStorage.setItem("tm_codigo_enviado", "1"); await enviar(); }
+    else $("#cod-aviso").innerHTML = `O código foi enviado para <b>${esc(email)}</b>. Se não chegou, toque em mandar de novo.`;
     $("#reenviar").onclick = enviar;
     $("#fc").onsubmit = async (ev) => {
       ev.preventDefault();
       const b = ev.target.querySelector("button"); b.disabled = true;
-      const { error } = await sb.auth.verifyOtp({ email, token: ev.target.codigo.value.trim(), type: "email" });
-      if (error) { b.disabled = false; return alertaErro({ message: "Código errado ou vencido. Confira ou peça outro." }); }
+      const { data, error } = await sb.rpc("confirmar_codigo", { codigo: ev.target.codigo.value.replace(/\D/g, "") });
+      if (error || !data) { b.disabled = false; return alertaErro({ message: "Código errado ou vencido. Confira ou peça outro." }); }
+      sessionStorage.removeItem("tm_codigo_enviado");
       await carregarEu(); chip();
       sinal("Entrou com código de segurança", "outro");
       location.hash = souDono() && !eu.perfil.telefone ? "#/perfil?boasvindas=1" : "#/time";
@@ -565,7 +562,8 @@
       const opcoes = souDono() ? ["pendente", "membro", "admin", "bloqueado"] : ["pendente", "membro", "bloqueado"];
       return `<div class="item ${p.papel === "pendente" ? "media" : ""}" data-id="${p.id}">
       <div style="display:flex;gap:12px;align-items:center"><span class="jogador" style="width:auto"><span class="rosto" style="width:56px;height:56px;font-size:20px;border-color:var(--linha);color:#fff">${rosto(fotoPublica(p.foto_path), p.nome)}</span></span>
-      <div style="flex:1"><h3 style="margin:0">${esc(p.nome || "(sem nome)")} ${tag(NOMES[p.papel], p.papel === "dono" ? "azul" : "")}</h3><div class="meta">${esc(p.email || "")} · cadastrado em ${fmtD(p.criado_em)}</div></div></div>
+      <div style="flex:1"><h3 style="margin:0">${esc(p.nome || "(sem nome)")} ${tag(NOMES[p.papel], p.papel === "dono" ? "azul" : "")}
+        ${p.membro_id && ps.some((o) => o.id !== p.id && o.membro_id === p.membro_id && o.papel !== "pendente" && o.papel !== "bloqueado") && p.papel === "pendente" ? tag("⚠️ Já existe outro cadastro com este nome: confira antes de aprovar", "alta") : ""}</h3><div class="meta">${esc(p.email || "")} · cadastrado em ${fmtD(p.criado_em)}</div></div></div>
       ${!mexivel ? `<p class="meta" style="margin-top:8px">${p.papel === "dono" ? "O dono tem todos os poderes." : "Só o dono mexe nos administradores."}</p>` : `
       <div class="ferramentas" style="margin-top:10px"><select data-k="papel" aria-label="Papel">${opcoes.map((x) => `<option value="${x}" ${p.papel === x ? "selected" : ""}>${NOMES[x]}</option>`).join("")}</select>
       ${Object.entries(ESFERAS).map(([k, v]) => `<label class="opcoes" style="flex:none"><label><input type="checkbox" data-esf="${k}" ${p.esferas.includes(k) ? "checked" : ""}> Time ${v.curto}</label></label>`).join("")}</div>

@@ -235,23 +235,68 @@ alter table public.perfis add constraint perfis_papel_check check (papel in ('pe
 alter table public.perfis add column if not exists poderes text[] not null default '{}';
 update public.perfis set poderes = array['aprovar','agenda','cobrancas'] where papel = 'admin' and poderes = '{}';
 
--- Sessão "forte": entrou com o código de 6 dígitos enviado por e-mail (não só com a senha).
--- Dono e administradores só exercem os poderes numa sessão forte: quem descobrir a senha não manda em nada.
-create or replace function public.sessao_forte() returns boolean language sql stable as $$
-  select coalesce((select bool_or(coalesce(x->>'method', x#>>'{}') in ('otp','magiclink','email/signup'))
-                   from jsonb_array_elements(coalesce(auth.jwt()->'amr','[]'::jsonb)) x), false);
+-- CÓDIGO DE SEGURANÇA DO DONO: a cada aparelho/entrada nova, o dono recebe um código no e-mail
+-- (o próprio Supabase envia, pelo "reauthenticate") e só exerce os poderes depois de digitá-lo.
+-- Quem descobrir a senha do dono entra como integrante comum, sem poder nenhum.
+create table if not exists public.sessoes_confirmadas (
+  session_id uuid primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  criado_em timestamptz not null default now()
+);
+create table if not exists public.codigo_tentativas (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  falhas int not null default 0,
+  ultimo_usado text,
+  em timestamptz not null default now()
+);
+alter table public.sessoes_confirmadas enable row level security;   -- sem regras: ninguém lê nem grava direto
+alter table public.codigo_tentativas enable row level security;
+
+create or replace function public.sessao_forte() returns boolean language sql stable security definer set search_path = public as $$
+  select coalesce((select bool_or(coalesce(x->>'method', x#>>'{}') in ('otp','magiclink'))
+                   from jsonb_array_elements(coalesce(auth.jwt()->'amr','[]'::jsonb)) x), false)
+      or exists (select 1 from sessoes_confirmadas
+                  where user_id = auth.uid() and session_id::text = coalesce(auth.jwt()->>'session_id',''));
 $$;
+grant execute on function public.sessao_forte() to authenticated;
+
+-- Confere o código que chegou no e-mail (mesma conta que o Supabase faz: sha224 de e-mail + código)
+create or replace function public.confirmar_codigo(codigo text) returns boolean
+language plpgsql security definer set search_path = public, extensions as $$
+declare u record; t record; h text;
+begin
+  select id, email, reauthentication_token, reauthentication_sent_at into u from auth.users where id = auth.uid();
+  if u.id is null or coalesce(u.reauthentication_token,'') = '' or u.reauthentication_sent_at < now() - interval '15 minutes' then
+    return false;
+  end if;
+  select * into t from codigo_tentativas where user_id = u.id;
+  if t.user_id is not null and t.falhas >= 5 and t.em > now() - interval '15 minutes' then return false; end if;
+  if t.user_id is not null and t.ultimo_usado = u.reauthentication_token then return false; end if;
+  h := encode(extensions.digest(u.email || trim(codigo), 'sha224'), 'hex');
+  if h = u.reauthentication_token then
+    insert into sessoes_confirmadas (session_id, user_id) values ((auth.jwt()->>'session_id')::uuid, u.id) on conflict do nothing;
+    insert into codigo_tentativas (user_id, falhas, ultimo_usado, em) values (u.id, 0, u.reauthentication_token, now())
+      on conflict (user_id) do update set falhas = 0, ultimo_usado = excluded.ultimo_usado, em = now();
+    return true;
+  end if;
+  insert into codigo_tentativas (user_id, falhas, em) values (u.id, 1, now())
+    on conflict (user_id) do update set falhas = case when codigo_tentativas.em > now() - interval '15 minutes' then codigo_tentativas.falhas + 1 else 1 end, em = now();
+  return false;
+end $$;
+revoke all on function public.confirmar_codigo(text) from public, anon;
+grant execute on function public.confirmar_codigo(text) to authenticated;
+
 create or replace function public.eh_membro() returns boolean language sql stable security definer set search_path = public as $$
-  select exists (select 1 from perfis where id = auth.uid() and (papel = 'membro' or (papel in ('admin','dono') and public.sessao_forte())));
+  select exists (select 1 from perfis where id = auth.uid() and (papel in ('membro','admin') or (papel = 'dono' and public.sessao_forte())));
 $$;
 create or replace function public.eh_admin() returns boolean language sql stable security definer set search_path = public as $$
-  select public.sessao_forte() and exists (select 1 from perfis where id = auth.uid() and papel in ('admin','dono'));
+  select exists (select 1 from perfis where id = auth.uid() and (papel = 'admin' or (papel = 'dono' and public.sessao_forte())));
 $$;
 create or replace function public.eh_dono() returns boolean language sql stable security definer set search_path = public as $$
   select public.sessao_forte() and exists (select 1 from perfis where id = auth.uid() and papel = 'dono');
 $$;
 create or replace function public.tem_poder(p text) returns boolean language sql stable security definer set search_path = public as $$
-  select public.sessao_forte() and exists (select 1 from perfis where id = auth.uid() and (papel = 'dono' or (papel = 'admin' and p = any(poderes))));
+  select exists (select 1 from perfis where id = auth.uid() and ((papel = 'dono' and public.sessao_forte()) or (papel = 'admin' and p = any(poderes))));
 $$;
 
 create or replace view public.vitrine as
@@ -265,7 +310,7 @@ declare meu text;
 begin
   if auth.uid() is null then return new; end if;              -- ajustes feitos pelo próprio sistema
   select papel into meu from perfis where id = auth.uid();
-  if meu in ('admin','dono') and not public.sessao_forte() then
+  if meu = 'dono' and not public.sessao_forte() then
     if new.papel is distinct from old.papel or new.esferas is distinct from old.esferas or new.poderes is distinct from old.poderes then
       raise exception 'Confirme o código de segurança enviado por e-mail antes de mexer nos cadastros.';
     end if;

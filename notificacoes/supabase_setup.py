@@ -106,16 +106,6 @@ def ajustar_login():
         "uri_allow_list": f"{SITE}/**,{SITE}",
         "mailer_autoconfirm": True,   # entra direto; quem libera o acesso é o administrador do time
         "external_email_enabled": True,
-        # código de segurança do dono e dos administradores (6 dígitos, vale 10 minutos)
-        "mailer_otp_length": 6,
-        "mailer_otp_exp": 600,
-        "mailer_subjects_magic_link": "Seu código de segurança do Time Mourinha",
-        "mailer_templates_magic_link_content": (
-            "<div style='font-family:Arial,sans-serif;max-width:480px;margin:auto'>"
-            "<h2 style='color:#0A2F6B'>Time Mourinha</h2>"
-            "<p>Seu código de segurança para entrar:</p>"
-            "<p style='font-size:34px;font-weight:bold;letter-spacing:8px;color:#FF6A13'>{{ .Token }}</p>"
-            "<p>Ele vale por 10 minutos. Se não foi você que tentou entrar, ignore este e-mail e troque sua senha.</p></div>"),
     })
     print("Login ajustado: cadastro por e-mail e senha, sem confirmação; endereço do site:", SITE)
 
