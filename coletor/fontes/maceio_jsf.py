@@ -89,11 +89,17 @@ def coletar(ano: int):
                     ids = pag.evaluate("""(form) => [...document.getElementById(form).querySelectorAll('input[type=text]')]
                         .filter(i => /^\\d{2}\\/\\d{2}\\/\\d{4}$/.test(i.value)).map(i => i.id)""", form)
                     for cid, valor in zip(ids[:2], (f"01/01/{ano}", fim)):
-                        campo = pag.locator(f'[id="{cid}"]')
-                        campo.click()
-                        campo.press("Control+A")
-                        campo.type(valor, delay=40)
-                        campo.press("Escape")
+                        d, m, y = (int(x) for x in valor.split("/"))
+                        # o campo de data é um calendário do PrimeFaces: muda pela própria API do componente
+                        pag.evaluate("""([cid, y, m, d, txt]) => {
+                            const base = cid.replace(/_input$/, '');
+                            const w = window.PrimeFaces && Object.values(PrimeFaces.widgets || {}).find(w => w && w.id === base);
+                            const el = document.getElementById(cid);
+                            el.removeAttribute('readonly');
+                            if (w && w.setDate) { w.setDate(new Date(y, m - 1, d)); }
+                            el.value = txt;
+                            if (window.jQuery) { jQuery(el).val(txt).trigger('change').trigger('blur'); }
+                        }""", [cid, y, m, d, valor])
                         pag.wait_for_timeout(300)
                     lidos = [pag.locator(f'[id="{c}"]').input_value() for c in ids[:2]]
                     ano_sel = pag.evaluate("() => { const s = document.getElementById('form-anoAtual:selectAno'); return s ? s.value : null }")
