@@ -543,7 +543,28 @@
     return false;
   }
 
-  window.Time = { rota, escalacao, atividadesDoOrgao };
+  /* Situação de cada cobrança (notícia da mídia): a cobrar / cobrando / resolvido — compartilhada pelo time */
+  async function statusCobranca(el) {
+    const caixas = [...el.querySelectorAll("[data-cobranca]")];
+    if (!caixas.length || !sb || !souMembro()) return;
+    const esf = caixas[0].dataset.esfera;
+    const { data } = await sb.from("missoes_status").select("*").eq("esfera", esf);
+    const st = Object.fromEntries((data || []).map((x) => [x.missao_id, x.situacao]));
+    caixas.forEach((c) => {
+      const id = c.dataset.cobranca;
+      const s = document.createElement("select");
+      s.innerHTML = [["a_fazer", "🔴 A cobrar"], ["em_andamento", "🟠 Cobrando"], ["feita", "🟢 Resolvido"]].map(([k, t]) => `<option value="${k}" ${(st[id] || "a_fazer") === k ? "selected" : ""}>${t}</option>`).join("");
+      s.setAttribute("aria-label", "Situação da cobrança");
+      s.onchange = async () => {
+        await sb.from("missoes_status").upsert({ esfera: esf, missao_id: id, situacao: s.value, responsavel: eu.perfil.id, atualizado_em: new Date().toISOString() });
+        const titulo = c.closest(".item")?.querySelector("h3")?.textContent?.slice(0, 120) || "";
+        await sinal(`${{ a_fazer: "Reabriu", em_andamento: "Está cobrando", feita: "Marcou como resolvida" }[s.value]}: ${titulo}`, "outro");
+      };
+      c.prepend(s);
+    });
+  }
+
+  window.Time = { rota, escalacao, atividadesDoOrgao, statusCobranca };
   const app = document.getElementById("app");
   const pronto = carregarEu().then(chip).catch(chip);
   // garante que o usuário já foi carregado antes da primeira página da área do time

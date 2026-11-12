@@ -72,6 +72,8 @@ def rodada(tmp_path, monkeypatch):
          "tipo": "entrega", "texto_busca": "GOVERNO ENTREGA ESCOLA REFORMADA EDUCACAO ENTREGA"}]))
     monkeypatch.setattr(externas, "dados_cnpj", lambda c, h, l: (ok("cnpj"), {"44444444000144": {"abertura": "2026-08-01"}}))
     monkeypatch.setattr(externas, "sancoes", lambda c, h, l: (ok("cgu"), {}))
+    import coletor.midia as midia
+    monkeypatch.setattr(midia, "rodar", lambda: 0)
     monkeypatch.setattr(publicar, "BASE_SAIDA", tmp_path / "dados")
     monkeypatch.setattr(main, "SAIDA", tmp_path / "dados")
     monkeypatch.setattr(main, "DOCS", tmp_path / "docs")

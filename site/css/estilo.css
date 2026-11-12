@@ -207,3 +207,14 @@ footer{max-width:1200px;margin:10px auto 0;padding:18px 16px 30px;color:var(--ci
 .lightbox p{color:#fff;text-align:center;margin:8px 0 0}
 .ferramentas input[type=checkbox],.ferramentas input[type=radio]{flex:none;min-width:0;width:18px;height:18px;padding:0}
 .ferramentas .opcoes label{justify-content:flex-start}
+
+/* ---------- "como agir": botões que abrem o que cobrar e o que fazer */
+.agir{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.agir details{flex:1 1 240px;background:var(--anil-cl);border-radius:10px;padding:0}
+.agir details[open]{background:var(--giz);border:1.5px solid var(--anil-2)}
+.agir summary{list-style:none;cursor:pointer;padding:10px 12px;font-weight:700;color:var(--anil);font-size:14.5px}
+.agir summary::-webkit-details-marker{display:none}
+.agir details .checklist,.agir details .explica{padding:0 12px 10px 30px;margin:0}
+.agir details .explica{padding-left:12px}
+.cobranca{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.cobranca select{border:1.5px solid var(--linha);border-radius:10px;padding:8px 10px;background:var(--giz);font-weight:600}

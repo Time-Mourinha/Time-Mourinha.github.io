@@ -89,6 +89,11 @@ def rodar(so_portal: bool = False, so_esfera: str | None = None) -> int:
                         "tipo": esf["tipo"], "portal": esf["portal"]["base"], **{k: v for k, v in r.items() if k not in ("id", "nome", "curto", "tipo", "portal")}})
     if not so_portal:
         salvar_json(SAIDA / "esferas.json", resumos, compacto=False)
+        try:  # notícias negativas da imprensa (72h), com a lista de secretarias recém-coletada
+            from . import midia
+            midia.rodar()
+        except Exception:  # noqa: BLE001
+            log.exception("mídia falhou")
     # Código 2 = alguma esfera ficou sem despesas: o workflow abre uma issue avisando.
     return 2 if falhas else 0
 

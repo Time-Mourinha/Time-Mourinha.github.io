@@ -26,6 +26,9 @@ esferas:
       filtro: estadual
       municipio_ibge: null
       razao_contem: ["ESTADO DE ALAGOAS", "SECRETARIA DE ESTADO DA SAUDE", "SESAU"]
+    # Temas buscados na imprensa enquanto a lista real de secretarias ainda não foi coletada
+    temas_midia: [Sesau, Seduc, Secretaria de Segurança Pública, Seinfra, Seades, Secretaria da Fazenda, Detran Alagoas,
+                  Casal, Secretaria de Agricultura, Secretaria de Cultura, Hospital Geral do Estado, Hemoal, Uncisal]
     noticias:
       - https://www.agenciaalagoas.al.gov.br/feed
       - https://www.agenciaalagoas.al.gov.br/rss
@@ -47,6 +50,8 @@ esferas:
       filtro: municipal
       municipio_ibge: "2704302"
       razao_contem: ["MUNICIPIO DE MACEIO", "SECRETARIA MUNICIPAL DE SAUDE", "PREFEITURA MUNICIPAL DE MACEIO", "FUNDO MUNICIPAL DE SAUDE DE MACEIO"]
+    temas_midia: [Secretaria Municipal de Saúde, Semed, Secretaria de Educação de Maceió, SMTT, Seminfra, Alurb,
+                  Secretaria de Assistência Social, Desenvolve Maceió, Defesa Civil de Maceió, Guarda Municipal]
     noticias:
       - https://www.maceio.al.gov.br/feed
       - https://news.google.com/rss/search?q=site:maceio.al.gov.br&hl=pt-BR&gl=BR&ceid=BR:pt-419

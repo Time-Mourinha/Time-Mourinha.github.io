@@ -178,6 +178,15 @@ Cada regra fica em `coletor/alertas/` com nome, descrição simples, severidade 
 - Classificar como **entrega** (inaugurou, entregou, concluiu, iniciou atendimento, pagou) ou **anúncio**.
 - Guardar título, data, link e trecho curto (até 2 linhas). Não copiar a matéria inteira.
 
+## 8A. Na mídia (72 horas) e Manual do fiscal
+
+- **Na mídia:** notícias **negativas** da imprensa (sem sites oficiais) das últimas 72 horas, por secretaria, nas duas esferas
+  (`coletor/midia.py`, workflow `midia.yml` às 7h, 12h e 17h). Botão "Na mídia" na esfera e em cada secretaria.
+  Cada notícia tem "O que cobrar", "O que fazer", situação da cobrança (a cobrar / cobrando / resolvido) e "Cobrar e registrar".
+- **Manual do fiscal** (`site/js/guias.js`): para cada tipo de problema (falta, fila, estrutura, obra parada, servidores,
+  irregularidade, risco à vida, gasto fora do padrão, reclamação) diz o que cobrar, o passo a passo e a quem levar.
+  Todo alerta, obra, missão e notícia mostra esses botões. Sempre criar botões e orientar o fiscal.
+
 ## 9. Identidade visual
 
 - **Marca:** escudo de clube azul com faixa laranja, estrela, monograma TM e uma lupa (`site/img/marca.svg`).

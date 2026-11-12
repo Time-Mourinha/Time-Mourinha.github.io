@@ -118,6 +118,7 @@ async function pgInicio() {
     <div class="botoes">
       ${botao({ href: "#/hoje", ic: "📸", t: "Atividade do dia", n: "", e: "Registre a visita de hoje com fotos e vídeos.", destaque: true })}
       ${botao({ href: "#/time", ic: "👥", t: "Time Mourinha", n: "7 integrantes", e: "Quem é quem e o que cada um está fazendo." })}
+      ${botao({ href: "#/manual", ic: "🧭", t: "Manual do fiscal", n: `${Object.keys(GUIAS).length} situações`, e: "O que cobrar e o que fazer em cada tipo de problema." })}
       ${botao({ href: "#/como-funciona", ic: "📘", t: "Como funciona", n: "", e: "De onde vêm os dados e como os alertas são calculados." })}
     </div>`;
   if (window.Time) Time.escalacao($("#escalacao"));
@@ -125,6 +126,7 @@ async function pgInicio() {
 
 async function pgEsfera(esf) {
   const meta = await dados(`${esf}/meta.json`);
+  const midia = await dados(`${esf}/midia.json`);
   const orgaos = (await dados(`${esf}/orgaos.json`)) || [];
   const info = ESFERAS[esf];
   const t = meta?.totais || {};
@@ -139,6 +141,7 @@ async function pgEsfera(esf) {
     </div>
     <div class="botoes">
       ${botao({ href: `#/e/${esf}/secretarias`, ic: "🏛️", t: "Secretarias", n: `${fmtN(orgaos.length)} órgãos`, e: "Abra cada secretaria: despesas, receitas, obras, alertas e o que fazer.", destaque: true })}
+      ${botao({ href: `#/e/${esf}/midia`, ic: "📰", t: "Na mídia (72h)", n: midia ? `${midia.itens.length} notícias` : "", e: "Notícias negativas sobre cada secretaria, com o que cobrar e o que fazer.", selo: midia?.itens.length ? `${midia.itens.length} novas` : "" })}
       ${botao({ href: `#/e/${esf}/missoes`, ic: "🎯", t: "Missões", n: `${fmtN(soma("n_missoes"))} missões`, e: "Onde o time precisa ir e o que verificar em cada lugar." })}
       ${botao({ href: `#/e/${esf}/obras`, ic: "🏗️", t: "Obras e reformas", n: `${fmtN(soma("n_obras"))} obras`, e: "Reformas de escolas e postos de saúde, com situação de cada uma.", selo: soma("n_obras_paradas") ? `${soma("n_obras_paradas")} paradas` : "" })}
       ${botao({ href: `#/e/${esf}/unidades`, ic: "🏫", t: "Escolas e saúde", n: `${fmtN(soma("n_unidades"))} unidades`, e: `Ficha de cada escola ${info.escolas} e unidade de saúde.` })}
@@ -178,6 +181,7 @@ const ABAS = [
   ["ranking", "🏆", "Ranking", "Posição no Índice Mourinha e maiores fornecedores."],
   ["unidades", "🏫", "Unidades", "Escolas, hospitais e postos ligados a esta secretaria."],
   ["obras", "🏗️", "Obras e reformas", "Cada obra com quanto foi pago e se está andando."],
+  ["midia", "🗞️", "Na mídia (72h)", "Notícias negativas da imprensa: o que cobrar e o que fazer."],
   ["entregas", "📰", "Entregas", "O que a secretaria entregou segundo as notícias oficiais."],
   ["alertas", "🚨", "Alertas", "Pontos de atenção encontrados nos gastos."],
   ["contratos", "📑", "Contratos e diárias", "Contratos, convênios, diárias e folha."],
@@ -192,6 +196,7 @@ async function pgSecretaria(esf, id, aba) {
   const meta = await dados(`${esf}/meta.json`);
   if (!o) { app.innerHTML = `${trilha([["Início", "#/"], [ESFERAS[esf].nome, `#/e/${esf}`]])}<p class="vazio">Secretaria não encontrada.</p>`; return; }
   const base = `#/e/${esf}/s/${id}`;
+  const midiaOrg = ((await dados(`${esf}/midia.json`))?.itens || []).filter((n) => n.orgaos.includes(id));
   const tr = [["Início", "#/"], [ESFERAS[esf].nome, `#/e/${esf}`], ["Secretarias", `#/e/${esf}/secretarias`], [o.sigla, aba ? base : null]];
   if (!aba) {
     const num = {
@@ -199,9 +204,9 @@ async function pgSecretaria(esf, id, aba) {
       receitas: pl(o.receitas.por_fonte.length, "fonte", "fontes"), ranking: o.posicao ? `${o.posicao}º lugar` : "—",
       unidades: pl(o.unidades.length, "unidade", "unidades"), obras: pl(o.obras.length, "obra", "obras"), entregas: pl(o.n_entregas, "entrega", "entregas"),
       alertas: pl(o.alertas.length, "alerta", "alertas"), contratos: pl(o.contratos.length, "contrato", "contratos"), melhorar: pl(o.onde_melhorar.length, "ponto", "pontos"),
-      fazer: pl(o.missoes.length, "missão", "missões"), time: "Registros do time", todas: pl(o.registros, "registro", "registros"),
+      fazer: pl(o.missoes.length, "missão", "missões"), time: "Registros do time", midia: pl(midiaOrg.length, "notícia", "notícias"), todas: pl(o.registros, "registro", "registros"),
     };
-    const selo = { alertas: o.n_alertas_alta ? `${o.n_alertas_alta} altos` : "", obras: o.n_obras_paradas ? `${o.n_obras_paradas} paradas` : "" };
+    const selo = { alertas: o.n_alertas_alta ? `${o.n_alertas_alta} altos` : "", obras: o.n_obras_paradas ? `${o.n_obras_paradas} paradas` : "", midia: midiaOrg.length ? "72h" : "" };
     app.innerHTML = `${trilha(tr)}${cabeca(o.nome, `${o.sigla} · ${ESFERAS[esf].nome}`)}
       <div class="kpis"><div class="kpi"><b>${fmtR(o.atualizado || o.orcado)}</b><span>orçamento</span></div><div class="kpi"><b>${fmtR(o.empenhado)}</b><span>empenhado</span></div>
       <div class="kpi"><b>${fmtR(o.pago)}</b><span>pago</span></div><div class="kpi"><b>${o.nota ?? "—"}</b><span>Índice Mourinha</span>${o.posicao ? `<small>${o.posicao}º lugar</small>` : ""}</div></div>
@@ -252,6 +257,7 @@ async function pgSecretaria(esf, id, aba) {
   if (aba === "unidades") await listaUnidades(el, esf, (u) => o.unidades.includes(u.id));
   if (aba === "obras") listaObras(el, esf, o.obras);
   if (aba === "entregas") listaNoticias(el, o.noticias);
+  if (aba === "midia") listaMidia(el, esf, midiaOrg, [o]);
   if (aba === "alertas") listaAlertas(el, esf, o.alertas);
   if (aba === "contratos") {
     const sec = [["contratos", "Contratos"], ["convenios", "Convênios"], ["diarias", "Diárias"]];
@@ -289,7 +295,7 @@ function listaAlertas(el, esf, alertas) {
   el.innerHTML = alertas.map((a) => `<div class="item ${a.severidade}"><div class="meta">${tag(sev[a.severidade], a.severidade)}${a.valor ? `<b>${fmtR(a.valor)}</b>` : ""}</div>
     <h3>${esc(a.titulo)}</h3><p>${esc(a.explicacao)}</p>
     <div class="meta">${a.favorecido ? `<span>${esc(a.favorecido)} ${esc(a.documento || "")}</span>` : ""}${a.fonte_url ? `<a href="${esc(a.fonte_url)}" target="_blank" rel="noopener">Ver na fonte</a>` : ""}
-    ${a.unidade_id ? `<a href="#/e/${esf}/u/${a.unidade_id}">Ver unidade</a>` : ""}</div></div>`).join("");
+    ${a.unidade_id ? `<a href="#/e/${esf}/u/${a.unidade_id}">Ver unidade</a>` : ""}</div>${comoAgir(guiaPor.alerta(a.tipo), esc)}</div>`).join("");
 }
 function listaObras(el, esf, obras) {
   if (!obras.length) { el.innerHTML = `<p class="vazio">Nenhuma obra ou reforma encontrada nos gastos.</p>`; return; }
@@ -303,7 +309,7 @@ function listaObras(el, esf, obras) {
       ${o.ultimo_pagamento ? `<span>Último pagamento ${fmtD(o.ultimo_pagamento)}</span>` : ""}</div>
       <div style="margin-top:6px">${barra(o.percentual_pago)}</div>
       <div class="meta" style="margin-top:6px"><a href="${esc(o.fonte_url)}" target="_blank" rel="noopener">Ver na fonte</a>
-      <a href="#/hoje?esfera=${esf}&orgao=${o.orgao_id || ""}&local=${encodeURIComponent(o.unidade_nome || o.descricao.slice(0, 60))}">Registrar visita</a></div></div>`).join("");
+      <a href="#/hoje?esfera=${esf}&orgao=${o.orgao_id || ""}&local=${encodeURIComponent(o.unidade_nome || o.descricao.slice(0, 60))}">Registrar visita</a></div>${comoAgir("obra", esc)}</div>`).join("");
   };
   $("#fst").onchange = d; d();
 }
@@ -316,9 +322,29 @@ function listaMissoes(el, esf, ms) {
   el.innerHTML = ms.map((m) => `<div class="item ${m.prioridade}"><div class="meta">${tag(m.prioridade === "alta" ? "Prioridade alta" : "Prioridade média", m.prioridade)}${m.municipio ? `<span>${esc(m.municipio)}</span>` : ""}<span class="st" data-m="${esc(m.id)}"></span></div>
     <h3>${esc(m.titulo)}</h3><p>${esc(m.motivo)}</p>
     <details><summary>Checklist da visita</summary><ul class="checklist">${m.checklist.map((c) => `<li>${esc(c)}</li>`).join("")}</ul></details>
+    ${comoAgir(guiaPor.missao(m.tipo), esc)}
     <div class="meta" style="margin-top:8px">${m.fonte_url ? `<a href="${esc(m.fonte_url)}" target="_blank" rel="noopener">Ver na fonte</a>` : ""}${m.unidade_id ? `<a href="#/e/${esf}/u/${m.unidade_id}">Ficha da unidade</a>` : ""}
     <a class="btn peq" href="#/hoje?esfera=${esf}&orgao=${m.orgao_id || ""}&missao=${encodeURIComponent(m.id)}&local=${encodeURIComponent(m.titulo.replace(/^Visitar |^Verificar: /, "").split(":")[0])}">Assumir e registrar</a></div></div>`).join("");
 }
+function haHoras(d) { const h = Math.round((Date.now() - new Date(d)) / 3600e3); return h < 1 ? "agora há pouco" : h < 24 ? `há ${h}h` : `há ${Math.floor(h / 24)} dia${h >= 48 ? "s" : ""}`; }
+function listaMidia(el, esf, itens, orgaos = []) {
+  if (!itens.length) { el.innerHTML = `<p class="vazio">Nenhuma notícia negativa nas últimas 72 horas.</p>`; return; }
+  const nomeOrg = Object.fromEntries(orgaos.map((o) => [o.id, o.sigla]));
+  el.innerHTML = itens.map((n) => {
+    const g = guiaPor.motivos(n.motivos);
+    const local = n.titulo.slice(0, 90);
+    return `<div class="item ${g === "vida" || g === "irregularidade" ? "alta" : "media"}">
+      <div class="meta">${tag(GUIAS[g].titulo, g === "vida" || g === "irregularidade" ? "alta" : "media")}<span>${esc(n.fonte || "imprensa")}</span><span>${haHoras(n.data)}</span></div>
+      <h3><a href="${esc(n.link)}" target="_blank" rel="noopener">${esc(n.titulo)}</a></h3>
+      <div class="meta">${(n.orgaos.length ? n.orgaos.map((o) => `<a href="#/e/${esf}/s/${o}/midia">${esc(nomeOrg[o] || o)}</a>`) : n.temas.map(esc)).join(" · ")}
+      <span>Motivo: ${n.motivos.map(esc).join(", ")}</span></div>
+      ${comoAgir(g, esc)}
+      <div class="cobranca" data-cobranca="midia-${esc(n.id)}" data-esfera="${esf}">
+        <a class="btn peq" href="#/hoje?esfera=${esf}&orgao=${n.orgaos[0] || ""}&missao=midia-${esc(n.id)}&local=${encodeURIComponent(local)}">Cobrar e registrar</a></div></div>`;
+  }).join("");
+  if (window.Time) Time.statusCobranca(el);
+}
+
 async function listaUnidades(el, esf, filtro = () => true) {
   const us = ((await dados(`${esf}/unidades.json`)) || []).filter(filtro);
   if (!us.length) { el.innerHTML = `<p class="vazio">Nenhuma unidade carregada ainda.</p>`; return; }
@@ -350,14 +376,27 @@ async function listaUnidades(el, esf, filtro = () => true) {
 /* ---------------------------------------------------------------- páginas por esfera */
 async function pgLista(esf, tipo) {
   const info = ESFERAS[esf];
-  const tit = { missoes: "Missões", obras: "Obras e reformas", unidades: "Escolas e saúde", radar: "Radar de alertas", entregas: "Entregas", ranking: "Ranking", fornecedores: "Fornecedores", dados: "Saúde dos dados" }[tipo];
+  const tit = { midia: "Na mídia (72 horas)", missoes: "Missões", obras: "Obras e reformas", unidades: "Escolas e saúde", radar: "Radar de alertas", entregas: "Entregas", ranking: "Ranking", fornecedores: "Fornecedores", dados: "Saúde dos dados" }[tipo];
   const sub = {
     missoes: "Onde o time precisa ir e o que verificar. Prioridade para escolas e unidades de saúde.",
     obras: "Reformas, construções e manutenções encontradas nos gastos. Parada = sem pagamento há mais de 90 dias.",
     radar: "Pontos de atenção. Não são acusações: cada um diz a regra que o gerou.",
     ranking: "Índice Mourinha de 0 a 100. Execução, pagamento em dia, entregas, dados completos e poucos alertas.",
+    midia: "Notícias negativas da imprensa sobre cada secretaria nas últimas 72 horas. Cada uma traz o que cobrar e o que fazer. Atualiza 3 vezes por dia.",
   }[tipo] || "";
   app.innerHTML = `${trilha([["Início", "#/"], [info.nome, `#/e/${esf}`], [tit]])}${cabeca(tit, sub)}<div id="l"></div>`;
+  if (tipo === "midia") {
+    const m = await dados(`${esf}/midia.json`);
+    const orgaos = (await dados(`${esf}/orgaos.json`)) || [];
+    const el = $("#l");
+    if (!m) { el.innerHTML = `<div class="aviso azul">A primeira busca na imprensa ainda não rodou. Ela roda sozinha às 7h, 12h e 17h.</div>`; return; }
+    const temas = [...new Set(m.itens.flatMap((n) => (n.orgaos.length ? n.orgaos : n.temas)))];
+    el.innerHTML = `<p class="fonte">Atualizado em ${new Date(m.atualizado_em).toLocaleString("pt-BR")} · ${m.itens.length} notícias</p>
+      <div class="ferramentas"><select id="ft"><option value="">Todas as secretarias</option>${temas.map((t) => `<option value="${esc(t)}">${esc(orgaos.find((o) => o.id === t)?.sigla || t)}</option>`).join("")}</select></div><div id="lm"></div>`;
+    const d = () => listaMidia($("#lm"), esf, m.itens.filter((n) => !$("#ft").value || n.orgaos.includes($("#ft").value) || n.temas.includes($("#ft").value)), orgaos);
+    $("#ft").onchange = d; d();
+    return;
+  }
   const el = $("#l");
   const meta = await dados(`${esf}/meta.json`);
   if (!meta) { el.innerHTML = semDados(esf); return; }
@@ -454,6 +493,21 @@ async function pgFornecedor(esf, id) {
     <h2 style="margin:0 0 10px;color:var(--anil)">Recebe de</h2><div class="botoes">${f.orgaos.map((oid) => { const o = orgaos.find((x) => x.id === oid); return o ? botao({ href: `#/e/${esf}/s/${oid}/despesas`, ic: "🏛️", t: o.sigla, n: "", e: o.nome }) : ""; }).join("")}</div>`;
 }
 
+function pgManual(chave) {
+  if (chave && GUIAS[chave]) {
+    const g = GUIAS[chave];
+    app.innerHTML = `${trilha([["Início", "#/"], ["Manual do fiscal", "#/manual"], [g.titulo]])}${cabeca(`${g.ic} ${g.titulo}`, esc(g.quando))}
+      <div class="bloco"><h2>O que cobrar</h2><ul class="checklist">${g.cobrar.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>
+      <div class="bloco"><h2>O que fazer, passo a passo</h2><ol class="checklist">${g.fazer.map((x) => `<li>${esc(x)}</li>`).join("")}</ol></div>
+      <div class="bloco"><h2>A quem levar</h2><p>${esc(g.aquem)}</p></div>
+      <div class="aviso azul">Regra do time: só fatos, fotos e documentos. Ponto de atenção não é acusação. Na dúvida, fale com um administrador.</div>
+      <p><a class="btn claro" href="#/manual">Voltar ao manual</a></p>`;
+    return;
+  }
+  app.innerHTML = `${trilha([["Início", "#/"], ["Manual do fiscal"]])}${cabeca("Manual do fiscal", "Para cada tipo de problema: o que cobrar, o que fazer e a quem levar.")}
+    <div class="botoes">${Object.entries(GUIAS).map(([k, g]) => botao({ href: `#/manual/${k}`, ic: g.ic, t: g.titulo, n: "", e: g.quando })).join("")}</div>`;
+}
+
 function pgComoFunciona() {
   app.innerHTML = `${trilha([["Início", "#/"], ["Como funciona"]])}${cabeca("Como o Time Mourinha funciona")}
   <div class="bloco"><h2>De onde vêm os dados</h2><p class="explica">Todo dia às 18h um robô visita os portais oficiais e baixa tudo de novo: Portal da Transparência de Alagoas, Portal da Transparência de Maceió, Alagoas em Dados,
@@ -487,6 +541,7 @@ async function rotear() {
       return await pgLista(esf, p[2]);
     }
     if (p[0] === "como-funciona") return pgComoFunciona();
+    if (p[0] === "manual") return pgManual(p[1]);
     if (window.Time && (await Time.rota(p, params, app))) return;
     app.innerHTML = `<p class="vazio">Página não encontrada. <a href="#/">Voltar ao início</a></p>`;
   } catch (e) {

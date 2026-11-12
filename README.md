@@ -48,6 +48,12 @@ O site já diminui as fotos antes de enviar (entre 300 e 500 KB cada, então cab
 Vídeo pesa mais: grave vídeos curtos (até 1 minuto, em 720p). Se o espaço acabar, o plano Pro
 do Supabase custa US$ 25 por mês e dá 100 GB. Nada disso usa o armazenamento do seu celular ou da sua nuvem.
 
+## Na mídia e Manual do fiscal
+
+- **Na mídia (72h):** notícias negativas da imprensa sobre cada secretaria, atualizadas às 7h, 12h e 17h.
+  Cada uma mostra o que cobrar, o que fazer e a situação da cobrança.
+- **Manual do fiscal:** página com o que cobrar e o que fazer em cada tipo de problema.
+
 ## Ao vivo e lembretes automáticos
 
 - **Painel Ao vivo** (`#/ao-vivo`): os administradores veem, em tempo real, onde está cada integrante,
