@@ -2,10 +2,182 @@
   "status": {
     "nome": "Portal da Transparência de Maceió (consultas)",
     "url": "https://www.transparencia.maceio.al.gov.br/transparencia/pages/despesas.faces",
-    "status": "parcial",
-    "registros": 0,
-    "observacao": "nenhuma tabela lida",
-    "coletado_em": "2026-11-12T14:13:56-03:00"
+    "status": "ok",
+    "registros": 15,
+    "observacao": "Maceió — despesas por órgão: 11 linhas; Maceió — despesas (empenhos): 2 linhas; Maceió — diárias: 2 linhas",
+    "coletado_em": "2026-11-12T14:21:26-03:00"
   },
-  "tabelas": []
+  "tabelas": [
+    {
+      "nome": "Maceió — despesas por órgão",
+      "linhas": 11,
+      "colunas": [
+        "Órgão",
+        "Orçado (R$)",
+        "Orçado Atualizado (R$)",
+        "Empenhado (R$)",
+        "Liquidado (R$)",
+        "Pago (R$)"
+      ],
+      "amostra": [
+        {
+          "Órgão": "AUTARQUIA DE DESENVOLVIMENTO SUSTENTAVEL E LIMPEZA URBANA - ALURB",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "988.000,00",
+          "Empenhado (R$)": "50.000,00",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "DEPARTAMENTO MUNICIPAL DE TRANSPORTE E TRANSITO - DMTT",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "0,00",
+          "Empenhado (R$)": "1.723,87",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "EMPRESA DE TECNOLOGIA E INLCUSÃO DIGITAL DE MACEIÓ - MACEIÓ DIGITAL S/A",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "0,00",
+          "Empenhado (R$)": "35.000,00",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "ENCARGOS GERAIS DO MUNICÍPIO",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "0,00",
+          "Empenhado (R$)": "12.698,50",
+          "Liquidado (R$)": "12.698,50",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "FUNDAÇÃO MUNICIPAL DE AÇÃO CULTURAL",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "0,00",
+          "Empenhado (R$)": "5.000,00",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "INSTITUTO DE PREVIDENCIA DOS SERVIDORES PUBLICOS DE MACEIO - IPREV",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "0,00",
+          "Empenhado (R$)": "5.795,34",
+          "Liquidado (R$)": "5.795,34",
+          "Pago (R$)": "354,49"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE ABASTECIMENTO, AGRICULTURA, PESCA E AQUICULTURA - SEMAPA",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "588.000,00",
+          "Empenhado (R$)": "166.000,00",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE DESENVOLVIMENTO HABITACIONAL - SEMHAB",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "0,00",
+          "Empenhado (R$)": "54.453,80",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL, PRIMEIRA INFANCIA E SEGURANCA ALIMENTAR",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "7.473.854,00",
+          "Empenhado (R$)": "217.324,00",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE EDUCAÇÃO",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "4.747,46",
+          "Empenhado (R$)": "4.186.735,74",
+          "Liquidado (R$)": "3.536.842,51",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE SAÚDE",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "11.328.926,00",
+          "Empenhado (R$)": "5.624.766,31",
+          "Liquidado (R$)": "640.203,00",
+          "Pago (R$)": "0,00"
+        }
+      ]
+    },
+    {
+      "nome": "Maceió — despesas (empenhos)",
+      "linhas": 2,
+      "colunas": [
+        "",
+        "Elemento da Despesa",
+        "Conta Despesa",
+        "Orçado (R$)",
+        "Orçado Atualizado (R$)",
+        "Empenhado (R$)",
+        "Liquidado (R$)",
+        "Pago (R$)"
+      ],
+      "amostra": [
+        {
+          "": "Detalhes",
+          "Elemento da Despesa": "30000000000",
+          "Conta Despesa": "DESPESAS CORRENTES",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "20.028.527,46",
+          "Empenhado (R$)": "10.499.628,50",
+          "Liquidado (R$)": "4.195.539,35",
+          "Pago (R$)": "354,49"
+        },
+        {
+          "": "Detalhes",
+          "Elemento da Despesa": "40000000000",
+          "Conta Despesa": "DESPESAS DE CAPITAL",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "455.000,00",
+          "Empenhado (R$)": "64.869,06",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        }
+      ]
+    },
+    {
+      "nome": "Maceió — diárias",
+      "linhas": 2,
+      "colunas": [
+        "Órgão",
+        "Conta Despesa",
+        "Orçado (R$)",
+        "Orçado Atualizado (R$)",
+        "Empenho (R$)",
+        "Liquidado (R$)",
+        "Pago (R$)"
+      ],
+      "amostra": [
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE SAÚDE",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "192.871.800,00",
+          "Empenho (R$)": "0,00",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL, PRIMEIRA INFANCIA E SEGURANCA ALIMENTAR",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "7.250.000,00",
+          "Empenho (R$)": "0,00",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        }
+      ]
+    }
+  ]
 }
