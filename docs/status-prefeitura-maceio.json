@@ -1,0 +1,50 @@
+[
+  {
+    "nome": "Portal da Transparência — Prefeitura de Maceió",
+    "url": "https://transparencia.maceio.al.gov.br",
+    "status": "ok",
+    "registros": 4,
+    "observacao": "16 páginas visitadas, 1 links de download, 0 respostas JSON, 1 tabelas lidas",
+    "coletado_em": "2026-11-12T12:55:33-03:00"
+  },
+  {
+    "nome": "CNES — unidades de saúde",
+    "url": "https://apidadosabertos.saude.gov.br/cnes/estabelecimentos",
+    "status": "ok",
+    "registros": 125,
+    "observacao": "125 unidades de saúde (municipal)",
+    "coletado_em": "2026-11-12T12:59:17-03:00"
+  },
+  {
+    "nome": "INEP — Censo Escolar (rede municipal)",
+    "url": "https://download.inep.gov.br/dados_abertos/microdados_censo_escolar_2024.zip",
+    "status": "ok",
+    "registros": 158,
+    "observacao": "Censo Escolar 2024: 158 escolas da rede municipal",
+    "coletado_em": "2026-11-12T12:59:17-03:00"
+  },
+  {
+    "nome": "Notícias oficiais",
+    "url": "https://www.maceio.al.gov.br/feed",
+    "status": "ok",
+    "registros": 44,
+    "observacao": "44 notícias",
+    "coletado_em": "2026-11-12T12:59:17-03:00"
+  },
+  {
+    "nome": "BrasilAPI — dados de CNPJ",
+    "url": "https://brasilapi.com.br",
+    "status": "ok",
+    "registros": 0,
+    "observacao": "0 consultas novas hoje; 0 CNPJs em cache",
+    "coletado_em": "2026-11-12T12:59:20-03:00"
+  },
+  {
+    "nome": "CGU — empresas sancionadas (CEIS/CNEP)",
+    "url": "https://api.portaldatransparencia.gov.br/api-de-dados",
+    "status": "sem_chave",
+    "registros": 0,
+    "observacao": "Cadastre o segredo CGU_API_KEY no GitHub para ativar.",
+    "coletado_em": "2026-11-12T12:59:20-03:00"
+  }
+]

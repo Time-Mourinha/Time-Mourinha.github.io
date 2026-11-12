@@ -1,0 +1,425 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head id="j_idt3">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0, minimum-scale = 1.0"><link type="text/css" rel="stylesheet" href="/transparencia/javax.faces.resource/theme.css.faces?ln=primefaces-nova-light"><link type="text/css" rel="stylesheet" href="/transparencia/javax.faces.resource/components.css.faces?ln=primefaces&amp;v=7.0"><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-WLBEFG8GH0"></script><script type="text/javascript" src="/transparencia/javax.faces.resource/jquery/jquery.js.faces?ln=primefaces&amp;v=7.0"></script><script type="text/javascript" src="/transparencia/javax.faces.resource/jquery/jquery-plugins.js.faces?ln=primefaces&amp;v=7.0"></script><script type="text/javascript" src="/transparencia/javax.faces.resource/core.js.faces?ln=primefaces&amp;v=7.0"></script><script type="text/javascript" src="/transparencia/javax.faces.resource/components.js.faces?ln=primefaces&amp;v=7.0"></script><script type="text/javascript">if(window.PrimeFaces){PrimeFaces.settings.locale='pt_BR';}</script>
+        <link rel="icon" href="../imgs/favicon.ico">
+        <title>Portal da Transparência</title>
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="Icon" href="../imgs/header/logo_prefeitura_de_maceio.svg">
+    <link rel="stylesheet" href="../css/integration.css">
+    <link rel="StyleSheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../resources/fontawesome-free-5.11.2-web/css/fontawesome.css">
+    <link rel="stylesheet" href="../resources/fontawesome-free-5.11.2-web/css/solid.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <script type="text/javascript">
+        PrimeFaces.locales['pt'] = {
+            closeText: 'Fechar',
+            prevText: 'Anterior',
+            nextText: 'Próximo',
+            currentText: 'Atual',
+            monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio',
+                'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro',
+                'Novembro', 'Dezembro'],
+            monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta',
+                'Sexta', 'Sábado'],
+            dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+            dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+            weekHeader: 'Semana',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: '',
+            timeOnlyTitle: 'Só Horas',
+            timeText: 'Tempo',
+            hourText: 'Hora',
+            minuteText: 'Minuto',
+            secondText: 'Segundo',
+            ampm: false,
+            month: 'Mês',
+            week: 'Semana',
+            day: 'Dia',
+            allDayText: 'Todo o Dia'
+        };
+    </script>
+
+    <script type="text/javascript">
+        
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WLBEFG8GH0');
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-WLBEFG8GH0';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    <script type="text/javascript" src="../js/font.js"></script>
+    <script type="text/javascript" src="../js/theme.js"></script>
+    <script type="text/javascript" src="../resources/js/vlibras.js"></script><script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script></head><body>
+
+
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark menu-superior">
+
+            <a class="espac-img-prefeitura" href="../pages/homepage.faces">
+                <img src="../imgs/logo_prefeitura.png" alt="logotipo" class="header-img">
+            </a>
+            <a href="../pages/homepage.faces">
+                <p class="ajust-text-menu-navegacao-servicos">
+                    Portal da Transparência Município de Maceió
+                </p>
+            </a>
+
+            <div class="justify-content-end ajeitando-button">
+                <button class="navbar-toggler" data-toggle="collapse" data-target="#menu">
+                    <span class="navbar-toggler-icon ajust-icon-nav"></span>
+                </button>
+            </div>
+<form id="formDownload" name="formDownload" method="post" action="/transparencia/pages/despesasReceitaCovid.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="formDownload" value="formDownload">
+<button id="formDownload:linkBaixarOrganograma" name="formDownload:linkBaixarOrganograma" class="" onclick="PrimeFaces.bcn(this,event,[function(event){PrimeFaces.monitorDownload(start, stop);},function(event){}]);" style="display:none" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">ui-button</span></button><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0" value="-1121125368592207927:5405910703103241472" autocomplete="off">
+</form>
+
+            <div id="menu" class=" espac-itens-menu collapse navbar-collapse justify-content-center">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../pages/homepage.faces">
+                            Início
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../pages/sobre.faces">
+                            Sobre
+                        </a>
+                    </li>
+
+                    <li class="nav-item" title="Site da Prefeitura">
+                        <a class="nav-link" href="http://www.maceio.al.gov.br/" title="Clique aqui para ser redirecinado ao site da prefeitura" target="_blank">
+                            Site da Prefeitura
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../pages/faleConosco.faces">
+                            Fale Conosco
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../pages/despesasReceitaCovid.faces?i=0" target="_blank">
+                            COVID-19
+                        </a>
+                    </li>
+
+                    <li class="nav-item"><a id="j_idt10" href="#" class="ui-commandlink ui-widget nav-link" onclick="baixarOrganograma();;PrimeFaces.ab({s:&quot;j_idt10&quot;});return false;">Organograma</a>
+                    </li>
+
+                    <li class="nav-item radar-btn">
+                        <a class="nav-link" href="https://radardatransparencia.atricon.org.br/radar-da-transparencia-publica.html" title="Clique aqui para ser redirecinado para ao Radar da Transparência" target="_blank">
+                            <img src="../imgs/logo-radar-transparencia.png" alt="Clique aqui para ser redirecinado para ao Radar da Transparência" style="width:100px; height:50px;">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <script type="text/javascript">
+            function baixarOrganograma() {
+                document.getElementById('formDownload:linkBaixarOrganograma').click();
+            }
+        </script>
+    </header>
+
+    <i class="fa fa-adjust acessibilidade altoConstrate iconAltoConstrate" onclick="toggleDarkMode()"></i><input type="submit" name="j_idt13" value="A+" alt="Aumentar Fonte" class="acessibilidade redimensionamentoPositivo" onclick="setFontSize('a+')"><input type="submit" name="j_idt14" value="A-" alt="Diminuir Fonte" class="acessibilidade redimensionamentoNegativo" onclick="setFontSize('a-')">
+        <br><br>
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-2" id="menuLateral">
+
+    <img src="../imgs/imgCovidd.png" alt="imgCovid" class="img-covi-ajust">
+
+    <input type="checkbox" id="bt_menu">
+    <label for="bt_menu">☰</label>
+
+
+    <div class="menu-servicos" id="menu-covid">
+<form id="formMenuLateral" name="formMenuLateral" method="post" action="/transparencia/pages/despesasReceitaCovid.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="formMenuLateral" value="formMenuLateral">
+<div id="formMenuLateral:j_idt17" class="ui-tabmenu ui-widget ui-widget-content ui-corner-all" style="width: 221px"><ul class="ui-tabmenu-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist"><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/despesasReceitaCovid.faces"><span class="ui-menuitem-text">Despesas/Receitas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/documentosCovid.faces"><span class="ui-menuitem-text">Documentos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/ocupacaoDeLeitos.faces"><span class="ui-menuitem-text">Ocupação de leitos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/testesDiagnostico.faces"><span class="ui-menuitem-text">Testes Diagnósticos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/atendimentoURSG.faces"><span class="ui-menuitem-text">Atendimentos URSG</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/matrizCovid.faces"><span class="ui-menuitem-text">Matriz Covid</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/glossarioCovid19.faces"><span class="ui-menuitem-text">Glossário</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/conselhos.faces"><span class="ui-menuitem-text">Conselhos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/dicionarioDados.faces"><span class="ui-menuitem-text">Dicionário de Dados</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/contratosCovid.faces"><span class="ui-menuitem-text">Contratos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/cartilhaRecomendacoes.faces"><span class="ui-menuitem-text">Cartilha de Recomendações</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="Clique aqui para ser redirecionado ao site www.maceio.al.gov.br/coronavirus/coronavirus-decretos-municipais/" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="http://www.maceio.al.gov.br/coronavirus/coronavirus-decretos-municipais/" target="_blank"><span class="ui-menuitem-text">Legislação</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/notas.faces"><span class="ui-menuitem-text">Notas Fiscais</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/licitacoesCovid.faces"><span class="ui-menuitem-text">Licitações</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/dispensaInexigibilidade.faces"><span class="ui-menuitem-text">Dispensa/Inexigibilidade</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="Clique aqui para ser redirecionado ao site www.maceio.al.gov.br/coronavirus/" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="http://www.maceio.al.gov.br/coronavirus/" target="_blank"><span class="ui-menuitem-text">Notícias COVID-19</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="Clique aqui para ser redirecionado ao site www.maceio.al.gov.br/coronavirus/" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="http://www.maceio.al.gov.br/sms/boletim-coronavirus/" target="_blank"><span class="ui-menuitem-text">Boletins Epidemiológico</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="Clique aqui para ser redirecionado ao site www.covid19.maceio.al.gov.br/pages/principal.faces#mapas" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="http://www.covid19.maceio.al.gov.br/pages/principal.faces#mapas" target="_blank"><span class="ui-menuitem-text">Buscando Atendimento</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="Clique aqui para ser redirecionado ao site www.maceio.al.gov.br/coronavirus/servicos-online-da-prefeitura-durante-a-epidemia-do-coronavirus/" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="http://www.maceio.al.gov.br/coronavirus/servicos-online-da-prefeitura-durante-a-epidemia-do-coronavirus/" target="_blank"><span class="ui-menuitem-text">Centrais de Atendimento</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/conselho.faces"><span class="ui-menuitem-text">Conselho</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-2" href="../pages/quantitativoSolicitacoes.faces"><span class="ui-menuitem-text">Estatísticas Ouvidoria/e-Sic</span></a></li></ul></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:1" value="-1121125368592207927:5405910703103241472" autocomplete="off">
+</form>
+    </div>
+            </div>
+            <div class="ui-g-12 ui-md-10 ui-g-nopad table-servicos" id="center">
+                <div id="container" style="width: 95%">
+<form id="j_idt42" name="j_idt42" method="post" action="/transparencia/pages/despesasReceitaCovid.faces" enctype="application/x-www-form-urlencoded" style="margin-top: 10px;">
+<input type="hidden" name="j_idt42" value="j_idt42">
+<div id="j_idt42:j_idt43" class="ui-breadcrumb ui-module ui-widget ui-widget-header ui-helper-clearfix ui-corner-all" role="menu"><ul><li role="menuitem"><a tabindex="0" class="ui-menuitem-link ui-corner-all ui-icon ui-icon-home" href="homepage.faces"><span class="ui-menuitem-text">Home</span></a></li><li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e"></li><li role="menuitem"><a tabindex="0" class="ui-menuitem-link ui-corner-all" href="#" onclick="PrimeFaces.ab({s:&quot;j_idt42:j_idt45&quot;,f:&quot;j_idt42&quot;});return false;"><span class="ui-menuitem-text">Despesas/Receitas COVID-19</span></a></li></ul></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:2" value="-1121125368592207927:5405910703103241472" autocomplete="off">
+</form>
+
+
+<form id="j_idt47" name="j_idt47" method="post" action="/transparencia/pages/despesasReceitaCovid.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="j_idt47" value="j_idt47">
+
+            <div align="left"><label id="j_idt47:j_idt49" class="ui-outputlabel ui-widget">Ano:</label><select id="j_idt47:selectAno" name="j_idt47:selectAno" class="form-control" size="1" style="width: 25%" onchange="jsf.util.chain(this,event,'PrimeFaces.ab({s:this,e:&quot;change&quot;,f:&quot;j_idt47&quot;,p:&quot;j_idt47:selectAno&quot;});','PrimeFaces.ab({s:this,e:&quot;change&quot;,f:&quot;j_idt47&quot;,p:&quot;j_idt47:selectAno&quot;});','PrimeFaces.ab({s:this,e:&quot;change&quot;,f:&quot;j_idt47&quot;,p:&quot;j_idt47:selectAno&quot;});','PrimeFaces.ab({s:this,e:&quot;change&quot;,f:&quot;j_idt47&quot;,p:&quot;j_idt47:selectAno&quot;});','PrimeFaces.ab({s:this,e:&quot;change&quot;,f:&quot;j_idt47&quot;,p:&quot;j_idt47:selectAno&quot;,u:&quot;tabs:form-despesas tabs:form-uniao&quot;});')">	<option value="2020">2020</option>
+	<option value="2021">2021</option>
+	<option value="2022">2022</option>
+	<option value="2023">2023</option>
+	<option value="2024">2024</option>
+	<option value="2025">2025</option>
+	<option value="2026" selected="selected">2026</option>
+</select>
+                <small style="font-weight: bold">Selecione o ano para visualizar o valor total.</small>
+            </div>
+            <div class="valor-linha">
+                <div class="col-valor1"><table id="j_idt47:j_idt52" class="ui-panelgrid ui-widget no-border" role="grid"><tbody><tr class="ui-widget-content" role="row"><td role="gridcell" class="ui-panelgrid-cell">
+                        <label>Valor Recebido Acumulado </label></td></tr><tr class="ui-widget-content" role="row"><td role="gridcell" class="ui-panelgrid-cell"><span class="ng-binding">R$  </span><span id="j_idt47:recebido_acumulado" class="ng-binding"></span></td></tr></tbody></table>
+                </div>
+
+                <div class="col-valor2"><table id="j_idt47:j_idt57" class="ui-panelgrid ui-widget no-border" role="grid"><tbody><tr class="ui-widget-content" role="row"><td role="gridcell" class="ui-panelgrid-cell">
+                        <label>Despesas Empenhadas </label></td></tr><tr class="ui-widget-content" role="row"><td role="gridcell" class="ui-panelgrid-cell"><span class="ng-binding">R$  </span><span id="j_idt47:despesas_empenhadas" class="ng-binding">4.396.635,14</span></td></tr></tbody></table>
+                </div>
+            </div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:3" value="-1121125368592207927:5405910703103241472" autocomplete="off">
+</form><div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all ui-hidden-container ui-tabs-top" data-widget="widget_tabs"><ul class="ui-tabs-nav ui-helper-reset ui-widget-header ui-corner-all" role="tablist"><li class="ui-tabs-header ui-state-default ui-tabs-selected ui-state-active ui-corner-top" role="tab" aria-expanded="true" aria-selected="true" data-index="0" tabindex="0"><a href="#tabs:j_idt62" tabindex="-1">Despesas</a></li><li class="ui-tabs-header ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" data-index="1" tabindex="0"><a href="#tabs:j_idt134" tabindex="-1">Transferência da União</a></li></ul><div class="ui-tabs-panels"><div id="tabs:j_idt62" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="false" data-index="0">
+<form id="tabs:form-despesas" name="tabs:form-despesas" method="post" action="/transparencia/pages/despesasReceitaCovid.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="tabs:form-despesas" value="tabs:form-despesas">
+<span id="tabs:form-despesas:msg-despesas"></span>
+                <div align="left"><label id="tabs:form-despesas:j_idt65" class="ui-outputlabel ui-widget">Período</label>
+                </div>
+                <div style="width: 100%"><span id="tabs:form-despesas:j_idt67" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-despesas:j_idt67_input" name="tabs:form-despesas:j_idt67_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><label id="tabs:form-despesas:j_idt68" class="ui-outputlabel ui-widget" style="margin-left: 10px; margin-right: 10px">até</label><span id="tabs:form-despesas:j_idt69" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-despesas:j_idt69_input" name="tabs:form-despesas:j_idt69_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span>
+                </div>
+                <div align="left"><label id="tabs:form-despesas:j_idt73" class="ui-outputlabel ui-widget">Orgão</label>
+                </div><select id="tabs:form-despesas:selectOrgaoDespesas" name="tabs:form-despesas:selectOrgaoDespesas" class="form-control" size="1">	<option value="" selected="selected">TODOS</option>
+	<option value="13000">SECRETARIA MUNICIPAL DE ESPORTE - SEMESP</option>
+</select>
+                <div align="left"><label id="tabs:form-despesas:j_idt79" class="ui-outputlabel ui-widget">Elemento da Despesa</label>
+                </div><select id="tabs:form-despesas:selectNaturezaDespesas" name="tabs:form-despesas:selectNaturezaDespesas" class="form-control" size="1">	<option value="" selected="selected">TODOS</option>
+	<option value="33390390000">33390390000 - OUTROS SERVIÇOS DE TERCEIROS - PESSOA JURÍDICA</option>
+	<option value="33390930000">33390930000 - INDENIZAÇÕES E RESTITUIÇÕES</option>
+	<option value="33390370000">33390370000 - LOCAÇÃO DE MÃO-DE-OBRA</option>
+	<option value="33390300000">33390300000 - MATERIAL DE CONSUMO</option>
+	<option value="33350430000">33350430000 - SUBVENÇÕES SOCIAIS</option>
+</select>
+                <div align="left" style="margin-top: 5px; margin-left: 5px"><button id="tabs:form-despesas:j_idt85" name="tabs:form-despesas:j_idt85" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="PrimeFaces.ab({s:&quot;tabs:form-despesas:j_idt85&quot;,f:&quot;tabs:form-despesas&quot;,u:&quot;tabs:form-despesas:msg-despesas tabs:form-despesas:tabela-despesas&quot;});return false;" style="margin-right: 5px" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Consultar</span></button><button id="tabs:form-despesas:j_idt86" name="tabs:form-despesas:j_idt86" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only warning-btn" onclick="PrimeFaces.bcn(this,event,[function(event){PrimeFaces.ab({s:&quot;tabs:form-despesas:j_idt86&quot;,e:&quot;click&quot;,f:&quot;tabs:form-despesas&quot;,p:&quot;tabs:form-despesas:j_idt86&quot;});},function(event){PrimeFaces.ab({s:&quot;tabs:form-despesas:j_idt86&quot;,f:&quot;tabs:form-despesas&quot;,u:&quot;tabs:form-despesas:msg-despesas tabs:form-despesas:tabela-despesas tabs:form-despesas&quot;});return false;}]);" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Limpar</span></button>
+                </div>
+                <div align="right">
+<script type="text/javascript" src="/transparencia/javax.faces.resource/jsf.js.faces?ln=javax.faces"></script>
+<a href="#" style="padding: 5px" title="Exportar dados para PDF" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-despesas'),{'tabs:form-despesas:j_idt90':'tabs:form-despesas:j_idt90'},'');return false"><img id="tabs:form-despesas:j_idt91" src="../imgs/file-pdf.jpg?pfdrid_c=true" alt="" class="file-pdf" width="30px"></a><a href="#" style="padding: 5px" title="Exportar dados para Excel" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-despesas'),{'tabs:form-despesas:j_idt92':'tabs:form-despesas:j_idt92'},'');return false" class="ml-2"><img id="tabs:form-despesas:j_idt93" src="../imgs/file-excel.png?pfdrid_c=true" alt="" class="file-excel" width="30px"></a><a href="#" style="padding: 5px" title="Exportar dados para CSV" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-despesas'),{'tabs:form-despesas:j_idt94':'tabs:form-despesas:j_idt94'},'');return false" class="ml-2"><img id="tabs:form-despesas:j_idt95" src="../imgs/file-csv.png?pfdrid_c=true" alt="" class="file-csv" width="30px"></a>
+                </div><div id="tabs:form-despesas:tabela-despesas" class="ui-datatable ui-widget"><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="tabs:form-despesas:tabela-despesas_head"><tr role="row"><th id="tabs:form-despesas:tabela-despesas:j_idt97" class="ui-state-default font-color-blue font-weight-bold" role="columnheader" scope="col"><span class="ui-column-title"></span></th><th id="tabs:form-despesas:tabela-despesas:j_idt99" class="ui-state-default" role="columnheader" aria-label="Elemento da Despesa" scope="col"><span class="ui-column-title">Elemento da Despesa</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt101" class="ui-state-default" role="columnheader" aria-label="Conta Despesa" scope="col"><span class="ui-column-title">Conta Despesa</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt103" class="ui-state-default" role="columnheader" aria-label="Orçado (R$)" scope="col"><span class="ui-column-title">Orçado (R$)</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt105" class="ui-state-default" role="columnheader" aria-label="Orçado Atualizado (R$)" scope="col"><span class="ui-column-title">Orçado Atualizado (R$)</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt107" class="ui-state-default" role="columnheader" aria-label="Empenhado (R$)" scope="col"><span class="ui-column-title">Empenhado (R$)</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt110" class="ui-state-default" role="columnheader" aria-label="Liquidado (R$)" scope="col"><span class="ui-column-title">Liquidado (R$)</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt113" class="ui-state-default" role="columnheader" aria-label="Pago (R$)" scope="col"><span class="ui-column-title">Pago (R$)</span></th></tr></thead><tbody id="tabs:form-despesas:tabela-despesas_data" class="ui-datatable-data ui-widget-content"><tr class="ui-widget-content ui-datatable-empty-message"><td colspan="8">Nenhum resultado encontrado!</td></tr></tbody></table></div><div id="tabs:form-despesas:tabela-despesas_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination"><span class="ui-paginator-current">0-0 de 0 registros</span><a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page" tabindex="-1"><span class="ui-icon ui-icon-seek-first">F</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page" tabindex="-1"><span class="ui-icon ui-icon-seek-prev">P</span></a><span class="ui-paginator-pages"></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all ui-state-disabled" aria-label="Next Page" tabindex="-1"><span class="ui-icon ui-icon-seek-next">N</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all ui-state-disabled" aria-label="Last Page" tabindex="-1"><span class="ui-icon ui-icon-seek-end">E</span></a></div></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:4" value="-1121125368592207927:5405910703103241472" autocomplete="off">
+</form></div><div id="tabs:j_idt134" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-helper-hidden" role="tabpanel" aria-hidden="true" data-index="1">
+<form id="tabs:form-uniao" name="tabs:form-uniao" method="post" action="/transparencia/pages/despesasReceitaCovid.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="tabs:form-uniao" value="tabs:form-uniao">
+<span id="tabs:form-uniao:msg-uniao"></span>
+                <div align="left"><label id="tabs:form-uniao:j_idt137" class="ui-outputlabel ui-widget">Período</label>
+                </div>
+                <div style="width: 100%"><span id="tabs:form-uniao:j_idt139" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-uniao:j_idt139_input" name="tabs:form-uniao:j_idt139_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><label id="tabs:form-uniao:j_idt140" class="ui-outputlabel ui-widget" style="margin-left: 10px; margin-right: 10px">até</label><span id="tabs:form-uniao:j_idt141" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-uniao:j_idt141_input" name="tabs:form-uniao:j_idt141_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span>
+                </div>
+                <div align="left"><label id="tabs:form-uniao:j_idt145" class="ui-outputlabel ui-widget">Orgão</label>
+                </div><select id="tabs:form-uniao:selectOrgaoReceitaUniao" name="tabs:form-uniao:selectOrgaoReceitaUniao" class="form-control" size="1">	<option value="" selected="selected">TODOS</option>
+	<option value="13000">SECRETARIA MUNICIPAL DE ESPORTE - SEMESP</option>
+</select>
+                <div align="left" style="margin-top: 5px; margin-left: 5px"><button id="tabs:form-uniao:j_idt151" name="tabs:form-uniao:j_idt151" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="PrimeFaces.ab({s:&quot;tabs:form-uniao:j_idt151&quot;,f:&quot;tabs:form-uniao&quot;,u:&quot;tabs:form-uniao:msg-uniao tabs:form-uniao:tabela-uniao&quot;});return false;" style="margin-right: 5px" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Consultar</span></button><button id="tabs:form-uniao:j_idt152" name="tabs:form-uniao:j_idt152" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only warning-btn" onclick="PrimeFaces.ab({s:&quot;tabs:form-uniao:j_idt152&quot;,f:&quot;tabs:form-uniao&quot;,u:&quot;tabs:form-uniao:msg-uniao tabs:form-uniao:tabela-uniao tabs:form-uniao&quot;});return false;" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Limpar</span></button>
+                </div>
+                <div align="right"><a href="#" style="padding: 5px" title="Exportar dados para PDF" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-uniao'),{'tabs:form-uniao:j_idt156':'tabs:form-uniao:j_idt156'},'');return false"><img id="tabs:form-uniao:j_idt157" src="../imgs/file-pdf.jpg?pfdrid_c=true" alt="" class="file-pdf" width="30px"></a><a href="#" style="padding: 5px" title="Exportar dados para Excel" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-uniao'),{'tabs:form-uniao:j_idt158':'tabs:form-uniao:j_idt158'},'');return false" class="ml-2"><img id="tabs:form-uniao:j_idt159" src="../imgs/file-excel.png?pfdrid_c=true" alt="" class="file-excel" width="30px"></a><a href="#" style="padding: 5px" title="Exportar dados para CSV" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-uniao'),{'tabs:form-uniao:j_idt160':'tabs:form-uniao:j_idt160'},'');return false" class="ml-2"><img id="tabs:form-uniao:j_idt161" src="../imgs/file-csv.png?pfdrid_c=true" alt="" class="file-csv" width="30px"></a>
+                </div><div id="tabs:form-uniao:tabela-uniao" class="ui-datatable ui-widget"><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="tabs:form-uniao:tabela-uniao_head"><tr role="row"><th id="tabs:form-uniao:tabela-uniao:j_idt163" class="ui-state-default" role="columnheader" aria-label="Natureza da Receita" scope="col"><span class="ui-column-title">Natureza da Receita</span></th><th id="tabs:form-uniao:tabela-uniao:j_idt165" class="ui-state-default" role="columnheader" aria-label="Descrição" scope="col"><span class="ui-column-title">Descrição</span></th><th id="tabs:form-uniao:tabela-uniao:j_idt167" class="ui-state-default" role="columnheader" aria-label="Prev. Anual (R$)" scope="col"><span class="ui-column-title">Prev. Anual (R$)</span></th><th id="tabs:form-uniao:tabela-uniao:j_idt169" class="ui-state-default" role="columnheader" aria-label="Prev. Anual Atualizada (R$)" scope="col"><span class="ui-column-title">Prev. Anual Atualizada (R$)</span></th><th id="tabs:form-uniao:tabela-uniao:j_idt171" class="ui-state-default" role="columnheader" aria-label="Arrecadado (R$)" scope="col"><span class="ui-column-title">Arrecadado (R$)</span></th></tr></thead><tbody id="tabs:form-uniao:tabela-uniao_data" class="ui-datatable-data ui-widget-content"><tr class="ui-widget-content ui-datatable-empty-message"><td colspan="5">Nenhum resultado encontrado!</td></tr></tbody></table></div><div id="tabs:form-uniao:tabela-uniao_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination"><span class="ui-paginator-current">0-0 de 0 registros</span><a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page" tabindex="-1"><span class="ui-icon ui-icon-seek-first">F</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page" tabindex="-1"><span class="ui-icon ui-icon-seek-prev">P</span></a><span class="ui-paginator-pages"></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all ui-state-disabled" aria-label="Next Page" tabindex="-1"><span class="ui-icon ui-icon-seek-next">N</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all ui-state-disabled" aria-label="Last Page" tabindex="-1"><span class="ui-icon ui-icon-seek-end">E</span></a></div></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:5" value="-1121125368592207927:5405910703103241472" autocomplete="off">
+</form></div></div><input type="hidden" id="tabs_activeIndex" name="tabs_activeIndex" value="0" autocomplete="off"></div>
+                </div>
+            </div>
+        </div><div id="j_idt174"></div><div id="j_idt175" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-loading ui-draggable" role="dialog" aria-labelledby="j_idt175_title" aria-describedby="j_idt175_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt175_title" class="ui-dialog-title">Carregando...</span></div><div class="ui-dialog-content ui-widget-content" id="j_idt175_content" style="height: auto;">
+        <div align="center"><img id="j_idt177" src="/transparencia/imgs/ajax_loading_bar.gif?pfdrid_c=true" alt="">
+        </div></div></div><div id="dlg-empenho" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-content ui-draggable" role="dialog" aria-labelledby="dlg-empenho_title" aria-describedby="dlg-empenho_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="dlg-empenho_title" class="ui-dialog-title">Listagem dos Empenhos</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="dlg-empenho_content" style="height: auto;"></div></div><div id="j_idt236" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container ui-draggable" role="dialog" aria-labelledby="j_idt236_title" aria-describedby="j_idt236_content" aria-hidden="true" aria-modal="true" style="width: 1000px; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt236_title" class="ui-dialog-title">Detalhe do Empenho</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt236_content" style="height: 430px;"></div></div><div id="dlg-liquidado" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-content" role="dialog" aria-labelledby="dlg-liquidado_title" aria-describedby="dlg-liquidado_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top"><span id="dlg-liquidado_title" class="ui-dialog-title">Listagem dos Empenhos Liquidados</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="dlg-liquidado_content" style="height: auto;"></div></div><div id="j_idt403" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container ui-draggable" role="dialog" aria-labelledby="j_idt403_title" aria-describedby="j_idt403_content" aria-hidden="true" aria-modal="true" style="width: 800px; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt403_title" class="ui-dialog-title">Detalhe da Liquidação</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt403_content" style="height: 280px;"></div></div><div id="j_idt429" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-licitacao-ajust ui-draggable" role="dialog" aria-labelledby="j_idt429_title" aria-describedby="j_idt429_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt429_title" class="ui-dialog-title">Detalhes Licitação</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt429_content" style="height: 420px;"></div></div><div id="j_idt559" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-escla-impug-ajust ui-draggable" role="dialog" aria-labelledby="j_idt559_title" aria-describedby="j_idt559_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt559_title" class="ui-dialog-title">Detalhes Esclarecimento</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt559_content" style="height: 420px;"></div></div><div id="j_idt623" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-escla-impug-ajust ui-draggable" role="dialog" aria-labelledby="j_idt623_title" aria-describedby="j_idt623_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt623_title" class="ui-dialog-title">Detalhes Impugnação</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt623_content" style="height: 420px;"></div></div><div id="j_idt683" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-licitacao-ajust ui-draggable" role="dialog" aria-labelledby="j_idt683_title" aria-describedby="j_idt683_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt683_title" class="ui-dialog-title">Detalhe Nota Fiscal</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt683_content" style="height: 420px;"></div></div><div id="dlg-pago" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-content" role="dialog" aria-labelledby="dlg-pago_title" aria-describedby="dlg-pago_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top"><span id="dlg-pago_title" class="ui-dialog-title">Listagem dos Empenhos Pagos</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="dlg-pago_content" style="height: auto;"></div></div><div id="j_idt780" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container ui-draggable" role="dialog" aria-labelledby="j_idt780_title" aria-describedby="j_idt780_content" aria-hidden="true" aria-modal="true" style="width: 800px; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt780_title" class="ui-dialog-title">Detalhe do Pagamento</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt780_content" style="height: 280px;"></div></div>
+
+    <div class="ui-g-12" id="footer"><link type="text/css" rel="stylesheet" href="/transparencia/javax.faces.resource/theme.css.faces?ln=primefaces-nova-light"><script type="text/javascript">if(window.PrimeFaces){PrimeFaces.settings.locale='pt_BR';}</script>
+
+    <link rel="StyleSheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <section class="section-white">
+
+        <div class="box-content">
+
+            <h3 class="titulo-sites">Links de Acesso</h3>
+
+            <div id="conteudo-geral">
+
+                <div class="sites-box zoom">
+
+                    <a href="https://www.servicos.maceio.al.gov.br/" target="_blank" class="no-decor">
+                        <div class="sites-box-img">
+                            <img src="../imgs/portalDeServicos.png" alt="Portal de Serviços">
+                        </div>
+
+                        <div class="sites-box-texto">
+                            <div class="titulo">
+                                Portal de Serviços
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="sites-box zoom">
+
+                    <a href="https://www.ouvidoria.maceio.al.gov.br/" target="_blank" class="no-decor">
+                        <div class="sites-box-img">
+                            <img src="../imgs/ouvidoriaNovo1.png" alt="Site da ouvidoria">
+                        </div>
+
+                        <div class="sites-box-texto">
+                            <div class="titulo">
+                                Ouvidoria
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="sites-box zoom">
+
+                    <a href="https://www.informa.maceio.al.gov.br" target="_blank" class="no-decor">
+                        <div class="sites-box-img">
+                            <img src="../imgs/informaNovo.png" alt="Informa Maceió">
+                        </div>
+
+                        <div class="sites-box-texto">
+                            <div class="titulo">
+                                Informa Maceió
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="sites-box zoom">
+
+                    <a href="https://www.participa.maceio.al.gov.br/" target="_blank" class="no-decor">
+                        <div class="sites-box-img">
+                            <img src="../imgs/portalDoCidadao.png" alt="Portal do Cidadão">
+                        </div>
+
+                        <div class="sites-box-texto">
+                            <div class="titulo">
+                                Participa Maceió
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="contato">
+
+        <div class="box-content width-contato">
+
+            <div class="row justify-content-center mb-4 mb-md-4 mb-lg-4 mb-xl-4">
+
+                <h3>Contato</h3>
+
+            </div>
+
+            <div class="row no-margin">
+
+                <div class="col-sm-12 col-md-6 col-lg-3 col-xl-3 social-networks">
+
+                    <h4>Nossas Redes</h4>
+
+                    <ul>
+
+                        <li><a href="https://www.facebook.com/PrefeituraDeMaceio/" target="_blank">
+                            <img src="../imgs/facebook.png" alt="Link da página do Facebook da Prefeitura" class="zoom"></a>
+                        </li>
+                        <li><a href="https://www.instagram.com/prefeiturademaceio/?hl=pt-br" target="_blank">
+                            <img src="../imgs/twitter.png" alt="Link do perfil da Prefeitura no Twitter" class="zoom"></a>
+                        </li>
+                        <li><a href="https://twitter.com/prefmaceio" target="_blank">
+                            <img src="../imgs/insta.png" alt="Link do perfil da Prefeitura no instagram" class="zoom"></a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 endereco">
+
+                    <h4>Endereço</h4>
+
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3933.0957625117294!2d-35.723990584669785!3d-9.672858704917784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x701456da12fd8fd%3A0xfbe3b3725a897ac8!2sR.%20S%C3%A1%20e%20Albuquerque%2C%20235%20-%20Jaragu%C3%A1%2C%20Macei%C3%B3%20-%20AL%2C%2057022-180!5e0!3m2!1spt-BR!2sbr!4v1573661393472!5m2!1spt-BR!2sbr" height="150" frameborder="0" style="border:0;" title="Endereço da prefeitura de maceió no google maps"></iframe>
+
+                    <p>
+                        Rua Sá e Albuquerque, 235, Jaraguá, Maceió/AL. CEP: 57022-180 <br>
+                        Telefones: 3312-5860 / 3312-5370
+                    </p>
+
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-3 col-xl-3 container">
+                    <div class="row">
+                        <h4>Avaliação do Portal</h4>
+                    </div>
+
+                    <div class="row lead">
+                        <p>Qual é a sua avaliação sobre este portal?</p>
+<form id="novaAvaliacao" name="novaAvaliacao" method="post" action="/transparencia/pages/despesasReceitaCovid.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="novaAvaliacao" value="novaAvaliacao">
+<span id="novaAvaliacao:j_idt812"></span><div id="novaAvaliacao:j_idt813" class="ui-rating"><div class="ui-rating-star"><a></a></div><div class="ui-rating-star"><a></a></div><div class="ui-rating-star"><a></a></div><div class="ui-rating-star"><a></a></div><div class="ui-rating-star"><a></a></div><input type="hidden" id="novaAvaliacao:j_idt813_input" name="novaAvaliacao:j_idt813_input" autocomplete="off"></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:6" value="-1121125368592207927:5405910703103241472" autocomplete="off">
+</form>
+                        <p style="margin-top: 30px">Alguma informação não foi localizada no Portal?<a href="../pages/faleConosco.faces"> Fale Conosco</a></p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <div class="mapadosite"><div id="j_idt815" class="ui-outputpanel ui-widget titulomapadosite">
+            <h4>Mapa do Site</h4>
+            <div class="linha"></div></div>
+    <input type="checkbox" id="bt_menu">
+    <label for="bt_menu">☰</label>
+    <div class="menu-servicos" id="menu-servicos" style="width: 240px">
+<form id="j_idt818" name="j_idt818" method="post" action="/transparencia/pages/despesasReceitaCovid.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="j_idt818" value="j_idt818">
+<div id="j_idt818:j_idt819" class="ui-tabmenu ui-widget ui-widget-content ui-corner-all"><ul class="ui-tabmenu-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist"><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="COVID-19" class="ui-menuitem-link ui-corner-all menu-lateral-covid" href="../pages/despesasReceitaCovid.faces" target="_blank"><span class="ui-menuitem-text">COVID-19</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/planejamento.faces"><span class="ui-menuitem-text">Planejamento Orçamentário</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/programacaoFinanceira.faces"><span class="ui-menuitem-text">Programação Financeira</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/orcamentoCriancaAdolescente.faces"><span class="ui-menuitem-text">Orçamento da Criança e do Adolescente</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/indicesFiscais.faces"><span class="ui-menuitem-text">Índices Fiscais</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaCidada.faces"><span class="ui-menuitem-text">Emenda Cidadã</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaParlamentarBI.faces"><span class="ui-menuitem-text">Emenda Parlamentar BI</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaParlamentarMunicipal.faces"><span class="ui-menuitem-text">Emenda Parlamentar Municipal</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="/transparencia/resources/csv/Emendas_Parlamentares_Estaduais.csv"><span class="ui-menuitem-text">Emenda Parlamentar Estadual</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://portaldatransparencia.gov.br/emendas/consulta?paginacaoSimples=true&amp;tamanhoPagina=&amp;offset=direcaoOrdenacao=asc&amp;palavraChave=MACEI%C3%93&amp;de=2020&amp;ate=2026&amp;colunasSelecionadas=codigoEmenda%2Cano%2CtipoEmenda%2Cautor%2CnumeroEmenda%2ClocalidadeDoGasto%2Cfuncao%2Csubfuncao%2CvalorEmpenhado%2CvalorLiquidado%2CvalorPago&amp;ordenarPor=autor&amp;direcao=asc" target="_blank"><span class="ui-menuitem-text">Emenda Parlamentar Federal</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://in.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Maceió IN</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/receita.faces"><span class="ui-menuitem-text">Receita</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/dividaAtivaBI.faces"><span class="ui-menuitem-text">Dívida Ativa</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/despesas.faces"><span class="ui-menuitem-text">Despesas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/servidores.faces"><span class="ui-menuitem-text">Servidores</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="Clique aqui para ser redirecionado ao site licitacao.maceio.al.gov.br" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="http://www.licitacao.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Licitações</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/contratos.faces"><span class="ui-menuitem-text">Contratos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/convenios.faces"><span class="ui-menuitem-text">Convênios</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/termoParceria.faces?i=9"><span class="ui-menuitem-text">Termos de Parceria</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/demonstrativos.faces"><span class="ui-menuitem-text">Demonstrativos Contábeis</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/relatoriosPareceres.faces"><span class="ui-menuitem-text">Prestação de Contas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/legislacao.faces"><span class="ui-menuitem-text">Consulta à Legislação</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/obras.faces"><span class="ui-menuitem-text">Obras</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/glossario.faces"><span class="ui-menuitem-text">Glossário</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/perguntas.faces"><span class="ui-menuitem-text">Perguntas Frequentes</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/conselhos.faces"><span class="ui-menuitem-text">Conselhos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/SIAFIC.faces"><span class="ui-menuitem-text">SIAFIC</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/doacoes.faces"><span class="ui-menuitem-text">Doações Recebidas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://transparencia.sms.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Transparência Saúde</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://app.powerbi.com/view?r=eyJrIjoiMWFlMWU1NzMtYmI2MC00MjBlLWFmZjctMjNiNjFiNDk5MjQ0IiwidCI6IjhmN2I0MjQ1LWUzYjQtNGFkYy1iMmRlLWY4ZDM3NmQxMThhZSJ9" target="_blank"><span class="ui-menuitem-text">Painel de Manifestações</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://pemci.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Plano Estratégico</span></a></li></ul></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:7" value="-1121125368592207927:5405910703103241472" autocomplete="off">
+</form>
+    </div>
+    </div>
+
+
+    </div>
+
+    <div class="footer">
+        <div class="footer-img">
+            <a target="_blank" href="https://digital.maceio.al.gov.br/">
+                <img src="../imgs/header/logo_maceiodigital_white.svg" alt="Maceió Digital">
+            </a>
+        </div>
+        <div class="social text-right text-light">
+            <p>
+                © 2026 Maceió Digital. Prefeitura Municipal de Maceió.<br>
+                Todos os direitos reservados.
+            </p>
+            <p>
+                Versão: 4.1.2-202605210921
+            </p>
+        </div>
+    </div>
+
+    <script src="../resources/js/bootstrap.js"></script>
+
+        <div vw="" class="enabled">
+        <div vw-access-button="" class="active"></div>
+        <div vw-plugin-wrapper="">
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+        </div>
+    <div id="textarea_simulator" style="position: absolute; top: 0px; left: 0px; visibility: hidden;"></div><div id="tabs:form-despesas:msg-despesas_container" class="ui-growl ui-widget" style="z-index: 1001;"></div><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-shadow"></div><div id="tabs:form-uniao:msg-uniao_container" class="ui-growl ui-widget" style="z-index: 1002;"></div><div class="ui-dialog-docking-zone"></div><div id="novaAvaliacao:j_idt812_container" class="ui-growl ui-widget" style="z-index: 1003;"></div><div id="vlibras-access-wrapper"></div></body></html>

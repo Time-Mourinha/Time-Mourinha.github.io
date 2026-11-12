@@ -1,0 +1,1918 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Portal da TransparÃªncia - 
+    API / Combos
+</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+	<meta name="description" content="">
+	<meta name="author" content="ITEC-AL">
+	<link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico" />
+
+	<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+	<link href="/static/css/base_site.css" rel="stylesheet">
+	<link href="/static/css/font-awesome.min.css" rel="stylesheet">
+	<link href="/static/css/open-sans.css" rel='stylesheet' type='text/css'>
+	<link href="/static/css/bootstrap-table.css" rel='stylesheet' type='text/css'>
+	<link href="/static/css/bootstrap-chosen.css" rel="stylesheet">
+	<link href="/static/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+	<link href="/static/css/bootstro.min.css" rel="stylesheet">
+	<link href="/static/css/Chart.min.css" rel="stylesheet">
+
+	<script src="/static/js/jquery-2.0.2.min.js"></script>
+	<script src="/static/js/jquery-ui.min.js"></script>
+
+	<!-- GOOGLE ANALYTICS -->
+	<script>
+		(function (i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+				(i[r].q = i[r].q || []).push(arguments)
+			}, i[r].l = 1 * new Date(); a = s.createElement(o),
+				m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+		ga('create', 'UA-66288497-1', 'auto');
+		ga('send', 'pageview');
+
+	</script>
+
+	<meta property="og:locale" content="pt_BR">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Portal da TransparÃªncia de Alagoas">
+	<meta property="og:description" content="Registros financeiros do Governo do Estado de Alagoas">
+	<meta property="og:url" content="https://transparencia.al.gov.br">
+	<meta property="og:site_name" content="Portal da TransparÃªncia de Alagoas">
+	<meta property="og:image" content="https://transparencia.al.gov.br/static/img/bg-share-transparencia.png">
+
+	<style>
+		.loading-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(129, 128, 128, 0.521);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			transition: opacity 0.5s, visibility 0.5s;
+			z-index: 1000;
+		}
+
+		.loading-container.hidden {
+			opacity: 0;
+			visibility: hidden;
+		}
+
+		.loading-container>.spinner {
+			width: 50px;
+			height: 50px;
+			border: 5px solid #ccc;
+			border-top-color: #3498db;
+			border-radius: 50%;
+			animation: spin 1s linear infinite;
+		}
+	</style>
+
+	
+</head>
+
+<body>
+	<div class="loading-container hidden" id="loading">
+		<div class="spinner">
+		</div>
+	</div>
+	<div class="container-fluid menu-top hidden-print">
+		<div class="row linha-topo">
+			<div class="col-sm-5 pull-left hidden-xs hidden-sm" style="padding:5px 0 0 15px;font-size:10px;color:#eee;">
+				<a accesskey="1" href="#amenu">Ir para o menu <span class="atalhos img-rounded">1</span></a>
+				&nbsp;&bull;&nbsp;
+				<a accesskey="2" href="#aconteudo">Ir para conteÃºdo <span class="atalhos img-rounded">2</span></a>
+				&nbsp;&bull;&nbsp;
+				<a accesskey="3" href="#arodape">Ir para o rodapÃ© <span class="atalhos img-rounded">3</span> </a>
+				&nbsp;&bull;&nbsp;
+				<a href="https://cge.al.gov.br/solicitacao-de-informacao" target="_blank">
+					<img src="/static/img/informacao.png" height="18px" /> <strong>Acesso Ã  informaÃ§Ã£o</strong>
+				</a>
+			</div>
+			<div class="col-sm-7 menu-navegacao" style="padding: 0px">
+				<div class="container-fluid" style="margin-right:0px; padding: 0px">
+					<nav>
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle collapsed btn-xs" data-toggle="collapse"
+								data-target="#menu-top" style="margin:0px;" aria-expanded="false">
+								<span style="color:#fff;">NAVEGAÃÃO </span>
+								<span style="color:#fff;" class="glyphicon glyphicon-align-justify"></span>
+							</button>
+						</div>
+
+						<div class="collapse navbar-collapse" id="menu-top">
+							<ul class="nav navbar-nav menu-navegacao linha-menu-topo">
+								<li class="dropdown">
+									<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+										aria-expanded="false">NavegaÃ§Ã£o <i class="fa fa-angle-down"
+											style="margin-left:3px;"></i></a>
+									<ul class="dropdown-menu">
+										<li><a href="/media/Manual-Portal-Transparencia-Alagoas.odt">Manual de
+												NavegaÃ§Ã£o</a></li>
+										<li><a href="/portal/mapa-do-site">Mapa do Site</a></li>
+										<li><a href="/portal/legislacao">LegislaÃ§Ã£o</a></li>
+										<li><a href="/portal/perguntas-frequentes">Perguntas Frequentes</a></li>
+										<li><a href="http://www.governo.al.gov.br/" target="_blank">Ãreas do Governo</a>
+										</li>
+										<li><a href="/portal/outros-poderes">Outros Poderes</a></li>
+									</ul>
+								</li>
+								<li class="">
+									<a href="/portal/legislacao">LegislaÃ§Ã£o</a>
+								</li>
+								<li class="dropdown">
+									<a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+										aria-expanded="false">Dados Abertos <i class="fa fa-angle-down"
+											style="margin-left:3px;"></i></a>
+									<ul class="dropdown-menu">
+										<li><a href="/portal/api">API / WebService</a></li>
+										<li><a href="/portal/api/exportacao">Exportar Consultas</a></li>
+										<li><a href="/portal/download-de-dados">Download de Dados</a></li>
+										<li><a href="/portal/api/dicionario-de-dados">DicionÃ¡rio de Dados</a></li>
+										<li><a href="/portal/api/licenca-de-uso">LicenÃ§a</a></li>
+									</ul>
+								</li>
+								<li class="">
+									<a href="/portal/sobre">Sobre</a>
+								</li>
+								<li class="">
+									<a href="/portal/glossario">GlossÃ¡rio</a>
+								</li>
+								<li class="">
+									<a href="/portal/fale_conosco">Fale Conosco</a>
+								</li>
+								<li class="" style="margin-top: 6px;">
+									<span class="tamanho-fonte" style="margin:0 10px 0 0;color:#fff;">
+										<a title="Reduzir tamanho da fonte" style="color:#fff; padding:0 5px;"
+											class="jfontsize-button" id="jfontsize-m2" href="#">A-</a>
+										<a title="Tamanho da fonte normal" style="color:#fff; padding:0 5px;"
+											class="jfontsize-button" id="jfontsize-d2" href="#">A</a>
+										<a title="Aumentar tamanho da fonte" style="color:#fff; padding:0 5px;"
+											class="jfontsize-button" id="jfontsize-p2" href="#">A+</a>
+									</span>
+								</li>
+							</ul>
+						</div>
+					</nav>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- LOGO -->
+		<div class="row topo">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-sm-9">
+						<div class="pull-left hidden-sm hidden-xs">
+							<a href="/">
+								<img style="margin-right:15px;" src="/static/img/brasao_alagoas.png">
+							</a>
+						</div>
+						<div class="titulo-pagina">
+							<a href="/">
+								<span>PORTAL DA</span>
+								<h1><strong>TRANSPARÃNCIA</strong></h1>
+								<span>GRACILIANO RAMOS &nbsp;&bull;&nbsp; ALAGOAS</span>
+							</a>
+						</div>
+					</div>
+					<div class="col-sm-3 text-right hidden-xs hidden-sm" style="margin-top:10px;">
+						<!-- <span style="margin-right:5px;"><i class="fa fa-adjust fa-fw"></i></span>
+				<span class="tamanho-fonte" style="margin:15px 0 0 0;color:#fff;">
+					<a style="color:#fff; padding:0 5px;" class="jfontsize-button" id="jfontsize-m2" href="#">A-</a>
+					<a style="color:#fff; padding:0 5px;" class="jfontsize-button" id="jfontsize-d2" href="#">A</a>
+					<a style="color:#fff; padding:0 5px;" class="jfontsize-button" id="jfontsize-p2" href="#">A+</a>
+				</span> -->
+						<span class="social" style="margin-left:10px;color:#f5f5f5;">
+							<a href="https://www.facebook.com/pages/Governo-de-Alagoas/432117366821724" target="_blank">
+								<i class="fa fa-facebook fa-fw fa-lg" style="margin:0 4px;"></i>
+							</a>
+							<a href="https://twitter.com/GovernoAlagoas" target="_blank">
+								<i class="fa fa-twitter fa-fw fa-lg" style="margin:0 4px;"></i>
+							</a>
+							<a href="https://instagram.com/governodealagoas" target="_blank">
+								<i class="fa fa-instagram fa-fw fa-lg" style="margin:0 4px;"></i>
+							</a>
+						</span>
+						<form id="form-busca" method="get" action="/busca/">
+							<div class="input-group" style="margin-top:5px;">
+								<input id="busca_geral" type="text" class="form-control" name="busca"
+									placeholder="Digite para buscar no portal">
+								<span class="input-group-btn">
+									<button id="busca_geral" class="btn btn-default" type="submit"><i
+											class="fa fa-search"></i></button>
+								</span>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<a name="amenu" id="amenu"></a>
+		
+	<!-- MENU -->
+	<div class="row menu-topo">
+		<div class="container-fluid">
+			<!-- MENU RESPONSIVO -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed btn-xs" data-toggle="collapse" data-target="#menu-principal" aria-expanded="false">
+					<span style="color:#fff;">MENU </span><span style="color:#fff;" class="glyphicon glyphicon-align-justify"></span>
+				</button>
+			</div>
+			
+			<!-- MENU DESKTOP -->
+			<div class="collapse navbar-collapse" id="menu-principal">
+				<div class="row">
+					<ul class="nav navbar-nav col-sm-12" style="padding-right:0px;" id="menu-consultas">
+						
+
+    
+    <li class="menu-linha dropdown green">
+    	<a class="dropdown-toggle" href="/portal/orcamento" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >OrÃ§amento <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        				<ul id="titulo-green" class="dropdown-menu">
+			<li class="">
+				<a href="/orcamento/dotacoes-orcamentarias">DotaÃ§Ãµes OrÃ§amentÃ¡rias</a>
+			</li>
+			<li class="">
+				<a href="/orcamento/execucao-orcamentaria-avancada">ClassificaÃ§Ã£o e ExecuÃ§Ã£o OrÃ§amentÃ¡ria</a>
+			</li>
+			<li class="">
+				<a  href="/orcamento/lei-de-diretrizes-orcamentarias">Lei de Diretrizes OrÃ§amentÃ¡rias (LDO)</a>
+			</li>
+			<li class="">
+				<a href="/orcamento/lei-orcamentaria-anual">
+					Lei OrÃ§amentÃ¡ria Anual (LOA)
+				</a>
+			</li>
+			<li class="">
+				<a target="_blank" href="http://www.sefaz.al.gov.br/financas">Lei de Responsabilidade Fiscal (LRF)</a>
+			</li>
+			<li class="">
+				<a href="/orcamento/plano-plurianual">Plano Plurianual (PPA)</a>
+			</li>
+			<li class="">
+				<a href="/portal/prestacao-de-contas">PrestaÃ§Ã£o de Contas</a>
+			</li>
+			<li class="">
+				<a href="/portal/relatorio-resumido-de-execucao-orcamentaria">RelatÃ³rio Resumido de ExecuÃ§Ã£o OrÃ§amentÃ¡ria (RREO)</a>
+			</li>
+			<li class="">
+				<a href="/portal/relatorio-de-gestao-fiscal">RelatÃ³rio de GestÃ£o Fiscal (RGF)</a>
+			</li>
+			<li class="">
+				<a href="/orcamento/consulta-avancada">Consulta AvanÃ§ada</a>
+			</li>
+			<li class="">
+				<a href="/orcamento/analise-grafica">AnÃ¡lise GrÃ¡fica</a>
+			</li>
+		</ul>
+
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+				
+
+    </li>
+    
+    <li class="menu-linha dropdown orange">
+    	<a class="dropdown-toggle" href="/portal/receitas" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >Receitas <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        		
+        			<ul id="titulo-orange" class="dropdown-menu">
+	<li class="">
+		<a href="/receita/comparativo">Comparativo da Receita</a>
+	</li>
+	<li class="">
+		<a href="/receita/receitas-por-fonte">Receitas por Fonte</a>
+	</li>
+	<li class="">
+		<a href="/receita/receitas-mensais">Receitas Mensais</a>
+	</li>
+	<li class="">
+		<a href="/receita/consulta-avancada">Consulta AvanÃ§ada</a>
+	</li>
+	<li class="">
+        <a href="/receita/analise-grafica/">AnÃ¡lise GrÃ¡fica</a>
+    </li>
+</ul>
+
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+				
+
+    </li>
+    
+    <li class="menu-linha dropdown purple">
+    	<a class="dropdown-toggle" href="/portal/repasses" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >Repasses <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        			<ul id="titulo-purple" class="dropdown-menu">
+	<li class="">
+		<a href="/repasse/repasses-aos-municipios/">Aos MunicÃ­pios</a>
+	</li>
+	<li class="">
+		<a href="/repasse/repasses-consolidados">Consolidados</a>
+	</li>
+	<li class="">
+		<a href="/repasse/repasses-por-impostos/">Por Tipo</a>
+	</li>
+	<li class="">
+		<a href="http://www.portaldatransparencia.gov.br/PortalTransparenciaListaAcoesUF.asp?Exercicio=2015&SelecaoUF=1&SiglaUF=AL" target="_blank">
+			Da UniÃ£o com o Estado
+		</a>
+	</li>
+	<li class="">
+		<a href="/repasse/consulta-avancada">Consulta AvanÃ§ada</a>
+	</li>
+	<li class="">
+		<a href="/repasse/analise-grafica">AnÃ¡lise GrÃ¡fica</a>
+	</li>
+</ul>
+
+        		
+        		
+        		
+				
+
+    </li>
+    
+    <li class="menu-linha dropdown light-blue">
+    	<a class="dropdown-toggle" href="/portal/pessoal" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >Pessoal <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        		
+        		
+        		
+        		
+        			<ul id="titulo-light-blue" class="dropdown-menu">
+    <li class="">
+        <a href="/pessoal/servidores-ativos">Servidores Ativos</a>
+    </li>
+    <li class="">
+        <a href="/pessoal/servidores-inativos">Servidores Inativos</a>
+    </li>
+    <li class="">
+        <a href="/pessoal/consulta-avancada/">Consulta AvanÃ§ada</a>
+    </li>
+    <li class="">
+        <a href="/pessoal/analise-grafica/">AnÃ¡lise GrÃ¡fica</a>
+    </li>
+    <li class="">
+        <a target="_blank" href="http://www.imprensaoficialal.com.br/?p=115">DiÃ¡rio Oficial</a>
+    </li>
+    <li class="">
+        <a href="/portal/concursos-e-editais">Concursos e Editais</a>
+    </li>
+    <li class="">
+        <a href="/portal/selecoes-publicas">SeleÃ§Ãµes PÃºblicas</a>
+    </li>
+    <li class="">
+        <a href="/pessoal/legislacao">LegislaÃ§Ã£o de FixaÃ§Ã£o de SubsÃ­dios</a>
+    </li>
+    <li class="">
+        <a href="https://gestaointegrada.seplag.al.gov.br/" target="_blank">Tabela remuneratÃ³ria dos cargos e funÃ§Ãµes</a>
+    </li>
+</ul>
+
+        		
+        		
+        		
+        		
+				
+
+    </li>
+    
+    <li class="menu-linha dropdown blue">
+    	<a class="dropdown-toggle" href="/portal/licitacoes-e-contratos" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >LicitaÃ§Ãµes <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        		
+        		
+        		
+        			<ul id="titulo-blue" class="dropdown-menu">
+	<li class="">
+		<a href="/licitacao/atas-de-pregoes/">Atas de PregÃµes</a>
+	</li>
+	<li class="">
+		<a href="/licitacao/contracoes-diretas/">ContrataÃ§Ãµes Diretas</a>
+	</li>
+	<li class="">
+		<a href="/licitacao/editais/">LicitaÃ§Ãµes PÃºblicas</a>
+	</li>
+	<li class="">
+		<a href="/licitacao/utilizacoes-ata-registro-de-preco/">UtilizaÃ§Ãµes de Atas de Registro de PreÃ§o</a>
+	</li>
+	<li class="">
+		<a href="https://www.amgesp.al.gov.br/documentos/category/348-decretos-estaduais">Regulamento interno de LicitaÃ§Ãµes e Contratos</a>
+	</li>
+</ul>
+
+        		
+        		
+        		
+        		
+        		
+				
+
+    </li>
+    
+    <li class="menu-linha dropdown red">
+    	<a class="dropdown-toggle" href="/portal/despesas" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >Despesas <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        		
+        		
+        			<ul id="titulo-red" class="dropdown-menu multi-column columns-2">
+	<div class="row">
+    	<div class="col-sm-6 col-esquerda">
+    		<ul class="multi-column-dropdown">
+    			<li>
+					<a href="/despesa/despesas-por-acao">Por AÃ§Ã£o</a>
+				</li>
+				<li class="">
+					<a href="/despesa/despesas-por-categoria-economica">Por Categoria EconÃ´mica</a>
+				</li>
+				<li>
+					<a href="/despesa/despesas-por-contratos">Por Contratos</a>
+				</li>
+				<li class="">
+					<a href="/despesa/despesas-com-diarias">Por DiÃ¡rias</a>
+				</li>
+				<li class="">
+					<a href="/despesa/despesas-por-favorecido">Por Favorecido</a>
+				</li>
+				<li>
+					<a href="/despesa/despesas-por-fonte">Por Fonte</a>
+				</li>
+				<li>
+					<a href="/despesa/despesas-por-funcao">Por FunÃ§Ã£o</a>
+				</li>
+				<li>
+					<a href="/despesa/despesas-por-lista">Por Lista</a>
+				</li>
+				<li class="dropdown-submenu">
+					<a href="#">Emendas Parlamentares da UniÃ£o</a>
+					<ul class="dropdown-menu menu-dropdow-red">
+						<li>
+							<a href="https://portaldatransparencia.gov.br/emendas/consulta-por-favorecido?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&de=01%2F01%2F2021&ate=31%2F01%2F2026&ufFavorecido=AL&colunasSelecionadas=linkDetalhamento%2Cfavorecido%2CnaturezaJuridica%2CtipoFavorecido%2CufFavorecido%2CmunicipioFavorecido%2Cvalor&ordenarPor=valor&direcao=desc" target="_blank">Emendas Parlamentares da UniÃ£o Para Alagoas</a>
+						</li>
+						<li>
+							<a href="https://especiais.transferegov.sistema.gov.br/transferencia-especial/plano-acao/consulta" target="_blank" title="Para consultar informaÃ§Ãµes do Governo do Estado de Alagoas, filtrar a UF: AL">Plano de AÃ§Ã£o</a>
+						</li>					
+					</ul>
+				</li>						
+    		</ul>
+    	</div>
+    	<div class="col-sm-6 col-direita">
+    		<ul class="multi-column-dropdown">
+				<li class="">
+					<a href="/despesa/despesas-por-natureza">Por Natureza</a>
+				</li>
+				<li>
+					<a href="/despesa/despesas-por-orgao">Por ÃrgÃ£o</a>
+				</li>
+				<li>
+					<a href="/despesa/despesas-por-programa">Por Programa</a>
+				</li>				
+				<li>
+					<a href="/despesa/despesas-por-restos-a-pagar">Restos a Pagar a Pagar</a>
+				</li>
+				<li>
+					<a href="/despesa/despesas-por-restos-pagos">Restos a Pagar Pagos</a>
+				</li>
+				<li>
+					<a href="/despesa/despesas-com-covid19">Covid-19</a>
+				</li>
+				<li>
+					<a href="/despesa/consulta-avancada">Consulta AvanÃ§ada</a>
+				</li>
+				<li>
+					<a href="/despesa/analise-grafica">AnÃ¡lise GrÃ¡fica</a>
+				</li>								
+				<li>
+					<a href="/despesa/emendas-parlamentares-estaduais">Emendas Parlamentares Estaduais</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</ul>
+
+        		
+        		
+        		
+        		
+        		
+        		
+				
+
+    </li>
+    
+    <li class="menu-linha dropdown pink">
+    	<a class="dropdown-toggle" href="/portal/patrimonio" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >PatrimÃ´nio <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        			<ul id="titulo-pink" class="dropdown-menu">
+	<li class="">
+		<a href="/patrimonio/imobiliario">ImobiliÃ¡rio Geral</a>
+	</li>
+	<li class="">
+		<a href="/patrimonio/mobiliario">MobiliÃ¡rio</a>
+	</li>
+	<li class="">
+		<a href="/patrimonio/consulta-avancada">Consulta AvanÃ§ada</a>
+	</li>
+</ul>
+
+        		
+				
+
+    </li>
+    
+    <li class="menu-linha dropdown brown">
+    	<a class="dropdown-toggle" href="/portal/convenios" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >ConvÃªnios <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        			<ul id="titulo-brown" class="dropdown-menu">
+		<li class="">
+			<a href="/convenio/convenios-por-concedentes/">Estado como Concedente</a>
+		</li>
+		<li class="">
+			<a target="_blank" href="http://www.portaldatransparencia.gov.br/convenios/consulta?paginacaoSimples=true&tamanhoPagina=&offset=&direcaoOrdenacao=asc&uf=AL&colunasSelecionadas=linkDetalhamento%2CnumeroConvenio%2CnumeroOriginal%2Cuf%2CmunicipioConvenente%2Csituacao%2CtipoTransferencia%2Cobjetivo%2CorgaoSuperior%2Corgao%2Cconcedente%2Cconvenente%2CdataInicioVigencia%2CdataFimVigencia%2CvalorCelebrado">
+				Estado como Beneficiado
+			</a>
+		</li>
+	</ul>
+
+        		
+        		
+				
+
+    </li>
+    
+    <li class="menu-linha dropdown gray">
+    	<a class="dropdown-toggle" href="/portal/obras" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" >Obras <i class="fa fa-angle-down" style="margin-left:3px;"></i></a>
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+				
+					<ul id="titulo-gray" class="dropdown-menu">
+	<li class="">
+		<a href="/obras/obras-publicas">Obras PÃºblicas</a>
+	</li>
+	<li class="">
+		<a href="/obras/analise-grafica">AnÃ¡lise GrÃ¡fica</a>
+	</li>
+	<li class="">
+		<a href="/obras/consulta-avancada">Consulta AvanÃ§ada</a>
+	</li>
+</ul>
+
+				
+
+    </li>
+    
+
+						<li class="menu-linha red"><a href="/despesa/covid19"><strong>COVID-19</strong></a></li>
+
+						<span class="social pull-right hidden-xs" style="margin:15px 15px 0 0;color:#f5f5f5;">
+							<span id="mostrar_dicas" style="cursor:pointer;">
+								DICAS <i class="fa fa-question-circle fa-fw fa-lg" style="color:#fff;margin:0 0px;"></i>
+							</span>
+						</span>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+	</div>
+
+
+	<div class="container-fluid">
+		<div class="row">
+			<a name="aconteudo" id="aconteudo"></a>
+			
+
+<script>
+$(document).ready(function() {
+	$(".list-group li").addClass("list-group-item");
+});
+</script>
+
+	<div class="col-sm-12 conteudo">
+	<div class="btn-group btn-breadcrumb" style="margin-bottom:15px;">
+            <a href="#" class="btn btn-default"><i class="glyphicon glyphicon-home"></i></a>
+            <a href="/" class="btn btn-default">Portal</a>
+	        
+
+
+<a href="/portal/api" class="btn btn-default">API</a>
+
+<a href="/portal/api/receitas" class="btn btn-default">Receitas</a>
+
+<a href="/portal/api/receitas/combos" class="btn btn-default">Combos</a>
+<a href="/portal/api/receitas/combos/fonte" class="btn btn-default">Fonte</a>
+        </div>
+	
+    <div class="panel panel-padrao">
+    	<div class="panel-heading" style="border-bottom:0px;border-bottom:2px dotted #696969;">
+    		<h2 class="" style="margin-top:10px;color:#696969;">API / Combos</h2>
+    	</div>
+    	
+        <div class="panel-body">
+        	<div class="col-sm-2">
+        		<ul class="nav navbar-nav navbar-default nav-api">
+					
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">OrÃ§amento <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Combos <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/orcamento/combos/elemento-de-despesa">Elemento de Despesa </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/orcamento/combos/modalidade-de-aplicacao">Modalidade de AplicaÃ§Ã£o </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/orcamento/combos/natureza-de-despesa">Natureza de Despesa </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/orcamento/combos/categoria-economica">Categoria EconÃ´mica </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/orcamento/combos/unidades-gestoras">Unidades Gestoras </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/orcamento/consulta-avancada">Consulta AvanÃ§ada </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">DotaÃ§Ãµes OrÃ§amentÃ¡rias <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/orcamento/dotacoes-orcamentarias/lista-de-ugs">Lista de UGs </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/orcamento/dotacoes-orcamentarias/dotacoes-de-ug">DotaÃ§Ãµes de UG </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">Receitas <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Comparativo da Receita <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/comparativo-da-receita/lista-de-origens">Lista de Origens </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/comparativo-da-receita/lista-de-rubricas">Lista de Rubricas </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/comparativo-da-receita/lista-de-subalineas">Lista de SubalÃ­neas </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/comparativo-da-receita/lista-de-ugs">Lista de UGs </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Receitas por Fonte <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/receitas-por-fonte/lista-de-fonte-mae">Lista de Fonte MÃ£e </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/receitas-por-fonte/lista-de-fontes">Lista de Fontes </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/receitas-por-fonte/lista-de-ugs">Lista de UGs </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Receitas Mensais <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/receitas-mensais/lista-de-origens">Lista de Origens </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/receitas-mensais/lista-de-rubricas">Lista de Rubricas </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/receitas-mensais/lista-de-subalineas">Lista de SubalÃ­neas </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/receitas-mensais/lista-de-ugs">Lista de UGs </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/consulta-avancada">Consulta AvanÃ§ada </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Combos <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/combos/unidade-gestora">Unidade Gestora </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/combos/fonte-mae">Fonte MÃ£e </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/receitas/combos/fonte">Fonte </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">Repasses <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Repasses aos MunicÃ­pios <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/repasses/repasses-aos-municipios/lista-de-municipios">Lista de MunicÃ­pios </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/repasses/repasses-aos-municipios/lista-de-impostos">Lista de Impostos </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/repasses/repasses-aos-municipios/lista-de-parcelas">Lista de Parcelas </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/repasses/consulta-avancada">Consulta AvanÃ§ada </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">Pessoal <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Servidores Ativos <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/pessoal/servidores-ativos/lista-de-servidores">Lista de Servidores </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/pessoal/servidores-ativos/detalhes-de-servidor">Detalhes de Servidor </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Servidores Inativos <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/pessoal/servidores-inativos/lista-de-inativos">Lista de Inativos </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/pessoal/servidores-inativos/detalhes-de-inativo">Detalhes de Inativo </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/pessoal/consulta-avancada">Consulta AvanÃ§ada </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">LicitaÃ§Ãµes <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Editais de LicitaÃ§Ãµes <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/licitacoes/editais-de-licitacoes/lista-de-licitacoes">Lista de LicitaÃ§Ãµes </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/licitacoes/utilizacoes-de-atas-de-registro-de-preco">UtilizaÃ§Ãµes de Atas de Registro de PreÃ§o </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/licitacoes/contratacoes-diretas">ContrataÃ§Ãµes diretas </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">Despesas <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Despesas por AÃ§Ã£o <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-acao/lista-de-acoes">Lista de AÃ§Ãµes </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-acao/lista-de-ugs">Lista de UGs </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-acao/lista-de-favorecidos">Lista de Favorecidos </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-acao/lista-de-subelementos">Lista de Subelementos </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Despesas por DiÃ¡rias <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-diarias/lista-de-ugs">Lista de UGs </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-diarias/lista-de-favorecidos">Lista de Favorecidos </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-diarias/lista-de-subelementos">Lista de Subelementos </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">Despesas por Favorecido <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-favorecido/lista-de-favorecidos">Lista de Favorecidos </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-favorecido/lista-de-ugs">Lista de UGs </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/despesas-por-favorecido/lista-de-subelementos">Lista de Subelementos </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/despesas/consulta-avancada">Consulta AvanÃ§ada </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">PatrimÃ´nio <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">ImobiliÃ¡rio Geral <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/patrimonio/imobiliario-geral/lista-de-imoveis">Lista de ImÃ³veis </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">MobiliÃ¡rio <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/patrimonio/mobiliario/lista-de-ugs">Lista de UGs </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/patrimonio/mobiliario/lista-de-materiais">Lista de Materiais </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/patrimonio/mobiliario/detalhes-de-material">Detalhes de Material </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/patrimonio/consulta-avancada">Consulta AvanÃ§ada </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">ConvÃªnios <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">ConvÃªnios por Concedentes <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/convenios/convenios-por-concedentes/lista-de-concedentes">Lista de Concedentes </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/convenios/convenios-por-concedentes/lista-de-beneficiados">Lista de Beneficiados </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/convenios/convenios-por-concedentes/lista-de-convenios">Lista de ConvÃªnios </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="">ConvÃªnios por Beneficiados <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/convenios/convenios-por-beneficiados/lista-de-beneficiados">Lista de Beneficiados </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/convenios/convenios-por-beneficiados/lista-de-concedentes">Lista de Concedentes </a>
+    
+</li>
+
+
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/convenios/convenios-por-beneficiados/lista-de-convenios">Lista de ConvÃªnios </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="">Obras <i class="fa fa-angle-right"></i></a>
+    
+    <ul class="dropdown-menu">
+	    
+	        
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/obras/obras-obras-publicas">Obras PÃºblicas </a>
+    
+</li>
+
+
+	    
+    </ul>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/exportacao">ExportaÃ§Ã£o </a>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/dicionario-de-dados">DicionÃ¡rio de Dados </a>
+    
+</li>
+
+
+
+    
+
+
+<li class="dropdown-submenu">
+<a href="/portal/api/licenca-de-uso">LicenÃ§a de uso </a>
+    
+</li>
+
+
+
+
+
+				</ul>
+        	</div>
+        	<div class="col-sm-10">
+        		<h2 style="margin-top:5px;">
+        			Fonte
+        		</h2>
+        		<p>Esta consulta retorna&nbsp;uma&nbsp;<strong>lista de fontes&nbsp;para preenchimento de combo select</strong>.</p>
+
+<p>&nbsp;</p>
+
+<p><strong>URL</strong></p>
+
+<p>/receita/json-receita-avancada-fonte/</p>
+
+<p>&nbsp;</p>
+
+<p><strong>M&Eacute;TODO</strong></p>
+
+<p>GET</p>
+
+<p>&nbsp;</p>
+
+<p><strong>PAR&Acirc;METROS</strong></p>
+
+<p><em>Obrigat&oacute;rios</em></p>
+
+<table border="0" cellpadding="1" cellspacing="1" class="table" style="line-height:20.8px; width:100%">
+	<tbody>
+		<tr>
+			<td><strong>Nome</strong></td>
+			<td><strong>Tipo</strong></td>
+			<td><strong>Descri&ccedil;&atilde;o</strong></td>
+		</tr>
+		<tr>
+			<td>data_registro_dti_</td>
+			<td>Date</td>
+			<td>Seta a data inicial que ser&aacute; realizada a consulta. (dd/mm/yyyy)</td>
+		</tr>
+		<tr>
+			<td>data_registro_dtf_</td>
+			<td>Date</td>
+			<td>Seta a data final que ser&aacute; realizada a consulta. (dd/mm/yyyy)</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<p><strong>NOTAS</strong></p>
+
+<p>Todos os servi&ccedil;os devem ser consultados utilizando requisi&ccedil;&otilde;es AJAX. Para tanto, deve-se configurar o cabe&ccedil;alho X-Requested-With para XMLHttpRequest.</p>
+
+<p>&nbsp;</p>
+
+<p><strong>EXEMPLO</strong></p>
+
+<p>URL utilizada:&nbsp;http://transparencia.al.gov.br/receita/json-receita-avancada-fonte/?data_registro_dti_=01/01/2015&amp;data_registro_dtf_=31/12/2015</p>
+
+<p>&nbsp;</p>
+
+<pre>
+[
+{
+id: &quot;0110002586&quot;,
+descricao: &quot;0113017400.TECNOVA ALAGOAS FAPEAL/SECTI/&quot;
+},
+{
+id: &quot;0100002470&quot;,
+descricao: &quot;013/12 SEPLANDE/SEBRAE/FIEA. LEITE AO CA&quot;
+},
+{
+id: &quot;0110002427&quot;,
+descricao: &quot;02/2011.CASAL/ITEC. CIRCUITOS DE DADOS,&quot;
+}
+]</pre>
+
+        	</div>
+        	
+        </div>
+    </div>
+    </div>
+    
+
+		</div>
+	</div>
+
+	<div class="rodape hidden-print">
+		<div class="container-fluid">
+			<a name="arodape" id="arodape"></a>
+			<div class="row text-center txt-api">
+				<span>TENHA ACESSO ÃS INFORMAÃÃES ATRAVÃS DE DADOS ABERTOS <i class="fa fa-long-arrow-right hidden-xs"
+						style="margin-left:10px;"></i></span> <br class="visible-xs" />
+				<a href="/portal/api">
+					<button class="btn btn-info btn-outline">API TransparÃªncia</button>
+				</a>
+			</div>
+			<div class="row rodape-mapa bootstro">
+				<div class="col-sm-2">
+					<img src="/static/img/brasao.png" class="img-responsive hidden-xs" />
+				</div>
+				<div class="col-sm-2">
+					<ul class="list-unstyled">
+						<li class="tituloServ">NavegaÃ§Ã£o</li>
+						<li class="menu-rodape"><a href="/">Pagina Inicial</a></li>
+						<li class="menu-rodape"><a href="/portal/sobre">Sobre o Portal</a></li>
+						<li class="menu-rodape"><a href="/portal/legislacao">LegislaÃ§Ã£o</a></li>
+						<li class="menu-rodape"><a href="/portal/glossario">GlossÃ¡rio</a></li>
+						<li class="menu-rodape"><a href="/media/Manual-Portal-Transparencia-Alagoas.odt">Manual de
+								NavegaÃ§Ã£o</a></li>
+						<li class="menu-rodape"><a href="/portal/mapa-do-site">Mapa do Site</a></li>
+						<li class="menu-rodape"><a href="/portal/perguntas-frequentes">Perguntas Frequentes</a></li>
+						<li class="menu-rodape"><a href="http://www.governo.al.gov.br/" target="_blank">Ãreas do
+								Governo</a></li>
+						<li class="menu-rodape"><a href="/portal/outros-poderes">Outros Poderes</a></li>
+						<li class="menu-rodape"><a href="/portal/fale_conosco">Fale Conosco</a></li>
+						<li class="menu-rodape"><a href="http://ceis.cge.al.gov.br" target="_blank">CEIS/AL</a></li>
+						<li class="menu-rodape">
+							<a href="https://cge.al.gov.br/solicitacao-de-informacao" target="_blank">Acesso Ã  InformaÃ§Ã£o</a>
+						</li>
+					</ul>
+				</div>
+				<div class="col-sm-2">
+					<ul class="list-unstyled">
+						<li class="tituloServ">Consultas</li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/orcamento">OrÃ§amento</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/receitas">Receitas</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/repasses">Repasses</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/pessoal">Pessoal</a></li>
+						<li class="menu-rodape"><a style="color:#fff;"
+								href="/portal/licitacoes-e-contratos">LicitaÃ§Ãµes</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/despesas">Despesas</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/patrimonio">PatrimÃ´nio</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/convenios">ConvÃªnios</a></li>
+					</ul>
+				</div>
+				<div class="col-sm-2">
+					<ul class="list-unstyled">
+						<li class="tituloServ">Dados Abertos</li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/api">API / WebService</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/api/exportacao">Exportar
+								Consultas</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/download-de-dados">Download de
+								Dados</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/api/dicionario-de-dados">DicionÃ¡rio
+								de Dados</a></li>
+						<li class="menu-rodape"><a style="color:#fff;" href="/portal/api/licenca-de-uso">LicenÃ§a</a>
+						</li>										
+					</ul>					
+				</div>	
+				<div class="col-sm-1">
+					<a href="https://radardatransparencia.atricon.org.br/" target="_blank">
+					  <img src="/static/img/banners/banner_radar_transparencia.png" alt="">
+					</a>
+				</div>			
+				<div class="col-sm-3 text-right hidden-xs">
+					<div class="tel" style="font-size: 18px"><span class="glyphicon glyphicon-earphone"></span> 0800 284 7447</div>
+					<div class="tel" style="font-size: 18px"><span class="glyphicon glyphicon-earphone"></span> 0800 284 7547</div>
+					<div class="tel" style="font-size: 18px"><span class=""></span> <i class="fa fa-whatsapp fa-fw fa-lg" style="margin:0 4px;"></i> (82) 98878-3892</div>
+					<div class="email">suot@cge.al.gov.br</div>
+					<div class="cge" style="color:#34a8fe">
+						CONTROLADORIA-GERAL DO ESTADO DE ALAGOAS
+						<br>
+						ResponsÃ¡vel pelo monitoramento
+						<br><br>
+					</div>
+					<div class="cge">
+						Atendimento: 08h Ã s 17h, <br />
+						de Segunda Ã  Sexta<br />
+						<small>(presencial ou telefone)</small>
+						<br /><br />
+					</div>
+					<div class="cge">
+						PraÃ§a Marechal Floriano Peixoto, nÂº 571, <br />
+						EdifÃ­cio Maria Moreno <br />
+						Centro, MaceiÃ³ - Alagoas. CEP 57020-090
+					</div>
+				</div>
+				<div class="col-sm-9 txt-rodape">
+					<div>
+						2007-2026. ConteÃºdo e dados do Portal da TransparÃªncia licenciados sob LicenÃ§a Creative
+						Commons
+						<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.pt_BR" target="_blank"><img
+								alt="LicenÃ§a Creative Commons BY-SA" style="border-width:0"
+								src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+						<a href="http://opendefinition.org/od/2.0/pt-br/" target="_blank"><img alt="Open Data"
+								style="border-width:0" src="/static/img/open-data.png" /></a>
+					</div>
+				</div>
+				<div class="col-sm-3 text-right">
+					<img class="img-topo" src="/static/img/itec_rodape.png" />
+				</div>
+
+			</div>
+		</div>
+	</div>
+	<div vw class="enabled">
+		<div vw-access-button class="active"></div>
+		<div vw-plugin-wrapper>
+			<div class="vw-plugin-top-wrapper"></div>
+		</div>
+	</div>
+	<script src="https://plugin.handtalk.me/web/latest/handtalk.min.js"></script>
+	<script>
+	var ht = new HT({
+		token: "907a9e2a731f84bda6df242ffbf82362",
+		avatar: "MAYA"
+	});
+	</script>
+
+</body>
+
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/bootstrap-table.js"></script>
+<script src="/static/js/locales/bootstrap-table-pt-BR.js"></script>
+<script src="/static/js/bootstrap-table-flatJSON.js"></script>
+<script src="/static/js/bootstrap-datepicker.min.js"></script>
+<script src="/static/js/locales/bootstrap-datepicker.pt-BR.min.js"></script>
+<script src="/static/js/base.js"></script>
+<script src="/static/js/base_site.js"></script>
+<script src="/static/js/bootstro.min.js"></script>
+<!-- <script src="/static/js/highcharts.js"></script> -->
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/treemap.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="/static/js/exporting.js"></script>
+<script src="/static/js/jquery.mask.min.js"></script>
+<script src="/static/js/jquery.jfontsize-2.0.js"></script>
+<script src="/static/js/jstorage.js"></script>
+<script src="/static/js/Chart.min.js"></script>
+
+<!-- Libs de exportaÃ§Ã£o -->
+<script src="/static/js/bootstrap-table-export.js"></script>
+<script src="/static/js/tableExport.js"></script>
+<script src="/static/js/jquery.base64.js"></script>
+<script src="/static/js/jspdf/FileSaver.min.js"></script>
+<script src="/static/js/html2canvas/html2canvas.min.js"></script>
+<script src="/static/js/jspdf/jspdf.min.js"></script>
+<script src="/static/js/jspdf/jspdf.plugin.autotable.js"></script>
+
+<script src="/static/js/chosen.jquery.min.js"></script>
+<script src="/static/js/chosen.proto.min.js"></script>
+
+<script type="text/javascript" language="javascript">
+	$('body').jfontsize({
+		btnMinusClasseId: '#jfontsize-m2', // Defines the class or id of the decrease button
+		btnDefaultClasseId: '#jfontsize-d2', // Defines the class or id of default size button
+		btnPlusClasseId: '#jfontsize-p2', // Defines the class or id of the increase button
+		btnMinusMaxHits: 1, // How many times the size can be decreased
+		btnPlusMaxHits: 5, // How many times the size can be increased
+		sizeChange: 5 // Defines the range of change in pixels
+	});
+</script>
+<script src="/static/js/bootstrap-hover-dropdown.min.js"></script>
+
+ 
+
+</html>

@@ -1,0 +1,698 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head id="j_idt3">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0, minimum-scale = 1.0"><link type="text/css" rel="stylesheet" href="/transparencia/javax.faces.resource/theme.css.faces?ln=primefaces-nova-light"><link type="text/css" rel="stylesheet" href="/transparencia/javax.faces.resource/components.css.faces?ln=primefaces&amp;v=7.0"><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-WLBEFG8GH0"></script><script type="text/javascript" src="/transparencia/javax.faces.resource/jquery/jquery.js.faces?ln=primefaces&amp;v=7.0"></script><script type="text/javascript" src="/transparencia/javax.faces.resource/jquery/jquery-plugins.js.faces?ln=primefaces&amp;v=7.0"></script><script type="text/javascript" src="/transparencia/javax.faces.resource/core.js.faces?ln=primefaces&amp;v=7.0"></script><script type="text/javascript" src="/transparencia/javax.faces.resource/components.js.faces?ln=primefaces&amp;v=7.0"></script><script type="text/javascript">if(window.PrimeFaces){PrimeFaces.settings.locale='pt_BR';}</script>
+        <link rel="icon" href="../imgs/favicon.ico">
+        <title>Portal da Transparência</title>
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="Icon" href="../imgs/header/logo_prefeitura_de_maceio.svg">
+    <link rel="stylesheet" href="../css/integration.css">
+    <link rel="StyleSheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../resources/fontawesome-free-5.11.2-web/css/fontawesome.css">
+    <link rel="stylesheet" href="../resources/fontawesome-free-5.11.2-web/css/solid.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+
+    <script type="text/javascript">
+        PrimeFaces.locales['pt'] = {
+            closeText: 'Fechar',
+            prevText: 'Anterior',
+            nextText: 'Próximo',
+            currentText: 'Atual',
+            monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio',
+                'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro',
+                'Novembro', 'Dezembro'],
+            monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+            dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta',
+                'Sexta', 'Sábado'],
+            dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+            dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+            weekHeader: 'Semana',
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: '',
+            timeOnlyTitle: 'Só Horas',
+            timeText: 'Tempo',
+            hourText: 'Hora',
+            minuteText: 'Minuto',
+            secondText: 'Segundo',
+            ampm: false,
+            month: 'Mês',
+            week: 'Semana',
+            day: 'Dia',
+            allDayText: 'Todo o Dia'
+        };
+    </script>
+
+    <script type="text/javascript">
+        
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-WLBEFG8GH0');
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-WLBEFG8GH0';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+
+    <script type="text/javascript" src="../js/font.js"></script>
+    <script type="text/javascript" src="../js/theme.js"></script>
+    <script type="text/javascript" src="../resources/js/vlibras.js"></script><script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script></head><body>
+
+
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark menu-superior">
+
+            <a class="espac-img-prefeitura" href="../pages/homepage.faces">
+                <img src="../imgs/logo_prefeitura.png" alt="logotipo" class="header-img">
+            </a>
+            <a href="../pages/homepage.faces">
+                <p class="ajust-text-menu-navegacao-servicos">
+                    Portal da Transparência Município de Maceió
+                </p>
+            </a>
+
+            <div class="justify-content-end ajeitando-button">
+                <button class="navbar-toggler" data-toggle="collapse" data-target="#menu">
+                    <span class="navbar-toggler-icon ajust-icon-nav"></span>
+                </button>
+            </div>
+<form id="formDownload" name="formDownload" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="formDownload" value="formDownload">
+<button id="formDownload:linkBaixarOrganograma" name="formDownload:linkBaixarOrganograma" class="" onclick="PrimeFaces.bcn(this,event,[function(event){PrimeFaces.monitorDownload(start, stop);},function(event){}]);" style="display:none" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">ui-button</span></button><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:0" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form>
+
+            <div id="menu" class=" espac-itens-menu collapse navbar-collapse justify-content-center">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../pages/homepage.faces">
+                            Início
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../pages/sobre.faces">
+                            Sobre
+                        </a>
+                    </li>
+
+                    <li class="nav-item" title="Site da Prefeitura">
+                        <a class="nav-link" href="http://www.maceio.al.gov.br/" title="Clique aqui para ser redirecinado ao site da prefeitura" target="_blank">
+                            Site da Prefeitura
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../pages/faleConosco.faces">
+                            Fale Conosco
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="../pages/despesasReceitaCovid.faces?i=0" target="_blank">
+                            COVID-19
+                        </a>
+                    </li>
+
+                    <li class="nav-item"><a id="j_idt10" href="#" class="ui-commandlink ui-widget nav-link" onclick="baixarOrganograma();;PrimeFaces.ab({s:&quot;j_idt10&quot;});return false;">Organograma</a>
+                    </li>
+
+                    <li class="nav-item radar-btn">
+                        <a class="nav-link" href="https://radardatransparencia.atricon.org.br/radar-da-transparencia-publica.html" title="Clique aqui para ser redirecinado para ao Radar da Transparência" target="_blank">
+                            <img src="../imgs/logo-radar-transparencia.png" alt="Clique aqui para ser redirecinado para ao Radar da Transparência" style="width:100px; height:50px;">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <script type="text/javascript">
+            function baixarOrganograma() {
+                document.getElementById('formDownload:linkBaixarOrganograma').click();
+            }
+        </script>
+    </header>
+
+    <i class="fa fa-adjust acessibilidade altoConstrate iconAltoConstrate" onclick="toggleDarkMode()"></i><input type="submit" name="j_idt13" value="A+" alt="Aumentar Fonte" class="acessibilidade redimensionamentoPositivo" onclick="setFontSize('a+')"><input type="submit" name="j_idt14" value="A-" alt="Diminuir Fonte" class="acessibilidade redimensionamentoNegativo" onclick="setFontSize('a-')">
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-lg-3" id="menuLateral">
+    <input type="checkbox" id="bt_menu">
+    <label for="bt_menu">☰</label>
+    <div class="menu-servicos" id="menu-servicos" style="width: 240px">
+<form id="j_idt17" name="j_idt17" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="j_idt17" value="j_idt17">
+<div id="j_idt17:j_idt18" class="ui-tabmenu ui-widget ui-widget-content ui-corner-all"><ul class="ui-tabmenu-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist"><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="COVID-19" class="ui-menuitem-link ui-corner-all menu-lateral-covid" href="../pages/despesasReceitaCovid.faces" target="_blank"><span class="ui-menuitem-text">COVID-19</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/planejamento.faces"><span class="ui-menuitem-text">Planejamento Orçamentário</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/programacaoFinanceira.faces"><span class="ui-menuitem-text">Programação Financeira</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/orcamentoCriancaAdolescente.faces"><span class="ui-menuitem-text">Orçamento da Criança e do Adolescente</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/indicesFiscais.faces"><span class="ui-menuitem-text">Índices Fiscais</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaCidada.faces"><span class="ui-menuitem-text">Emenda Cidadã</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaParlamentarBI.faces"><span class="ui-menuitem-text">Emenda Parlamentar BI</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaParlamentarMunicipal.faces"><span class="ui-menuitem-text">Emenda Parlamentar Municipal</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="/transparencia/resources/csv/Emendas_Parlamentares_Estaduais.csv"><span class="ui-menuitem-text">Emenda Parlamentar Estadual</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://portaldatransparencia.gov.br/emendas/consulta?paginacaoSimples=true&amp;tamanhoPagina=&amp;offset=direcaoOrdenacao=asc&amp;palavraChave=MACEI%C3%93&amp;de=2020&amp;ate=2026&amp;colunasSelecionadas=codigoEmenda%2Cano%2CtipoEmenda%2Cautor%2CnumeroEmenda%2ClocalidadeDoGasto%2Cfuncao%2Csubfuncao%2CvalorEmpenhado%2CvalorLiquidado%2CvalorPago&amp;ordenarPor=autor&amp;direcao=asc" target="_blank"><span class="ui-menuitem-text">Emenda Parlamentar Federal</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://in.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Maceió IN</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/receita.faces"><span class="ui-menuitem-text">Receita</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/dividaAtivaBI.faces"><span class="ui-menuitem-text">Dívida Ativa</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/despesas.faces"><span class="ui-menuitem-text">Despesas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/servidores.faces"><span class="ui-menuitem-text">Servidores</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="Clique aqui para ser redirecionado ao site licitacao.maceio.al.gov.br" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="http://www.licitacao.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Licitações</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/contratos.faces"><span class="ui-menuitem-text">Contratos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/convenios.faces"><span class="ui-menuitem-text">Convênios</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/termoParceria.faces?i=9"><span class="ui-menuitem-text">Termos de Parceria</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/demonstrativos.faces"><span class="ui-menuitem-text">Demonstrativos Contábeis</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/relatoriosPareceres.faces"><span class="ui-menuitem-text">Prestação de Contas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/legislacao.faces"><span class="ui-menuitem-text">Consulta à Legislação</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/obras.faces"><span class="ui-menuitem-text">Obras</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/glossario.faces"><span class="ui-menuitem-text">Glossário</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/perguntas.faces"><span class="ui-menuitem-text">Perguntas Frequentes</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/conselhos.faces"><span class="ui-menuitem-text">Conselhos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/SIAFIC.faces"><span class="ui-menuitem-text">SIAFIC</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/doacoes.faces"><span class="ui-menuitem-text">Doações Recebidas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://transparencia.sms.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Transparência Saúde</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://app.powerbi.com/view?r=eyJrIjoiMWFlMWU1NzMtYmI2MC00MjBlLWFmZjctMjNiNjFiNDk5MjQ0IiwidCI6IjhmN2I0MjQ1LWUzYjQtNGFkYy1iMmRlLWY4ZDM3NmQxMThhZSJ9" target="_blank"><span class="ui-menuitem-text">Painel de Manifestações</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://pemci.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Plano Estratégico</span></a></li></ul></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:1" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form>
+    </div>
+            </div>
+
+            <div class="ui-g-12 ui-lg-9 ui-g-nopad table-servicos" id="center">
+                <div id="container" style="width: 100%">
+<form id="j_idt53" name="j_idt53" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded" style="margin-top: 10px;">
+<input type="hidden" name="j_idt53" value="j_idt53">
+<div id="j_idt53:j_idt54" class="ui-breadcrumb ui-module ui-widget ui-widget-header ui-helper-clearfix ui-corner-all" role="menu"><ul><li role="menuitem"><a tabindex="0" class="ui-menuitem-link ui-corner-all ui-icon ui-icon-home" href="homepage.faces"><span class="ui-menuitem-text">Home</span></a></li><li class="ui-breadcrumb-chevron ui-icon ui-icon-triangle-1-e"></li><li role="menuitem"><a tabindex="0" class="ui-menuitem-link ui-corner-all" href="#" onclick="PrimeFaces.ab({s:&quot;j_idt53:j_idt56&quot;,f:&quot;j_idt53&quot;});return false;"><span class="ui-menuitem-text">Despesas</span></a></li></ul></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:2" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form>
+
+
+<form id="form-anoAtual" name="form-anoAtual" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="form-anoAtual" value="form-anoAtual">
+
+            <div align="left"><label id="form-anoAtual:j_idt59" class="ui-outputlabel ui-widget">Ano:</label><select id="form-anoAtual:selectAno" name="form-anoAtual:selectAno" class="form-control" size="1" style="width: 25%" onchange="jsf.util.chain(this,event,'PrimeFaces.ab({s:this,e:&quot;change&quot;,f:&quot;form-anoAtual&quot;,p:&quot;form-anoAtual:selectAno&quot;});','PrimeFaces.ab({s:this,e:&quot;change&quot;,f:&quot;form-anoAtual&quot;,p:&quot;form-anoAtual:selectAno&quot;});','PrimeFaces.ab({s:this,e:&quot;change&quot;,f:&quot;form-anoAtual&quot;,p:&quot;form-anoAtual:selectAno&quot;,u:&quot;tabs:form-despesas tabs:form-credores tabs:form-despesas-orgao tabs:form-diarias tabs:form-programas tabs:form-resto&quot;});')">	<option value="2020">2020</option>
+	<option value="2021">2021</option>
+	<option value="2022">2022</option>
+	<option value="2023">2023</option>
+	<option value="2024">2024</option>
+	<option value="2025">2025</option>
+	<option value="2026" selected="selected">2026</option>
+</select>
+                <small style="font-weight: bold">Selecione o ano de incidência das consultas.</small>
+            </div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:3" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form>
+        <div style="margin-top: 5px"><div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all ui-hidden-container ui-tabs-top" data-widget="widget_tabs"><ul class="ui-tabs-nav ui-helper-reset ui-widget-header ui-corner-all" role="tablist"><li class="ui-tabs-header ui-state-default ui-tabs-selected ui-state-active ui-corner-top" role="tab" aria-expanded="true" aria-selected="true" data-index="0" tabindex="0"><a href="#tabs:j_idt63" tabindex="-1">Despesas</a></li><li class="ui-tabs-header ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" data-index="1" tabindex="0"><a href="#tabs:j_idt138" tabindex="-1">Credores</a></li><li class="ui-tabs-header ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" data-index="2" tabindex="0"><a href="#tabs:j_idt242" tabindex="-1">Diárias</a></li><li class="ui-tabs-header ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" data-index="3" tabindex="0"><a href="#tabs:j_idt303" tabindex="-1">Restos a Pagar</a></li><li class="ui-tabs-header ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" data-index="4" tabindex="0"><a href="#tabs:j_idt376" tabindex="-1">Despesas por Órgão</a></li></ul><div class="ui-tabs-panels"><div id="tabs:j_idt63" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="false" data-index="0">
+<form id="tabs:form-despesas" name="tabs:form-despesas" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="tabs:form-despesas" value="tabs:form-despesas">
+<span id="tabs:form-despesas:msg-despesas"></span><div id="tabs:form-despesas:j_idt64" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_despesas_j_idt64"><div id="tabs:form-despesas:j_idt64_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Filtrar consulta</span></div><div id="tabs:form-despesas:j_idt64_content" class="ui-panel-content ui-widget-content">
+                    <div align="left"><label id="tabs:form-despesas:j_idt67" class="ui-outputlabel ui-widget">Período</label>
+                    </div>
+                    <div style="width: 100%"><span id="tabs:form-despesas:j_idt69" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-despesas:j_idt69_input" name="tabs:form-despesas:j_idt69_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><label id="tabs:form-despesas:j_idt70" class="ui-outputlabel ui-widget" style="margin-right: 10px; margin-left: 10px">até</label><span id="tabs:form-despesas:j_idt71" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-despesas:j_idt71_input" name="tabs:form-despesas:j_idt71_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span>
+                    </div>
+                    <div align="left" style="margin-top: 10px"><label id="tabs:form-despesas:j_idt75" class="ui-outputlabel ui-widget">Órgão</label>
+                    </div>
+                    <div><select id="tabs:form-despesas:buscarListagemEmpenhoPagoPorDespesaGruposelectOrgaoDespesas" name="tabs:form-despesas:buscarListagemEmpenhoPagoPorDespesaGruposelectOrgaoDespesas" class="form-control" size="1">	<option value="" selected="selected">TODOS</option>
+	<option value="39000">AGENCIA DE LICITACOES, CONTRATOS E CONVENIOS DE MACEIO - ALICC</option>
+	<option value="31000">AGENCIA DE REGULACAO DE SERVICOS DE MACEIO</option>
+	<option value="40000">AGENCIA MUNICIPAL DE REGULAÇÃO DE SERVIÇOS DELEGADOS - ARSER (LEI DELEGADA)</option>
+	<option value="38000">AUTARQUIA DE DESENVOLVIMENTO SUSTENTAVEL E LIMPEZA URBANA - ALURB</option>
+	<option value="23000">AUTARQUIA MUNICIPAL DE ILUMINACAO PUBLICA - ILUMINA</option>
+	<option value="1000">CÂMARA MUNICIPAL DE MACEIÓ</option>
+	<option value="27000">COMPANHIA MUNICIPAL DE ADMINISTRAÇÃO, RECURSOS HUMANOS E PATRIMÔNIO</option>
+	<option value="7000">CONTROLADORIA-GERAL DO MUNICIPIO - CGM</option>
+	<option value="45001">COORDENADORIA MUNICIPAL DE PROTEÇÃO, DEFESA CIVIL E MUDANÇAS CLIMÁTICAS</option>
+	<option value="24000">DEPARTAMENTO MUNICIPAL DE TRANSPORTE E TRANSITO - DMTT</option>
+	<option value="44000">EMPRESA DE TECNOLOGIA E INLCUSÃO DIGITAL DE MACEIÓ - MACEIÓ DIGITAL S/A</option>
+	<option value="21000">ENCARGOS GERAIS DO MUNICÍPIO</option>
+	<option value="28000">FUNDAÇÃO MUNICIPAL DE AÇÃO CULTURAL</option>
+	<option value="2000">GABINETE CIVIL DE MACEIO</option>
+	<option value="3000">GABINETE DO VICE-PREFEITO</option>
+	<option value="9000">INSTITUTO DE PESQUISA, PLANEJAMENTO E LINCENCIAMENTO URBANO E AMBIENTAL DE MACEIO - IPLAM</option>
+	<option value="22000">INSTITUTO DE PREVIDENCIA DOS SERVIDORES PUBLICOS DE MACEIO - IPREV</option>
+	<option value="8000">PROCURADORIA GERAL DO MUNICÍPIO</option>
+	<option value="99000">RESERVA DE CONTINGÊNCIA</option>
+	<option value="43000">SECRETARIA EXTRAAORDINÁRIA DE INDÚSTRIA, COMÉRCIO E SERVIÇOS  (SEMINC)</option>
+	<option value="46001">SECRETARIA EXTRAORDINARIA DE INCLUSÃO SOCIAL E AÇÃO COMUNITÁRIA</option>
+	<option value="42000">SECRETARIA EXTRAORDINÁRIA DE JUVENTUDE E LAZER</option>
+	<option value="11000">SECRETARIA MUNICIPAL DA MULHER, PESSOAS COM DEFICIENCIA, IDOSOS E CIDADANIA - SEMUC</option>
+	<option value="10000">SECRETARIA MUNICIPAL DE ABASTECIMENTO, AGRICULTURA, PESCA E AQUICULTURA - SEMAPA</option>
+	<option value="15000">SECRETARIA MUNICIPAL DE AÇÕES ESTRATEGICAS E PARCERIAS (SAEP)</option>
+	<option value="5000">SECRETARIA MUNICIPAL DE COMUNICAÇÃO</option>
+	<option value="25000">SECRETARIA MUNICIPAL DE CULTURA E ECONOMIA CRIATIVA - SEMCE</option>
+	<option value="16000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO HABITACIONAL - SEMHAB</option>
+	<option value="14000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL, PRIMEIRA INFANCIA E SEGURANCA ALIMENTAR</option>
+	<option value="30000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SUSTENTÁVEL</option>
+	<option value="12000">SECRETARIA MUNICIPAL DE EDUCAÇÃO</option>
+	<option value="13000">SECRETARIA MUNICIPAL DE ESPORTE - SEMESP</option>
+	<option value="32000">SECRETARIA MUNICIPAL DE ESPORTE, LAZER E JUVENTUDE</option>
+	<option value="29000">SECRETARIA MUNICIPAL DE ESTRATEGIAS DISRUPTIVAS, CIENCIA, TECNOLOGIA E INOVACAO - SECIT</option>
+	<option value="33000">SECRETARIA MUNICIPAL DE FAZENDA - SEFAZ</option>
+	<option value="34000">SECRETARIA MUNICIPAL DE GESTAO DE PESSOAS E PATRIMONIO - SEMGE</option>
+	<option value="4000">SECRETARIA MUNICIPAL DE GOVERNO E SUBPREFEITURAS - SEGOV</option>
+	<option value="20000">SECRETARIA MUNICIPAL DE INFRA-ESTRUTURA</option>
+	<option value="35000">SECRETARIA MUNICIPAL DE MEIO AMBIENTE E URBANISMO - SEMURB</option>
+	<option value="6000">SECRETARIA MUNICIPAL DE RELAÇÕES FEDERATIVAS - SERF</option>
+	<option value="18000">SECRETARIA MUNICIPAL DE SAÚDE</option>
+	<option value="36000">SECRETARIA MUNICIPAL DE SEGURANCA CIDADA - SEMSC</option>
+	<option value="17000">SECRETARIA MUNICIPAL DE TURISMO</option>
+	<option value="37000">SECRETARIA MUNICIPAL DE TURISMO - SEMTUR</option>
+	<option value="19000">SECRETARIA MUNICIPAL DO TRABALHO,  EMPREGO E ECONOMIA SOLIDÁRIA - SEMTES</option>
+	<option value="41000">SECRETARIA MUNICIPAL EXTRAORDINÁRIA DE BEM-ESTAR ANIMAL</option>
+	<option value="26000">SUPERINTENDÊNCIA  DE LIMPEZA URBANA DE MACEIÓ</option>
+</select>
+                    </div>
+                    <div align="left" style="margin-top: 10px"><label id="tabs:form-despesas:j_idt82" class="ui-outputlabel ui-widget">Elemento da Despesa</label>
+                    </div>
+                    <div><select id="tabs:form-despesas:selectNaturezaDespesas" name="tabs:form-despesas:selectNaturezaDespesas" class="form-control" size="1">	<option value="" selected="selected">TODOS</option>
+</select>
+                    </div>
+                    <div style="margin-top: 10px; margin-left: 10px"><button id="tabs:form-despesas:j_idt89" name="tabs:form-despesas:j_idt89" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="PrimeFaces.ab({s:&quot;tabs:form-despesas:j_idt89&quot;,f:&quot;tabs:form-despesas&quot;,u:&quot;tabs:form-despesas:msg-despesas tabs:form-despesas:tabela-despesas&quot;});return false;" style="margin-right: 5px" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Consultar</span></button><button id="tabs:form-despesas:j_idt90" name="tabs:form-despesas:j_idt90" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only warning-btn" onclick="PrimeFaces.bcn(this,event,[function(event){PrimeFaces.ab({s:&quot;tabs:form-despesas:j_idt90&quot;,e:&quot;click&quot;,f:&quot;tabs:form-despesas&quot;,p:&quot;tabs:form-despesas:j_idt90&quot;});},function(event){PrimeFaces.ab({s:&quot;tabs:form-despesas:j_idt90&quot;,e:&quot;click&quot;,f:&quot;tabs:form-despesas&quot;,p:&quot;tabs:form-despesas:j_idt90&quot;,u:&quot;tabs:form-despesas:msg-despesas tabs:form-despesas:tabela-despesas tabs:form-despesas&quot;});},function(event){PrimeFaces.ab({s:&quot;tabs:form-despesas:j_idt90&quot;,f:&quot;tabs:form-despesas&quot;});return false;}]);" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Limpar</span></button>
+                    </div></div></div><div id="tabs:form-despesas:j_idt92" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_despesas_j_idt92"><div id="tabs:form-despesas:j_idt92_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Transferir resultado</span></div><div id="tabs:form-despesas:j_idt92_content" class="ui-panel-content ui-widget-content"><span style="padding: 5px" title="Exportar dados para PDF"><img id="tabs:form-despesas:j_idt94" src="../imgs/csv/pdf-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-pdf" width="45px"></span><span style="padding: 5px" title="Exportar dados para Excel" class="ml-2"><img id="tabs:form-despesas:j_idt96" src="../imgs/csv/xls-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-excel" width="45px"></span><span style="padding: 5px" title="Exportar dados para CSV" class="ml-2"><img id="tabs:form-despesas:j_idt98" src="../imgs/csv/csv-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-csv" width="45px"></span></div></div>
+
+            <div class="divAviso">
+                <p> Para visualizar mais detalhes das despesas —
+                    <b>refente ao empenho, pagamento entre outros</b>
+                    — clique nos textos destacados em azul após os resultados da consulta.
+                </p>
+            </div><div id="tabs:form-despesas:j_idt100" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_despesas_j_idt100"><div id="tabs:form-despesas:j_idt100_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Resultado da consulta</span></div><div id="tabs:form-despesas:j_idt100_content" class="ui-panel-content ui-widget-content"><div id="tabs:form-despesas:tabela-despesas" class="ui-datatable ui-widget"><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="tabs:form-despesas:tabela-despesas_head"><tr role="row"><th id="tabs:form-despesas:tabela-despesas:j_idt101" class="ui-state-default font-color-blue font-weight-bold" role="columnheader" scope="col"><span class="ui-column-title"></span></th><th id="tabs:form-despesas:tabela-despesas:j_idt103" class="ui-state-default" role="columnheader" aria-label="Elemento da Despesa" scope="col"><span class="ui-column-title">Elemento da Despesa</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt105" class="ui-state-default" role="columnheader" aria-label="Conta Despesa" scope="col"><span class="ui-column-title">Conta Despesa</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt107" class="ui-state-default" role="columnheader" aria-label="Orçado (R$)" scope="col"><span class="ui-column-title">Orçado (R$)</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt109" class="ui-state-default" role="columnheader" aria-label="Orçado Atualizado (R$)" scope="col"><span class="ui-column-title">Orçado Atualizado (R$)</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt111" class="ui-state-default" role="columnheader" aria-label="Empenhado (R$)" scope="col"><span class="ui-column-title">Empenhado (R$)</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt114" class="ui-state-default" role="columnheader" aria-label="Liquidado (R$)" scope="col"><span class="ui-column-title">Liquidado (R$)</span></th><th id="tabs:form-despesas:tabela-despesas:j_idt117" class="ui-state-default" role="columnheader" aria-label="Pago (R$)" scope="col"><span class="ui-column-title">Pago (R$)</span></th></tr></thead><tbody id="tabs:form-despesas:tabela-despesas_data" class="ui-datatable-data ui-widget-content"><tr class="ui-widget-content ui-datatable-empty-message"><td colspan="8">Nenhum resultado encontrado!</td></tr></tbody></table></div><div id="tabs:form-despesas:tabela-despesas_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination"><span class="ui-paginator-current">0-0 de 0 registros</span><a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page" tabindex="-1"><span class="ui-icon ui-icon-seek-first">F</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page" tabindex="-1"><span class="ui-icon ui-icon-seek-prev">P</span></a><span class="ui-paginator-pages"></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all ui-state-disabled" aria-label="Next Page" tabindex="-1"><span class="ui-icon ui-icon-seek-next">N</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all ui-state-disabled" aria-label="Last Page" tabindex="-1"><span class="ui-icon ui-icon-seek-end">E</span></a></div></div></div></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:4" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form></div><div id="tabs:j_idt138" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-helper-hidden" role="tabpanel" aria-hidden="true" data-index="1">
+<form id="tabs:form-credores" name="tabs:form-credores" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="tabs:form-credores" value="tabs:form-credores">
+<span id="tabs:form-credores:msg-credores"></span><div id="tabs:form-credores:j_idt139" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_credores_j_idt139"><div id="tabs:form-credores:j_idt139_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Filtrar consulta</span></div><div id="tabs:form-credores:j_idt139_content" class="ui-panel-content ui-widget-content">
+                    <div align="left"><label id="tabs:form-credores:j_idt142" class="ui-outputlabel ui-widget">Nome do Credor</label>
+                    </div>
+                    <div align="left"><input id="tabs:form-credores:j_idt144" name="tabs:form-credores:j_idt144" type="text" style="width: 100%" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" role="textbox" aria-disabled="false" aria-readonly="false">
+                    </div>
+                    <div align="left"><label id="tabs:form-credores:j_idt148" class="ui-outputlabel ui-widget" style="margin-top: 10px">Período</label>
+                    </div>
+                    <div style="width: 100%"><span id="tabs:form-credores:j_idt150" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-credores:j_idt150_input" name="tabs:form-credores:j_idt150_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><label id="tabs:form-credores:j_idt151" class="ui-outputlabel ui-widget" style="margin-right: 10px; margin-left: 10px">até</label><span id="tabs:form-credores:j_idt152" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-credores:j_idt152_input" name="tabs:form-credores:j_idt152_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span>
+                    </div><table id="tabs:form-credores:j_idt155" class="ui-panelgrid ui-widget semBorda" style="position: relative; right: 12px;" role="grid"><tbody><tr class="ui-widget-content" role="row"><td role="gridcell" class="ui-panelgrid-cell"><div id="tabs:form-credores:j_idt156" class="ui-outputpanel ui-widget">
+                            <div align="left"><label id="tabs:form-credores:j_idt158" class="ui-outputlabel ui-widget">Escolha o que quer informar</label>
+                            </div>
+                            <div align="left"><div id="tabs:form-credores:selectCredor" class="ui-selectonemenu ui-widget ui-state-default ui-corner-all" style="width: 100%" role="combobox" aria-haspopup="true" aria-expanded="false" aria-owns="tabs:form-credores:selectCredor_items"><div class="ui-helper-hidden-accessible"><input id="tabs:form-credores:selectCredor_focus" name="tabs:form-credores:selectCredor_focus" type="text" autocomplete="off" aria-expanded="false" aria-autocomplete="list" aria-activedescendant="tabs:form-credores:selectCredor_0" aria-describedby="tabs:form-credores:selectCredor_0" aria-disabled="false"></div><div class="ui-helper-hidden-accessible"><select id="tabs:form-credores:selectCredor_input" name="tabs:form-credores:selectCredor_input" tabindex="-1" aria-hidden="true" onchange="PrimeFaces.ab({s:&quot;tabs:form-credores:selectCredor&quot;,e:&quot;valueChange&quot;,f:&quot;tabs:form-credores&quot;,p:&quot;tabs:form-credores:selectCredor&quot;,u:&quot;tabs:form-credores:id-cpf-cnpj&quot;});"><option value="true" selected="selected" data-escape="true">CPF</option><option value="false" data-escape="true">CNPJ</option></select></div><label id="tabs:form-credores:selectCredor_label" class="ui-selectonemenu-label ui-inputfield ui-corner-all">CPF</label><div class="ui-selectonemenu-trigger ui-state-default ui-corner-right"><span class="ui-icon ui-icon-triangle-1-s ui-c"></span></div></div>
+                            </div></div></td><td role="gridcell" class="ui-panelgrid-cell"><div id="tabs:form-credores:id-cpf-cnpj" class="ui-outputpanel ui-widget">
+                            <div align="left"><label id="tabs:form-credores:j_idt164" class="ui-outputlabel ui-widget">CPF</label>
+                            </div>
+                            <div align="left"><input id="tabs:form-credores:j_idt166" name="tabs:form-credores:j_idt166" type="text" onchange="PrimeFaces.ab({s:&quot;tabs:form-credores:j_idt166&quot;,e:&quot;valueChange&quot;,f:&quot;tabs:form-credores&quot;,p:&quot;tabs:form-credores:j_idt166&quot;,u:&quot;tabs:form-credores:msg-credores&quot;});" class="ui-inputfield ui-inputmask ui-widget ui-state-default ui-corner-all" role="textbox" aria-disabled="false" aria-readonly="false">
+                            </div>
+                            <div align="left">
+                            </div>
+                            <div align="left">
+                            </div></div></td></tr></tbody></table>
+                    <div style="margin-top: 10px; margin-left: 10px"><button id="tabs:form-credores:j_idt174" name="tabs:form-credores:j_idt174" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="PrimeFaces.ab({s:&quot;tabs:form-credores:j_idt174&quot;,f:&quot;tabs:form-credores&quot;,u:&quot;tabs:form-credores:msg-credores tabs:form-credores:tabela-credores&quot;});return false;" style="margin-right: 5px" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Consultar</span></button><button id="tabs:form-credores:j_idt175" name="tabs:form-credores:j_idt175" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only warning-btn" onclick="PrimeFaces.ab({s:&quot;tabs:form-credores:j_idt175&quot;,f:&quot;tabs:form-credores&quot;,u:&quot;tabs:form-credores:msg-credores tabs:form-credores:tabela-credores tabs:form-credores&quot;});return false;" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Limpar</span></button>
+                    </div></div></div><div id="tabs:form-credores:j_idt177" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_credores_j_idt177"><div id="tabs:form-credores:j_idt177_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Transferir resultado</span></div><div id="tabs:form-credores:j_idt177_content" class="ui-panel-content ui-widget-content"><span style="padding: 5px" title="Exportar dados para PDF"><img id="tabs:form-credores:j_idt179" src="../imgs/csv/pdf-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-pdf" width="45px"></span><span style="padding: 5px" title="Exportar dados para Excel" class="ml-2"><img id="tabs:form-credores:j_idt181" src="../imgs/csv/xls-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-excel" width="45px"></span><span style="padding: 5px" title="Exportar dados para CSV" class="ml-2"><img id="tabs:form-credores:j_idt183" src="../imgs/csv/csv-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-csv" width="45px"></span></div></div>
+
+            <div class="divAviso">
+                <p> Para visualizar mais detalhes dos credores —
+                    <b>refente ao empenho, pagamento entre outros</b>
+                    — clique nos textos destacados em azul após os resultados da consulta.
+                </p>
+            </div><div id="tabs:form-credores:j_idt185" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_credores_j_idt185"><div id="tabs:form-credores:j_idt185_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Resultado da consulta</span></div><div id="tabs:form-credores:j_idt185_content" class="ui-panel-content ui-widget-content"><div id="tabs:form-credores:tabela-credores" class="ui-datatable ui-widget"><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="tabs:form-credores:tabela-credores_head"><tr role="row"><th id="tabs:form-credores:tabela-credores:j_idt186" class="ui-state-default" role="columnheader" aria-label="Nome/Raz. Social" scope="col" style="width:50%"><span class="ui-column-title">Nome/Raz. Social</span></th><th id="tabs:form-credores:tabela-credores:j_idt188" class="ui-state-default" role="columnheader" aria-label="CPF/CNPJ" scope="col"><span class="ui-column-title">CPF/CNPJ</span></th><th id="tabs:form-credores:tabela-credores:j_idt190" class="ui-state-default" role="columnheader" aria-label="Empenhado (R$)" scope="col"><span class="ui-column-title">Empenhado (R$)</span></th><th id="tabs:form-credores:tabela-credores:j_idt193" class="ui-state-default" role="columnheader" aria-label="Liquidado (R$)" scope="col"><span class="ui-column-title">Liquidado (R$)</span></th><th id="tabs:form-credores:tabela-credores:j_idt196" class="ui-state-default" role="columnheader" aria-label="Pago (R$)" scope="col"><span class="ui-column-title">Pago (R$)</span></th></tr></thead><tbody id="tabs:form-credores:tabela-credores_data" class="ui-datatable-data ui-widget-content"><tr class="ui-widget-content ui-datatable-empty-message"><td colspan="5">Nenhum resultado encontrado!</td></tr></tbody></table></div><div id="tabs:form-credores:tabela-credores_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination"><span class="ui-paginator-current">0-0 de 0 registros</span><a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page" tabindex="-1"><span class="ui-icon ui-icon-seek-first">F</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page" tabindex="-1"><span class="ui-icon ui-icon-seek-prev">P</span></a><span class="ui-paginator-pages"></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all ui-state-disabled" aria-label="Next Page" tabindex="-1"><span class="ui-icon ui-icon-seek-next">N</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all ui-state-disabled" aria-label="Last Page" tabindex="-1"><span class="ui-icon ui-icon-seek-end">E</span></a></div></div></div></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:5" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form></div><div id="tabs:j_idt242" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-helper-hidden" role="tabpanel" aria-hidden="true" data-index="2">
+<form id="tabs:form-diarias" name="tabs:form-diarias" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="tabs:form-diarias" value="tabs:form-diarias">
+<span id="tabs:form-diarias:msg-diarias"></span><div id="tabs:form-diarias:j_idt243" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_diarias_j_idt243"><div id="tabs:form-diarias:j_idt243_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Filtrar consulta</span></div><div id="tabs:form-diarias:j_idt243_content" class="ui-panel-content ui-widget-content">
+                    <div align="left"><label id="tabs:form-diarias:j_idt252" class="ui-outputlabel ui-widget">Período</label>
+                    </div>
+                    <div><span id="tabs:form-diarias:j_idt254" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-diarias:j_idt254_input" name="tabs:form-diarias:j_idt254_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><label id="tabs:form-diarias:j_idt255" class="ui-outputlabel ui-widget" style="margin-right: 10px; margin-left: 10px">até</label><span id="tabs:form-diarias:j_idt256" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-diarias:j_idt256_input" name="tabs:form-diarias:j_idt256_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><button id="tabs:form-diarias:j_idt257" name="tabs:form-diarias:j_idt257" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only autodeclaracao" onclick="PrimeFaces.bcn(this,event,[function(event){this.form.target = '_blank';},function(event){}]);" style="margin-left:150px" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Tabela Referência Diárias</span></button>
+                    </div>
+                    <div align="left" style="margin-top: 10px"><label id="tabs:form-diarias:j_idt261" class="ui-outputlabel ui-widget">Órgão</label>
+                    </div>
+                    <div><select id="tabs:form-diarias:selectOrgaoDespesasDiárias" name="tabs:form-diarias:selectOrgaoDespesasDiárias" class="form-control" size="1">	<option value="" selected="selected">TODOS</option>
+	<option value="39000">AGENCIA DE LICITACOES, CONTRATOS E CONVENIOS DE MACEIO - ALICC</option>
+	<option value="31000">AGENCIA DE REGULACAO DE SERVICOS DE MACEIO</option>
+	<option value="40000">AGENCIA MUNICIPAL DE REGULAÇÃO DE SERVIÇOS DELEGADOS - ARSER (LEI DELEGADA)</option>
+	<option value="38000">AUTARQUIA DE DESENVOLVIMENTO SUSTENTAVEL E LIMPEZA URBANA - ALURB</option>
+	<option value="23000">AUTARQUIA MUNICIPAL DE ILUMINACAO PUBLICA - ILUMINA</option>
+	<option value="1000">CÂMARA MUNICIPAL DE MACEIÓ</option>
+	<option value="27000">COMPANHIA MUNICIPAL DE ADMINISTRAÇÃO, RECURSOS HUMANOS E PATRIMÔNIO</option>
+	<option value="7000">CONTROLADORIA-GERAL DO MUNICIPIO - CGM</option>
+	<option value="45001">COORDENADORIA MUNICIPAL DE PROTEÇÃO, DEFESA CIVIL E MUDANÇAS CLIMÁTICAS</option>
+	<option value="24000">DEPARTAMENTO MUNICIPAL DE TRANSPORTE E TRANSITO - DMTT</option>
+	<option value="44000">EMPRESA DE TECNOLOGIA E INLCUSÃO DIGITAL DE MACEIÓ - MACEIÓ DIGITAL S/A</option>
+	<option value="21000">ENCARGOS GERAIS DO MUNICÍPIO</option>
+	<option value="28000">FUNDAÇÃO MUNICIPAL DE AÇÃO CULTURAL</option>
+	<option value="2000">GABINETE CIVIL DE MACEIO</option>
+	<option value="3000">GABINETE DO VICE-PREFEITO</option>
+	<option value="9000">INSTITUTO DE PESQUISA, PLANEJAMENTO E LINCENCIAMENTO URBANO E AMBIENTAL DE MACEIO - IPLAM</option>
+	<option value="22000">INSTITUTO DE PREVIDENCIA DOS SERVIDORES PUBLICOS DE MACEIO - IPREV</option>
+	<option value="8000">PROCURADORIA GERAL DO MUNICÍPIO</option>
+	<option value="99000">RESERVA DE CONTINGÊNCIA</option>
+	<option value="43000">SECRETARIA EXTRAAORDINÁRIA DE INDÚSTRIA, COMÉRCIO E SERVIÇOS  (SEMINC)</option>
+	<option value="46001">SECRETARIA EXTRAORDINARIA DE INCLUSÃO SOCIAL E AÇÃO COMUNITÁRIA</option>
+	<option value="42000">SECRETARIA EXTRAORDINÁRIA DE JUVENTUDE E LAZER</option>
+	<option value="11000">SECRETARIA MUNICIPAL DA MULHER, PESSOAS COM DEFICIENCIA, IDOSOS E CIDADANIA - SEMUC</option>
+	<option value="10000">SECRETARIA MUNICIPAL DE ABASTECIMENTO, AGRICULTURA, PESCA E AQUICULTURA - SEMAPA</option>
+	<option value="15000">SECRETARIA MUNICIPAL DE AÇÕES ESTRATEGICAS E PARCERIAS (SAEP)</option>
+	<option value="5000">SECRETARIA MUNICIPAL DE COMUNICAÇÃO</option>
+	<option value="25000">SECRETARIA MUNICIPAL DE CULTURA E ECONOMIA CRIATIVA - SEMCE</option>
+	<option value="16000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO HABITACIONAL - SEMHAB</option>
+	<option value="14000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL, PRIMEIRA INFANCIA E SEGURANCA ALIMENTAR</option>
+	<option value="30000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SUSTENTÁVEL</option>
+	<option value="12000">SECRETARIA MUNICIPAL DE EDUCAÇÃO</option>
+	<option value="13000">SECRETARIA MUNICIPAL DE ESPORTE - SEMESP</option>
+	<option value="32000">SECRETARIA MUNICIPAL DE ESPORTE, LAZER E JUVENTUDE</option>
+	<option value="29000">SECRETARIA MUNICIPAL DE ESTRATEGIAS DISRUPTIVAS, CIENCIA, TECNOLOGIA E INOVACAO - SECIT</option>
+	<option value="33000">SECRETARIA MUNICIPAL DE FAZENDA - SEFAZ</option>
+	<option value="34000">SECRETARIA MUNICIPAL DE GESTAO DE PESSOAS E PATRIMONIO - SEMGE</option>
+	<option value="4000">SECRETARIA MUNICIPAL DE GOVERNO E SUBPREFEITURAS - SEGOV</option>
+	<option value="20000">SECRETARIA MUNICIPAL DE INFRA-ESTRUTURA</option>
+	<option value="35000">SECRETARIA MUNICIPAL DE MEIO AMBIENTE E URBANISMO - SEMURB</option>
+	<option value="6000">SECRETARIA MUNICIPAL DE RELAÇÕES FEDERATIVAS - SERF</option>
+	<option value="18000">SECRETARIA MUNICIPAL DE SAÚDE</option>
+	<option value="36000">SECRETARIA MUNICIPAL DE SEGURANCA CIDADA - SEMSC</option>
+	<option value="17000">SECRETARIA MUNICIPAL DE TURISMO</option>
+	<option value="37000">SECRETARIA MUNICIPAL DE TURISMO - SEMTUR</option>
+	<option value="19000">SECRETARIA MUNICIPAL DO TRABALHO,  EMPREGO E ECONOMIA SOLIDÁRIA - SEMTES</option>
+	<option value="41000">SECRETARIA MUNICIPAL EXTRAORDINÁRIA DE BEM-ESTAR ANIMAL</option>
+	<option value="26000">SUPERINTENDÊNCIA  DE LIMPEZA URBANA DE MACEIÓ</option>
+</select>
+                    </div>
+                    <div align="left"><label id="tabs:form-diarias:j_idt268" class="ui-outputlabel ui-widget">Nome do Credor</label>
+                    </div>
+                    <div align="left"><input id="tabs:form-diarias:j_idt270" name="tabs:form-diarias:j_idt270" type="text" style="width: 100%" class="ui-inputfield ui-inputtext ui-widget ui-state-default ui-corner-all" role="textbox" aria-disabled="false" aria-readonly="false">
+                    </div>
+                    <div style="margin-top: 10px; margin-left: 10px"><button id="tabs:form-diarias:j_idt274" name="tabs:form-diarias:j_idt274" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="PrimeFaces.ab({s:&quot;tabs:form-diarias:j_idt274&quot;,f:&quot;tabs:form-diarias&quot;,u:&quot;tabs:form-diarias:msg-diarias tabs:form-diarias:tabela-diarias&quot;});return false;" style="margin-right: 5px" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Consultar</span></button><button id="tabs:form-diarias:j_idt275" name="tabs:form-diarias:j_idt275" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only warning-btn" onclick="PrimeFaces.ab({s:&quot;tabs:form-diarias:j_idt275&quot;,f:&quot;tabs:form-diarias&quot;,u:&quot;tabs:form-diarias tabs:form-diarias:msg-diarias tabs:form-diarias:tabela-diarias&quot;});return false;" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Limpar</span></button>
+                    </div></div></div><div id="tabs:form-diarias:j_idt277" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_diarias_j_idt277"><div id="tabs:form-diarias:j_idt277_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Transferir resultado</span></div><div id="tabs:form-diarias:j_idt277_content" class="ui-panel-content ui-widget-content"><span style="padding: 5px" title="Exportar dados para PDF"><img id="tabs:form-diarias:j_idt279" src="../imgs/csv/pdf-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-pdf" width="45px"></span><span style="padding: 5px" title="Exportar dados para Excel" class="ml-2"><img id="tabs:form-diarias:j_idt281" src="../imgs/csv/xls-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-excel" width="45px"></span><span style="padding: 5px" title="Exportar dados para CSV" class="ml-2"><img id="tabs:form-diarias:j_idt283" src="../imgs/csv/csv-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-csv" width="45px"></span></div></div>
+
+            <div class="divAviso">
+                <p> Para visualizar mais detalhes das diárias —
+                    <b>como motivo e período de afastamento, diárias usufruídas, local de destino, entre outros</b>
+                    — clique nos textos destacados em azul após os resultados da consulta.
+                </p>
+            </div><div id="tabs:form-diarias:j_idt285" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_diarias_j_idt285"><div id="tabs:form-diarias:j_idt285_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Resultado da consulta</span></div><div id="tabs:form-diarias:j_idt285_content" class="ui-panel-content ui-widget-content"><div id="tabs:form-diarias:tabela-diarias" class="ui-datatable ui-widget"><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="tabs:form-diarias:tabela-diarias_head"><tr role="row"><th id="tabs:form-diarias:tabela-diarias:j_idt286" class="ui-state-default" role="columnheader" aria-label="Órgão" scope="col"><span class="ui-column-title">Órgão</span></th><th id="tabs:form-diarias:tabela-diarias:j_idt288" class="ui-state-default" role="columnheader" aria-label="Conta Despesa" scope="col"><span class="ui-column-title">Conta Despesa</span></th><th id="tabs:form-diarias:tabela-diarias:j_idt290" class="ui-state-default" role="columnheader" aria-label="Orçado (R$)" scope="col"><span class="ui-column-title">Orçado (R$)</span></th><th id="tabs:form-diarias:tabela-diarias:j_idt292" class="ui-state-default" role="columnheader" aria-label="Orçado Atualizado (R$)" scope="col"><span class="ui-column-title">Orçado Atualizado (R$)</span></th><th id="tabs:form-diarias:tabela-diarias:j_idt294" class="ui-state-default" role="columnheader" aria-label="Empenho (R$)" scope="col"><span class="ui-column-title">Empenho (R$)</span></th><th id="tabs:form-diarias:tabela-diarias:j_idt297" class="ui-state-default" role="columnheader" aria-label="Liquidado (R$)" scope="col"><span class="ui-column-title">Liquidado (R$)</span></th><th id="tabs:form-diarias:tabela-diarias:j_idt300" class="ui-state-default" role="columnheader" aria-label="Pago (R$)" scope="col"><span class="ui-column-title">Pago (R$)</span></th></tr></thead><tbody id="tabs:form-diarias:tabela-diarias_data" class="ui-datatable-data ui-widget-content"><tr class="ui-widget-content ui-datatable-empty-message"><td colspan="7">Nenhum resultado encontrado!</td></tr></tbody></table></div><div id="tabs:form-diarias:tabela-diarias_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination"><span class="ui-paginator-current">0-0 de 0 registros</span><a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page" tabindex="-1"><span class="ui-icon ui-icon-seek-first">F</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page" tabindex="-1"><span class="ui-icon ui-icon-seek-prev">P</span></a><span class="ui-paginator-pages"></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all ui-state-disabled" aria-label="Next Page" tabindex="-1"><span class="ui-icon ui-icon-seek-next">N</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all ui-state-disabled" aria-label="Last Page" tabindex="-1"><span class="ui-icon ui-icon-seek-end">E</span></a></div></div></div></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:6" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form></div><div id="tabs:j_idt303" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-helper-hidden" role="tabpanel" aria-hidden="true" data-index="3">
+<form id="tabs:form-resto" name="tabs:form-resto" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="tabs:form-resto" value="tabs:form-resto">
+<span id="tabs:form-resto:msg-resto"></span><div id="tabs:form-resto:j_idt304" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_resto_j_idt304"><div id="tabs:form-resto:j_idt304_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Filtrar consulta</span></div><div id="tabs:form-resto:j_idt304_content" class="ui-panel-content ui-widget-content">
+                    <div align="left"><label id="tabs:form-resto:j_idt307" class="ui-outputlabel ui-widget">Período</label>
+                    </div>
+                    <div style="width: 100%"><span id="tabs:form-resto:j_idt309" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-resto:j_idt309_input" name="tabs:form-resto:j_idt309_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><label id="tabs:form-resto:j_idt310" class="ui-outputlabel ui-widget" style="margin-right: 10px; margin-left: 10px">até</label><span id="tabs:form-resto:j_idt311" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-resto:j_idt311_input" name="tabs:form-resto:j_idt311_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span>
+                    </div>
+                    <div align="left"><label id="tabs:form-resto:j_idt315" class="ui-outputlabel ui-widget" style="margin-top: 10px">Órgão</label>
+                    </div>
+                    <div><select id="tabs:form-resto:selectOrgaoDespesasRestos" name="tabs:form-resto:selectOrgaoDespesasRestos" class="form-control" size="1">	<option value="" selected="selected">TODOS</option>
+	<option value="39000">AGENCIA DE LICITACOES, CONTRATOS E CONVENIOS DE MACEIO - ALICC</option>
+	<option value="31000">AGENCIA DE REGULACAO DE SERVICOS DE MACEIO</option>
+	<option value="40000">AGENCIA MUNICIPAL DE REGULAÇÃO DE SERVIÇOS DELEGADOS - ARSER (LEI DELEGADA)</option>
+	<option value="38000">AUTARQUIA DE DESENVOLVIMENTO SUSTENTAVEL E LIMPEZA URBANA - ALURB</option>
+	<option value="23000">AUTARQUIA MUNICIPAL DE ILUMINACAO PUBLICA - ILUMINA</option>
+	<option value="1000">CÂMARA MUNICIPAL DE MACEIÓ</option>
+	<option value="27000">COMPANHIA MUNICIPAL DE ADMINISTRAÇÃO, RECURSOS HUMANOS E PATRIMÔNIO</option>
+	<option value="7000">CONTROLADORIA-GERAL DO MUNICIPIO - CGM</option>
+	<option value="45001">COORDENADORIA MUNICIPAL DE PROTEÇÃO, DEFESA CIVIL E MUDANÇAS CLIMÁTICAS</option>
+	<option value="24000">DEPARTAMENTO MUNICIPAL DE TRANSPORTE E TRANSITO - DMTT</option>
+	<option value="44000">EMPRESA DE TECNOLOGIA E INLCUSÃO DIGITAL DE MACEIÓ - MACEIÓ DIGITAL S/A</option>
+	<option value="21000">ENCARGOS GERAIS DO MUNICÍPIO</option>
+	<option value="28000">FUNDAÇÃO MUNICIPAL DE AÇÃO CULTURAL</option>
+	<option value="2000">GABINETE CIVIL DE MACEIO</option>
+	<option value="3000">GABINETE DO VICE-PREFEITO</option>
+	<option value="9000">INSTITUTO DE PESQUISA, PLANEJAMENTO E LINCENCIAMENTO URBANO E AMBIENTAL DE MACEIO - IPLAM</option>
+	<option value="22000">INSTITUTO DE PREVIDENCIA DOS SERVIDORES PUBLICOS DE MACEIO - IPREV</option>
+	<option value="8000">PROCURADORIA GERAL DO MUNICÍPIO</option>
+	<option value="99000">RESERVA DE CONTINGÊNCIA</option>
+	<option value="43000">SECRETARIA EXTRAAORDINÁRIA DE INDÚSTRIA, COMÉRCIO E SERVIÇOS  (SEMINC)</option>
+	<option value="46001">SECRETARIA EXTRAORDINARIA DE INCLUSÃO SOCIAL E AÇÃO COMUNITÁRIA</option>
+	<option value="42000">SECRETARIA EXTRAORDINÁRIA DE JUVENTUDE E LAZER</option>
+	<option value="11000">SECRETARIA MUNICIPAL DA MULHER, PESSOAS COM DEFICIENCIA, IDOSOS E CIDADANIA - SEMUC</option>
+	<option value="10000">SECRETARIA MUNICIPAL DE ABASTECIMENTO, AGRICULTURA, PESCA E AQUICULTURA - SEMAPA</option>
+	<option value="15000">SECRETARIA MUNICIPAL DE AÇÕES ESTRATEGICAS E PARCERIAS (SAEP)</option>
+	<option value="5000">SECRETARIA MUNICIPAL DE COMUNICAÇÃO</option>
+	<option value="25000">SECRETARIA MUNICIPAL DE CULTURA E ECONOMIA CRIATIVA - SEMCE</option>
+	<option value="16000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO HABITACIONAL - SEMHAB</option>
+	<option value="14000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL, PRIMEIRA INFANCIA E SEGURANCA ALIMENTAR</option>
+	<option value="30000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SUSTENTÁVEL</option>
+	<option value="12000">SECRETARIA MUNICIPAL DE EDUCAÇÃO</option>
+	<option value="13000">SECRETARIA MUNICIPAL DE ESPORTE - SEMESP</option>
+	<option value="32000">SECRETARIA MUNICIPAL DE ESPORTE, LAZER E JUVENTUDE</option>
+	<option value="29000">SECRETARIA MUNICIPAL DE ESTRATEGIAS DISRUPTIVAS, CIENCIA, TECNOLOGIA E INOVACAO - SECIT</option>
+	<option value="33000">SECRETARIA MUNICIPAL DE FAZENDA - SEFAZ</option>
+	<option value="34000">SECRETARIA MUNICIPAL DE GESTAO DE PESSOAS E PATRIMONIO - SEMGE</option>
+	<option value="4000">SECRETARIA MUNICIPAL DE GOVERNO E SUBPREFEITURAS - SEGOV</option>
+	<option value="20000">SECRETARIA MUNICIPAL DE INFRA-ESTRUTURA</option>
+	<option value="35000">SECRETARIA MUNICIPAL DE MEIO AMBIENTE E URBANISMO - SEMURB</option>
+	<option value="6000">SECRETARIA MUNICIPAL DE RELAÇÕES FEDERATIVAS - SERF</option>
+	<option value="18000">SECRETARIA MUNICIPAL DE SAÚDE</option>
+	<option value="36000">SECRETARIA MUNICIPAL DE SEGURANCA CIDADA - SEMSC</option>
+	<option value="17000">SECRETARIA MUNICIPAL DE TURISMO</option>
+	<option value="37000">SECRETARIA MUNICIPAL DE TURISMO - SEMTUR</option>
+	<option value="19000">SECRETARIA MUNICIPAL DO TRABALHO,  EMPREGO E ECONOMIA SOLIDÁRIA - SEMTES</option>
+	<option value="41000">SECRETARIA MUNICIPAL EXTRAORDINÁRIA DE BEM-ESTAR ANIMAL</option>
+	<option value="26000">SUPERINTENDÊNCIA  DE LIMPEZA URBANA DE MACEIÓ</option>
+</select>
+                    </div>
+                    <div style="margin-top: 10px; margin-left: 10px"><button id="tabs:form-resto:j_idt322" name="tabs:form-resto:j_idt322" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="PrimeFaces.ab({s:&quot;tabs:form-resto:j_idt322&quot;,f:&quot;tabs:form-resto&quot;,u:&quot;tabs:form-resto:msg-resto tabs:form-resto:tabela-resto-resumido tabs:form-resto:tabela-resto-nao-resumido&quot;});return false;" style="margin-right: 5px" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Consultar</span></button><button id="tabs:form-resto:j_idt323" name="tabs:form-resto:j_idt323" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only warning-btn" onclick="PrimeFaces.ab({s:&quot;tabs:form-resto:j_idt323&quot;,f:&quot;tabs:form-resto&quot;,u:&quot;tabs:form-resto:msg-resto tabs:form-resto:tabela-resto-resumido tabs:form-resto:tabela-resto-nao-resumido tabs:form-resto&quot;});return false;" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Limpar</span></button>
+                    </div></div></div><fieldset id="tabs:form-resto:j_idt325" class="ui-fieldset ui-widget ui-widget-content ui-corner-all ui-hidden-container ui-fieldset-toggleable ui-hidden-container" data-widget="widget_tabs_form_resto_j_idt325"><legend class="ui-fieldset-legend ui-corner-all ui-state-default" role="button" tabindex="0"><span class="ui-fieldset-toggler ui-icon ui-icon-plusthick"></span>Resumo por Órgão</legend><div class="ui-fieldset-content" style="display:none"><div id="tabs:form-resto:j_idt326" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_resto_j_idt326"><div id="tabs:form-resto:j_idt326_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Transferir resultado</span></div><div id="tabs:form-resto:j_idt326_content" class="ui-panel-content ui-widget-content"><span style="padding: 5px" title="Exportar dados para PDF"><img id="tabs:form-resto:j_idt328" src="../imgs/csv/pdf-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-pdf" width="45px"></span><span style="padding: 5px" title="Exportar dados para Excel" class="ml-2"><img id="tabs:form-resto:j_idt330" src="../imgs/csv/xls-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-excel" width="45px"></span><span style="padding: 5px" title="Exportar dados para CSV" class="ml-2"><img id="tabs:form-resto:j_idt332" src="../imgs/csv/csv-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-csv" width="45px"></span></div></div><div id="tabs:form-resto:j_idt333" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_resto_j_idt333"><div id="tabs:form-resto:j_idt333_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Resultado da consulta</span></div><div id="tabs:form-resto:j_idt333_content" class="ui-panel-content ui-widget-content"><div id="tabs:form-resto:tabela-resto-resumido" class="ui-datatable ui-widget"><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="tabs:form-resto:tabela-resto-resumido_head"><tr role="row"><th id="tabs:form-resto:tabela-resto-resumido:j_idt334" class="ui-state-default" role="columnheader" aria-label="Órgão" scope="col"><span class="ui-column-title">Órgão</span></th><th id="tabs:form-resto:tabela-resto-resumido:j_idt338" class="ui-state-default" role="columnheader" aria-label="Valor  Inscrito" scope="col"><span class="ui-column-title">Valor  Inscrito</span></th><th id="tabs:form-resto:tabela-resto-resumido:j_idt340" class="ui-state-default" role="columnheader" aria-label="Liquidado (R$)" scope="col"><span class="ui-column-title">Liquidado (R$)</span></th><th id="tabs:form-resto:tabela-resto-resumido:j_idt342" class="ui-state-default" role="columnheader" aria-label="Pago (R$)" scope="col"><span class="ui-column-title">Pago (R$)</span></th><th id="tabs:form-resto:tabela-resto-resumido:j_idt344" class="ui-state-default" role="columnheader" aria-label="Saldo (R$)" scope="col"><span class="ui-column-title">Saldo (R$)</span></th></tr></thead><tbody id="tabs:form-resto:tabela-resto-resumido_data" class="ui-datatable-data ui-widget-content"><tr class="ui-widget-content ui-datatable-empty-message"><td colspan="5">Nenhum resultado encontrado!</td></tr></tbody></table></div><div id="tabs:form-resto:tabela-resto-resumido_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination"><span class="ui-paginator-current">0-0 de 0 registros</span><a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page" tabindex="-1"><span class="ui-icon ui-icon-seek-first">F</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page" tabindex="-1"><span class="ui-icon ui-icon-seek-prev">P</span></a><span class="ui-paginator-pages"></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all ui-state-disabled" aria-label="Next Page" tabindex="-1"><span class="ui-icon ui-icon-seek-next">N</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all ui-state-disabled" aria-label="Last Page" tabindex="-1"><span class="ui-icon ui-icon-seek-end">E</span></a></div></div></div></div></div><input type="hidden" id="tabs:form-resto:j_idt325_collapsed" name="tabs:form-resto:j_idt325_collapsed" value="true"></fieldset><div id="tabs:form-resto:j_idt346" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_resto_j_idt346"><div id="tabs:form-resto:j_idt346_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Transferir resultado</span></div><div id="tabs:form-resto:j_idt346_content" class="ui-panel-content ui-widget-content"><span style="padding: 5px" title="Exportar dados para PDF"><img id="tabs:form-resto:j_idt348" src="../imgs/csv/pdf-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-pdf" width="45px"></span><span style="padding: 5px" title="Exportar dados para Excel" class="ml-2"><img id="tabs:form-resto:j_idt350" src="../imgs/csv/xls-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-excel" width="45px"></span><span style="padding: 5px" title="Exportar dados para CSV" class="ml-2"><img id="tabs:form-resto:j_idt352" src="../imgs/csv/csv-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-csv" width="45px"></span></div></div><div id="tabs:form-resto:j_idt353" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_resto_j_idt353"><div id="tabs:form-resto:j_idt353_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Resultado da consulta</span></div><div id="tabs:form-resto:j_idt353_content" class="ui-panel-content ui-widget-content"><div id="tabs:form-resto:tabela-resto-nao-resumido" class="ui-datatable ui-widget"><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="tabs:form-resto:tabela-resto-nao-resumido_head"><tr role="row"><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt354" class="ui-state-default" role="columnheader" aria-label="Tipo" scope="col"><span class="ui-column-title">Tipo</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt356" class="ui-state-default" role="columnheader" aria-label="Nº Empenho" scope="col"><span class="ui-column-title">Nº Empenho</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt358" class="ui-state-default" role="columnheader" aria-label="Ano" scope="col"><span class="ui-column-title">Ano</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt360" class="ui-state-default" role="columnheader" aria-label="Data" scope="col"><span class="ui-column-title">Data</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt362" class="ui-state-default" role="columnheader" aria-label="Credor" scope="col"><span class="ui-column-title">Credor</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt366" class="ui-state-default" role="columnheader" aria-label="CPF/CNPJ Credor" scope="col"><span class="ui-column-title">CPF/CNPJ Credor</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt368" class="ui-state-default" role="columnheader" aria-label="Valor Inscrito (R$)" scope="col"><span class="ui-column-title">Valor Inscrito (R$)</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt370" class="ui-state-default" role="columnheader" aria-label="Liquidado (R$)" scope="col"><span class="ui-column-title">Liquidado (R$)</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt372" class="ui-state-default" role="columnheader" aria-label="Pago (R$)" scope="col"><span class="ui-column-title">Pago (R$)</span></th><th id="tabs:form-resto:tabela-resto-nao-resumido:j_idt374" class="ui-state-default" role="columnheader" aria-label="Saldo (R$)" scope="col"><span class="ui-column-title">Saldo (R$)</span></th></tr></thead><tbody id="tabs:form-resto:tabela-resto-nao-resumido_data" class="ui-datatable-data ui-widget-content"><tr class="ui-widget-content ui-datatable-empty-message"><td colspan="10">Nenhum resultado encontrado!</td></tr></tbody></table></div><div id="tabs:form-resto:tabela-resto-nao-resumido_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination"><span class="ui-paginator-current">0-0 de 0 registros</span><a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page" tabindex="-1"><span class="ui-icon ui-icon-seek-first">F</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page" tabindex="-1"><span class="ui-icon ui-icon-seek-prev">P</span></a><span class="ui-paginator-pages"></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all ui-state-disabled" aria-label="Next Page" tabindex="-1"><span class="ui-icon ui-icon-seek-next">N</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all ui-state-disabled" aria-label="Last Page" tabindex="-1"><span class="ui-icon ui-icon-seek-end">E</span></a></div></div></div></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:7" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form></div><div id="tabs:j_idt376" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-helper-hidden" role="tabpanel" aria-hidden="true" data-index="4">
+<form id="tabs:form-despesas-orgao" name="tabs:form-despesas-orgao" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="tabs:form-despesas-orgao" value="tabs:form-despesas-orgao">
+<span id="tabs:form-despesas-orgao:msg-despesas-orgao"></span><div id="tabs:form-despesas-orgao:j_idt377" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_despesas_orgao_j_idt377"><div id="tabs:form-despesas-orgao:j_idt377_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Filtrar consulta</span></div><div id="tabs:form-despesas-orgao:j_idt377_content" class="ui-panel-content ui-widget-content">
+                    <div><label id="tabs:form-despesas-orgao:j_idt380" class="ui-outputlabel ui-widget">Período</label>
+                    </div>
+                    <div style="width: 100%"><span id="tabs:form-despesas-orgao:j_idt382" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-despesas-orgao:j_idt382_input" name="tabs:form-despesas-orgao:j_idt382_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span><label id="tabs:form-despesas-orgao:j_idt383" class="ui-outputlabel ui-widget" style="margin-right: 10px; margin-left: 10px">até</label><span id="tabs:form-despesas-orgao:j_idt384" class="ui-calendar ui-trigger-calendar"><input id="tabs:form-despesas-orgao:j_idt384_input" name="tabs:form-despesas-orgao:j_idt384_input" type="text" value="12/11/2026" class="ui-inputfield ui-widget ui-state-default ui-corner-all hasDatepicker" aria-required="true" role="textbox" aria-disabled="false" aria-readonly="false"><button type="button" class="ui-datepicker-trigger ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" aria-label="Show Calendar" aria-haspopup="true" tabindex="right" role="button" aria-disabled="false"><span class="ui-button-icon-left ui-icon ui-icon-calendar"></span><span class="ui-button-text">ui-button</span></button></span>
+                    </div>
+                    <div align="left" style="margin-top: 10px"><label id="tabs:form-despesas-orgao:j_idt388" class="ui-outputlabel ui-widget">Órgão</label>
+                    </div>
+                    <div><select id="tabs:form-despesas-orgao:selectOrgaoDespesasOrgaos" name="tabs:form-despesas-orgao:selectOrgaoDespesasOrgaos" class="form-control" size="1">	<option value="" selected="selected">TODOS</option>
+	<option value="39000">AGENCIA DE LICITACOES, CONTRATOS E CONVENIOS DE MACEIO - ALICC</option>
+	<option value="31000">AGENCIA DE REGULACAO DE SERVICOS DE MACEIO</option>
+	<option value="40000">AGENCIA MUNICIPAL DE REGULAÇÃO DE SERVIÇOS DELEGADOS - ARSER (LEI DELEGADA)</option>
+	<option value="38000">AUTARQUIA DE DESENVOLVIMENTO SUSTENTAVEL E LIMPEZA URBANA - ALURB</option>
+	<option value="23000">AUTARQUIA MUNICIPAL DE ILUMINACAO PUBLICA - ILUMINA</option>
+	<option value="1000">CÂMARA MUNICIPAL DE MACEIÓ</option>
+	<option value="27000">COMPANHIA MUNICIPAL DE ADMINISTRAÇÃO, RECURSOS HUMANOS E PATRIMÔNIO</option>
+	<option value="7000">CONTROLADORIA-GERAL DO MUNICIPIO - CGM</option>
+	<option value="45001">COORDENADORIA MUNICIPAL DE PROTEÇÃO, DEFESA CIVIL E MUDANÇAS CLIMÁTICAS</option>
+	<option value="24000">DEPARTAMENTO MUNICIPAL DE TRANSPORTE E TRANSITO - DMTT</option>
+	<option value="44000">EMPRESA DE TECNOLOGIA E INLCUSÃO DIGITAL DE MACEIÓ - MACEIÓ DIGITAL S/A</option>
+	<option value="21000">ENCARGOS GERAIS DO MUNICÍPIO</option>
+	<option value="28000">FUNDAÇÃO MUNICIPAL DE AÇÃO CULTURAL</option>
+	<option value="2000">GABINETE CIVIL DE MACEIO</option>
+	<option value="3000">GABINETE DO VICE-PREFEITO</option>
+	<option value="9000">INSTITUTO DE PESQUISA, PLANEJAMENTO E LINCENCIAMENTO URBANO E AMBIENTAL DE MACEIO - IPLAM</option>
+	<option value="22000">INSTITUTO DE PREVIDENCIA DOS SERVIDORES PUBLICOS DE MACEIO - IPREV</option>
+	<option value="8000">PROCURADORIA GERAL DO MUNICÍPIO</option>
+	<option value="99000">RESERVA DE CONTINGÊNCIA</option>
+	<option value="43000">SECRETARIA EXTRAAORDINÁRIA DE INDÚSTRIA, COMÉRCIO E SERVIÇOS  (SEMINC)</option>
+	<option value="46001">SECRETARIA EXTRAORDINARIA DE INCLUSÃO SOCIAL E AÇÃO COMUNITÁRIA</option>
+	<option value="42000">SECRETARIA EXTRAORDINÁRIA DE JUVENTUDE E LAZER</option>
+	<option value="11000">SECRETARIA MUNICIPAL DA MULHER, PESSOAS COM DEFICIENCIA, IDOSOS E CIDADANIA - SEMUC</option>
+	<option value="10000">SECRETARIA MUNICIPAL DE ABASTECIMENTO, AGRICULTURA, PESCA E AQUICULTURA - SEMAPA</option>
+	<option value="15000">SECRETARIA MUNICIPAL DE AÇÕES ESTRATEGICAS E PARCERIAS (SAEP)</option>
+	<option value="5000">SECRETARIA MUNICIPAL DE COMUNICAÇÃO</option>
+	<option value="25000">SECRETARIA MUNICIPAL DE CULTURA E ECONOMIA CRIATIVA - SEMCE</option>
+	<option value="16000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO HABITACIONAL - SEMHAB</option>
+	<option value="14000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL, PRIMEIRA INFANCIA E SEGURANCA ALIMENTAR</option>
+	<option value="30000">SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SUSTENTÁVEL</option>
+	<option value="12000">SECRETARIA MUNICIPAL DE EDUCAÇÃO</option>
+	<option value="13000">SECRETARIA MUNICIPAL DE ESPORTE - SEMESP</option>
+	<option value="32000">SECRETARIA MUNICIPAL DE ESPORTE, LAZER E JUVENTUDE</option>
+	<option value="29000">SECRETARIA MUNICIPAL DE ESTRATEGIAS DISRUPTIVAS, CIENCIA, TECNOLOGIA E INOVACAO - SECIT</option>
+	<option value="33000">SECRETARIA MUNICIPAL DE FAZENDA - SEFAZ</option>
+	<option value="34000">SECRETARIA MUNICIPAL DE GESTAO DE PESSOAS E PATRIMONIO - SEMGE</option>
+	<option value="4000">SECRETARIA MUNICIPAL DE GOVERNO E SUBPREFEITURAS - SEGOV</option>
+	<option value="20000">SECRETARIA MUNICIPAL DE INFRA-ESTRUTURA</option>
+	<option value="35000">SECRETARIA MUNICIPAL DE MEIO AMBIENTE E URBANISMO - SEMURB</option>
+	<option value="6000">SECRETARIA MUNICIPAL DE RELAÇÕES FEDERATIVAS - SERF</option>
+	<option value="18000">SECRETARIA MUNICIPAL DE SAÚDE</option>
+	<option value="36000">SECRETARIA MUNICIPAL DE SEGURANCA CIDADA - SEMSC</option>
+	<option value="17000">SECRETARIA MUNICIPAL DE TURISMO</option>
+	<option value="37000">SECRETARIA MUNICIPAL DE TURISMO - SEMTUR</option>
+	<option value="19000">SECRETARIA MUNICIPAL DO TRABALHO,  EMPREGO E ECONOMIA SOLIDÁRIA - SEMTES</option>
+	<option value="41000">SECRETARIA MUNICIPAL EXTRAORDINÁRIA DE BEM-ESTAR ANIMAL</option>
+	<option value="26000">SUPERINTENDÊNCIA  DE LIMPEZA URBANA DE MACEIÓ</option>
+</select>
+                    </div>
+                    <div style="margin-top: 10px; margin-left: 10px"><button id="tabs:form-despesas-orgao:j_idt395" name="tabs:form-despesas-orgao:j_idt395" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" onclick="PrimeFaces.ab({s:&quot;tabs:form-despesas-orgao:j_idt395&quot;,f:&quot;tabs:form-despesas-orgao&quot;,u:&quot;tabs:form-despesas-orgao:msg-despesas-orgao tabs:form-despesas-orgao:tabela-despesas-orgao&quot;});return false;" style="margin-right: 5px" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Consultar</span></button><button id="tabs:form-despesas-orgao:j_idt396" name="tabs:form-despesas-orgao:j_idt396" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only warning-btn" onclick="PrimeFaces.ab({s:&quot;tabs:form-despesas-orgao:j_idt396&quot;,f:&quot;tabs:form-despesas-orgao&quot;,u:&quot;tabs:form-despesas-orgao:msg-despesas-orgao tabs:form-despesas-orgao:tabela-despesas-orgao tabs:form-despesas-orgao&quot;});return false;" type="submit" role="button" aria-disabled="false"><span class="ui-button-text ui-c">Limpar</span></button>
+                    </div></div></div><div id="tabs:form-despesas-orgao:j_idt398" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_despesas_orgao_j_idt398"><div id="tabs:form-despesas-orgao:j_idt398_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Transferir resultado</span></div><div id="tabs:form-despesas-orgao:j_idt398_content" class="ui-panel-content ui-widget-content">
+<script type="text/javascript" src="/transparencia/javax.faces.resource/jsf.js.faces?ln=javax.faces"></script>
+<a href="#" style="padding: 5px" title="Exportar dados para PDF" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-despesas-orgao'),{'tabs:form-despesas-orgao:j_idt399':'tabs:form-despesas-orgao:j_idt399'},'');return false"><img id="tabs:form-despesas-orgao:j_idt400" src="../imgs/csv/pdf-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-pdf" width="45px"></a><a href="#" style="padding: 5px" title="Exportar dados para Excel" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-despesas-orgao'),{'tabs:form-despesas-orgao:j_idt401':'tabs:form-despesas-orgao:j_idt401'},'');return false" class="ml-2"><img id="tabs:form-despesas-orgao:j_idt402" src="../imgs/csv/xls-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-excel" width="45px"></a><a href="#" style="padding: 5px" title="Exportar dados para CSV" onclick="mojarra.jsfcljs(document.getElementById('tabs:form-despesas-orgao'),{'tabs:form-despesas-orgao:j_idt403':'tabs:form-despesas-orgao:j_idt403'},'');return false" class="ml-2"><img id="tabs:form-despesas-orgao:j_idt404" src="../imgs/csv/csv-svgrepo-com.svg?pfdrid_c=true" alt="" class="file-csv" width="45px"></a></div></div>
+
+            <div class="divAviso">
+                <p> Para visualizar mais detalhes das despesas por órgão—
+                    <b>refente ao empenho, pagamento entre outros</b>
+                    — clique nos textos destacados em azul após os resultados da consulta.
+                </p>
+            </div><div id="tabs:form-despesas-orgao:j_idt406" class="ui-panel ui-widget ui-widget-content ui-corner-all" style="margin-top: 10px;" data-widget="widget_tabs_form_despesas_orgao_j_idt406"><div id="tabs:form-despesas-orgao:j_idt406_header" class="ui-panel-titlebar ui-widget-header ui-helper-clearfix ui-corner-all"><span class="ui-panel-title">Resultado da consulta</span></div><div id="tabs:form-despesas-orgao:j_idt406_content" class="ui-panel-content ui-widget-content"><div id="tabs:form-despesas-orgao:tabela-despesas-orgao" class="ui-datatable ui-widget"><div class="ui-datatable-tablewrapper"><table role="grid"><thead id="tabs:form-despesas-orgao:tabela-despesas-orgao_head"><tr role="row"><th id="tabs:form-despesas-orgao:tabela-despesas-orgao:j_idt407" class="ui-state-default" role="columnheader" aria-label="Órgão" scope="col"><span class="ui-column-title">Órgão</span></th><th id="tabs:form-despesas-orgao:tabela-despesas-orgao:j_idt409" class="ui-state-default" role="columnheader" aria-label="Orçado (R$)" scope="col"><span class="ui-column-title">Orçado (R$)</span></th><th id="tabs:form-despesas-orgao:tabela-despesas-orgao:j_idt411" class="ui-state-default" role="columnheader" aria-label="Orçado Atualizado (R$)" scope="col"><span class="ui-column-title">Orçado Atualizado (R$)</span></th><th id="tabs:form-despesas-orgao:tabela-despesas-orgao:j_idt413" class="ui-state-default" role="columnheader" aria-label="Empenhado (R$)" scope="col"><span class="ui-column-title">Empenhado (R$)</span></th><th id="tabs:form-despesas-orgao:tabela-despesas-orgao:j_idt416" class="ui-state-default" role="columnheader" aria-label="Liquidado (R$)" scope="col"><span class="ui-column-title">Liquidado (R$)</span></th><th id="tabs:form-despesas-orgao:tabela-despesas-orgao:j_idt419" class="ui-state-default" role="columnheader" aria-label="Pago (R$)" scope="col"><span class="ui-column-title">Pago (R$)</span></th></tr></thead><tbody id="tabs:form-despesas-orgao:tabela-despesas-orgao_data" class="ui-datatable-data ui-widget-content"><tr class="ui-widget-content ui-datatable-empty-message"><td colspan="6">Nenhum resultado encontrado!</td></tr></tbody></table></div><div id="tabs:form-despesas-orgao:tabela-despesas-orgao_paginator_bottom" class="ui-paginator ui-paginator-bottom ui-widget-header ui-corner-bottom" role="navigation" aria-label="Pagination"><span class="ui-paginator-current">0-0 de 0 registros</span><a href="#" class="ui-paginator-first ui-state-default ui-corner-all ui-state-disabled" aria-label="First Page" tabindex="-1"><span class="ui-icon ui-icon-seek-first">F</span></a><a href="#" class="ui-paginator-prev ui-state-default ui-corner-all ui-state-disabled" aria-label="Previous Page" tabindex="-1"><span class="ui-icon ui-icon-seek-prev">P</span></a><span class="ui-paginator-pages"></span><a href="#" class="ui-paginator-next ui-state-default ui-corner-all ui-state-disabled" aria-label="Next Page" tabindex="-1"><span class="ui-icon ui-icon-seek-next">N</span></a><a href="#" class="ui-paginator-last ui-state-default ui-corner-all ui-state-disabled" aria-label="Last Page" tabindex="-1"><span class="ui-icon ui-icon-seek-end">E</span></a></div></div></div></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:8" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form></div></div><input type="hidden" id="tabs_activeIndex" name="tabs_activeIndex" value="0" autocomplete="off"></div>
+        </div>
+                </div>
+            </div>
+        </div><div id="j_idt424"></div><div id="j_idt425" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-loading ui-draggable" role="dialog" aria-labelledby="j_idt425_title" aria-describedby="j_idt425_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt425_title" class="ui-dialog-title">Carregando...</span></div><div class="ui-dialog-content ui-widget-content" id="j_idt425_content" style="height: auto;">
+        <div align="center"><img id="j_idt427" src="/transparencia/imgs/ajax_loading_bar.gif?pfdrid_c=true" alt="">
+        </div></div></div><div id="dlg-empenho" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-content ui-draggable" role="dialog" aria-labelledby="dlg-empenho_title" aria-describedby="dlg-empenho_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="dlg-empenho_title" class="ui-dialog-title">Listagem dos Empenhos</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="dlg-empenho_content" style="height: auto;"></div></div><div id="j_idt486" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container ui-draggable" role="dialog" aria-labelledby="j_idt486_title" aria-describedby="j_idt486_content" aria-hidden="true" aria-modal="true" style="width: 1000px; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt486_title" class="ui-dialog-title">Detalhe do Empenho</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt486_content" style="height: 430px;"></div></div><div id="dlg-liquidado" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-content" role="dialog" aria-labelledby="dlg-liquidado_title" aria-describedby="dlg-liquidado_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top"><span id="dlg-liquidado_title" class="ui-dialog-title">Listagem dos Empenhos Liquidados</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="dlg-liquidado_content" style="height: auto;"></div></div><div id="j_idt653" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container ui-draggable" role="dialog" aria-labelledby="j_idt653_title" aria-describedby="j_idt653_content" aria-hidden="true" aria-modal="true" style="width: 800px; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt653_title" class="ui-dialog-title">Detalhe da Liquidação</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt653_content" style="height: 280px;"></div></div><div id="dlg-pago" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container dlg-content" role="dialog" aria-labelledby="dlg-pago_title" aria-describedby="dlg-pago_content" aria-hidden="true" aria-modal="true" style="width: auto; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top"><span id="dlg-pago_title" class="ui-dialog-title">Listagem dos Empenhos Pagos</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="dlg-pago_content" style="height: auto;"></div></div><div id="j_idt736" class="ui-dialog ui-widget ui-widget-content ui-corner-all ui-shadow ui-hidden-container ui-draggable" role="dialog" aria-labelledby="j_idt736_title" aria-describedby="j_idt736_content" aria-hidden="true" aria-modal="true" style="width: 800px; height: auto;"><div class="ui-dialog-titlebar ui-widget-header ui-helper-clearfix ui-corner-top ui-draggable-handle"><span id="j_idt736_title" class="ui-dialog-title">Detalhe do Pagamento</span><a href="#" class="ui-dialog-titlebar-icon ui-dialog-titlebar-close ui-corner-all" aria-label="Close" role="button"><span class="ui-icon ui-icon-closethick"></span></a></div><div class="ui-dialog-content ui-widget-content" id="j_idt736_content" style="height: 280px;"></div></div>
+
+    <div class="ui-g-12" id="footer"><link type="text/css" rel="stylesheet" href="/transparencia/javax.faces.resource/theme.css.faces?ln=primefaces-nova-light"><script type="text/javascript">if(window.PrimeFaces){PrimeFaces.settings.locale='pt_BR';}</script>
+
+    <link rel="StyleSheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <section class="section-white">
+
+        <div class="box-content">
+
+            <h3 class="titulo-sites">Links de Acesso</h3>
+
+            <div id="conteudo-geral">
+
+                <div class="sites-box zoom">
+
+                    <a href="https://www.servicos.maceio.al.gov.br/" target="_blank" class="no-decor">
+                        <div class="sites-box-img">
+                            <img src="../imgs/portalDeServicos.png" alt="Portal de Serviços">
+                        </div>
+
+                        <div class="sites-box-texto">
+                            <div class="titulo">
+                                Portal de Serviços
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="sites-box zoom">
+
+                    <a href="https://www.ouvidoria.maceio.al.gov.br/" target="_blank" class="no-decor">
+                        <div class="sites-box-img">
+                            <img src="../imgs/ouvidoriaNovo1.png" alt="Site da ouvidoria">
+                        </div>
+
+                        <div class="sites-box-texto">
+                            <div class="titulo">
+                                Ouvidoria
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="sites-box zoom">
+
+                    <a href="https://www.informa.maceio.al.gov.br" target="_blank" class="no-decor">
+                        <div class="sites-box-img">
+                            <img src="../imgs/informaNovo.png" alt="Informa Maceió">
+                        </div>
+
+                        <div class="sites-box-texto">
+                            <div class="titulo">
+                                Informa Maceió
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="sites-box zoom">
+
+                    <a href="https://www.participa.maceio.al.gov.br/" target="_blank" class="no-decor">
+                        <div class="sites-box-img">
+                            <img src="../imgs/portalDoCidadao.png" alt="Portal do Cidadão">
+                        </div>
+
+                        <div class="sites-box-texto">
+                            <div class="titulo">
+                                Participa Maceió
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="contato">
+
+        <div class="box-content width-contato">
+
+            <div class="row justify-content-center mb-4 mb-md-4 mb-lg-4 mb-xl-4">
+
+                <h3>Contato</h3>
+
+            </div>
+
+            <div class="row no-margin">
+
+                <div class="col-sm-12 col-md-6 col-lg-3 col-xl-3 social-networks">
+
+                    <h4>Nossas Redes</h4>
+
+                    <ul>
+
+                        <li><a href="https://www.facebook.com/PrefeituraDeMaceio/" target="_blank">
+                            <img src="../imgs/facebook.png" alt="Link da página do Facebook da Prefeitura" class="zoom"></a>
+                        </li>
+                        <li><a href="https://www.instagram.com/prefeiturademaceio/?hl=pt-br" target="_blank">
+                            <img src="../imgs/twitter.png" alt="Link do perfil da Prefeitura no Twitter" class="zoom"></a>
+                        </li>
+                        <li><a href="https://twitter.com/prefmaceio" target="_blank">
+                            <img src="../imgs/insta.png" alt="Link do perfil da Prefeitura no instagram" class="zoom"></a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 endereco">
+
+                    <h4>Endereço</h4>
+
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3933.0957625117294!2d-35.723990584669785!3d-9.672858704917784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x701456da12fd8fd%3A0xfbe3b3725a897ac8!2sR.%20S%C3%A1%20e%20Albuquerque%2C%20235%20-%20Jaragu%C3%A1%2C%20Macei%C3%B3%20-%20AL%2C%2057022-180!5e0!3m2!1spt-BR!2sbr!4v1573661393472!5m2!1spt-BR!2sbr" height="150" frameborder="0" style="border:0;" title="Endereço da prefeitura de maceió no google maps"></iframe>
+
+                    <p>
+                        Rua Sá e Albuquerque, 235, Jaraguá, Maceió/AL. CEP: 57022-180 <br>
+                        Telefones: 3312-5860 / 3312-5370
+                    </p>
+
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-3 col-xl-3 container">
+                    <div class="row">
+                        <h4>Avaliação do Portal</h4>
+                    </div>
+
+                    <div class="row lead">
+                        <p>Qual é a sua avaliação sobre este portal?</p>
+<form id="novaAvaliacao" name="novaAvaliacao" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="novaAvaliacao" value="novaAvaliacao">
+<span id="novaAvaliacao:j_idt768"></span><div id="novaAvaliacao:j_idt769" class="ui-rating"><div class="ui-rating-star"><a></a></div><div class="ui-rating-star"><a></a></div><div class="ui-rating-star"><a></a></div><div class="ui-rating-star"><a></a></div><div class="ui-rating-star"><a></a></div><input type="hidden" id="novaAvaliacao:j_idt769_input" name="novaAvaliacao:j_idt769_input" autocomplete="off"></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:9" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form>
+                        <p style="margin-top: 30px">Alguma informação não foi localizada no Portal?<a href="../pages/faleConosco.faces"> Fale Conosco</a></p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <div class="mapadosite"><div id="j_idt771" class="ui-outputpanel ui-widget titulomapadosite">
+            <h4>Mapa do Site</h4>
+            <div class="linha"></div></div>
+    <input type="checkbox" id="bt_menu">
+    <label for="bt_menu">☰</label>
+    <div class="menu-servicos" id="menu-servicos" style="width: 240px">
+<form id="j_idt774" name="j_idt774" method="post" action="/transparencia/pages/despesas.faces" enctype="application/x-www-form-urlencoded">
+<input type="hidden" name="j_idt774" value="j_idt774">
+<div id="j_idt774:j_idt775" class="ui-tabmenu ui-widget ui-widget-content ui-corner-all"><ul class="ui-tabmenu-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist"><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="COVID-19" class="ui-menuitem-link ui-corner-all menu-lateral-covid" href="../pages/despesasReceitaCovid.faces" target="_blank"><span class="ui-menuitem-text">COVID-19</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/planejamento.faces"><span class="ui-menuitem-text">Planejamento Orçamentário</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/programacaoFinanceira.faces"><span class="ui-menuitem-text">Programação Financeira</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/orcamentoCriancaAdolescente.faces"><span class="ui-menuitem-text">Orçamento da Criança e do Adolescente</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/indicesFiscais.faces"><span class="ui-menuitem-text">Índices Fiscais</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaCidada.faces"><span class="ui-menuitem-text">Emenda Cidadã</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaParlamentarBI.faces"><span class="ui-menuitem-text">Emenda Parlamentar BI</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/emendaParlamentarMunicipal.faces"><span class="ui-menuitem-text">Emenda Parlamentar Municipal</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="/transparencia/resources/csv/Emendas_Parlamentares_Estaduais.csv"><span class="ui-menuitem-text">Emenda Parlamentar Estadual</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://portaldatransparencia.gov.br/emendas/consulta?paginacaoSimples=true&amp;tamanhoPagina=&amp;offset=direcaoOrdenacao=asc&amp;palavraChave=MACEI%C3%93&amp;de=2020&amp;ate=2026&amp;colunasSelecionadas=codigoEmenda%2Cano%2CtipoEmenda%2Cautor%2CnumeroEmenda%2ClocalidadeDoGasto%2Cfuncao%2Csubfuncao%2CvalorEmpenhado%2CvalorLiquidado%2CvalorPago&amp;ordenarPor=autor&amp;direcao=asc" target="_blank"><span class="ui-menuitem-text">Emenda Parlamentar Federal</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://in.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Maceió IN</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/receita.faces"><span class="ui-menuitem-text">Receita</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/dividaAtivaBI.faces"><span class="ui-menuitem-text">Dívida Ativa</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/despesas.faces"><span class="ui-menuitem-text">Despesas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/servidores.faces"><span class="ui-menuitem-text">Servidores</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" title="Clique aqui para ser redirecionado ao site licitacao.maceio.al.gov.br" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="http://www.licitacao.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Licitações</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/contratos.faces"><span class="ui-menuitem-text">Contratos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/convenios.faces"><span class="ui-menuitem-text">Convênios</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/termoParceria.faces?i=9"><span class="ui-menuitem-text">Termos de Parceria</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/demonstrativos.faces"><span class="ui-menuitem-text">Demonstrativos Contábeis</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/relatoriosPareceres.faces"><span class="ui-menuitem-text">Prestação de Contas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/legislacao.faces"><span class="ui-menuitem-text">Consulta à Legislação</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/obras.faces"><span class="ui-menuitem-text">Obras</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/glossario.faces"><span class="ui-menuitem-text">Glossário</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/perguntas.faces"><span class="ui-menuitem-text">Perguntas Frequentes</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/conselhos.faces"><span class="ui-menuitem-text">Conselhos</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/SIAFIC.faces"><span class="ui-menuitem-text">SIAFIC</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="../pages/doacoes.faces"><span class="ui-menuitem-text">Doações Recebidas</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://transparencia.sms.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Transparência Saúde</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://app.powerbi.com/view?r=eyJrIjoiMWFlMWU1NzMtYmI2MC00MjBlLWFmZjctMjNiNjFiNDk5MjQ0IiwidCI6IjhmN2I0MjQ1LWUzYjQtNGFkYy1iMmRlLWY4ZDM3NmQxMThhZSJ9" target="_blank"><span class="ui-menuitem-text">Painel de Manifestações</span></a></li><li class="ui-tabmenuitem ui-state-default ui-corner-top" role="tab" aria-expanded="false" aria-selected="false" tabindex="0"><a tabindex="-1" class="ui-menuitem-link ui-corner-all menu-lateral-1" href="https://pemci.maceio.al.gov.br/" target="_blank"><span class="ui-menuitem-text">Plano Estratégico</span></a></li></ul></div><input type="hidden" name="javax.faces.ViewState" id="j_id1:javax.faces.ViewState:10" value="-6992399148154021946:2744803248653554409" autocomplete="off">
+</form>
+    </div>
+    </div>
+
+
+    </div>
+
+    <div class="footer">
+        <div class="footer-img">
+            <a target="_blank" href="https://digital.maceio.al.gov.br/">
+                <img src="../imgs/header/logo_maceiodigital_white.svg" alt="Maceió Digital">
+            </a>
+        </div>
+        <div class="social text-right text-light">
+            <p>
+                © 2026 Maceió Digital. Prefeitura Municipal de Maceió.<br>
+                Todos os direitos reservados.
+            </p>
+            <p>
+                Versão: 4.1.2-202605210921
+            </p>
+        </div>
+    </div>
+
+    <script src="../resources/js/bootstrap.js"></script>
+
+        <div vw="" class="enabled">
+        <div vw-access-button="" class="active"></div>
+        <div vw-plugin-wrapper="">
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+        </div>
+    <div id="textarea_simulator" style="position: absolute; top: 0px; left: 0px; visibility: hidden;"></div><div id="tabs:form-despesas:msg-despesas_container" class="ui-growl ui-widget" style="z-index: 1001;"><div class="ui-growl-item-container ui-state-highlight ui-corner-all ui-helper-hidden ui-shadow ui-growl-error" aria-live="polite" style="display: block;"><div class="ui-growl-item"><div class="ui-growl-icon-close ui-icon ui-icon-closethick" style="display:none"></div><span class="ui-growl-image ui-growl-image-error"></span><div class="ui-growl-message"><span class="ui-growl-title">Erro ao gerar lista de Elementos de Despesa, entre em contato com a SEMGE.
+Erro: br.gov.al.maceio.framework.exception.DaoException: java.sql.SQLException: ORA-04063: view "SIGEF2026.VPORTALCONTACONTABILGRUPO" contém erros
+</span><p></p></div><div style="clear: both;"></div></div></div></div><div id="ui-datepicker-div" class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all ui-shadow"></div><div id="tabs:form-credores:msg-credores_container" class="ui-growl ui-widget" style="z-index: 1002;"><div class="ui-growl-item-container ui-state-highlight ui-corner-all ui-helper-hidden ui-shadow ui-growl-error" aria-live="polite" style="display: block;"><div class="ui-growl-item"><div class="ui-growl-icon-close ui-icon ui-icon-closethick" style="display:none"></div><span class="ui-growl-image ui-growl-image-error"></span><div class="ui-growl-message"><span class="ui-growl-title">Erro ao gerar lista de Elementos de Despesa, entre em contato com a SEMGE.
+Erro: br.gov.al.maceio.framework.exception.DaoException: java.sql.SQLException: ORA-04063: view "SIGEF2026.VPORTALCONTACONTABILGRUPO" contém erros
+</span><p></p></div><div style="clear: both;"></div></div></div></div><div id="tabs:form-credores:selectCredor_panel" class="ui-selectonemenu-panel ui-widget ui-widget-content ui-corner-all ui-helper-hidden ui-shadow ui-input-overlay"><div class="ui-selectonemenu-items-wrapper" style="max-height:200px"><ul id="tabs:form-credores:selectCredor_items" class="ui-selectonemenu-items ui-selectonemenu-list ui-widget-content ui-widget ui-corner-all ui-helper-reset" role="listbox" aria-activedescendant="tabs:form-credores:selectCredor_0"><li class="ui-selectonemenu-item ui-selectonemenu-list-item ui-corner-all ui-state-highlight" data-label="CPF" tabindex="-1" role="option" id="tabs:form-credores:selectCredor_0">CPF</li><li class="ui-selectonemenu-item ui-selectonemenu-list-item ui-corner-all" data-label="CNPJ" tabindex="-1" role="option" id="tabs:form-credores:selectCredor_1">CNPJ</li></ul></div></div><div id="tabs:form-diarias:msg-diarias_container" class="ui-growl ui-widget" style="z-index: 1003;"><div class="ui-growl-item-container ui-state-highlight ui-corner-all ui-helper-hidden ui-shadow ui-growl-error" aria-live="polite" style="display: block;"><div class="ui-growl-item"><div class="ui-growl-icon-close ui-icon ui-icon-closethick" style="display:none"></div><span class="ui-growl-image ui-growl-image-error"></span><div class="ui-growl-message"><span class="ui-growl-title">Erro ao gerar lista de Elementos de Despesa, entre em contato com a SEMGE.
+Erro: br.gov.al.maceio.framework.exception.DaoException: java.sql.SQLException: ORA-04063: view "SIGEF2026.VPORTALCONTACONTABILGRUPO" contém erros
+</span><p></p></div><div style="clear: both;"></div></div></div></div><div id="tabs:form-resto:msg-resto_container" class="ui-growl ui-widget" style="z-index: 1004;"><div class="ui-growl-item-container ui-state-highlight ui-corner-all ui-helper-hidden ui-shadow ui-growl-error" aria-live="polite" style="display: block;"><div class="ui-growl-item"><div class="ui-growl-icon-close ui-icon ui-icon-closethick" style="display:none"></div><span class="ui-growl-image ui-growl-image-error"></span><div class="ui-growl-message"><span class="ui-growl-title">Erro ao gerar lista de Elementos de Despesa, entre em contato com a SEMGE.
+Erro: br.gov.al.maceio.framework.exception.DaoException: java.sql.SQLException: ORA-04063: view "SIGEF2026.VPORTALCONTACONTABILGRUPO" contém erros
+</span><p></p></div><div style="clear: both;"></div></div></div></div><div id="tabs:form-despesas-orgao:msg-despesas-orgao_container" class="ui-growl ui-widget" style="z-index: 1005;"><div class="ui-growl-item-container ui-state-highlight ui-corner-all ui-helper-hidden ui-shadow ui-growl-error" aria-live="polite" style="display: block;"><div class="ui-growl-item"><div class="ui-growl-icon-close ui-icon ui-icon-closethick" style="display:none"></div><span class="ui-growl-image ui-growl-image-error"></span><div class="ui-growl-message"><span class="ui-growl-title">Erro ao gerar lista de Elementos de Despesa, entre em contato com a SEMGE.
+Erro: br.gov.al.maceio.framework.exception.DaoException: java.sql.SQLException: ORA-04063: view "SIGEF2026.VPORTALCONTACONTABILGRUPO" contém erros
+</span><p></p></div><div style="clear: both;"></div></div></div></div><div class="ui-dialog-docking-zone"></div><div id="novaAvaliacao:j_idt768_container" class="ui-growl ui-widget" style="z-index: 1006;"><div class="ui-growl-item-container ui-state-highlight ui-corner-all ui-helper-hidden ui-shadow ui-growl-error" aria-live="polite" style="display: block;"><div class="ui-growl-item"><div class="ui-growl-icon-close ui-icon ui-icon-closethick" style="display:none"></div><span class="ui-growl-image ui-growl-image-error"></span><div class="ui-growl-message"><span class="ui-growl-title">Erro ao gerar lista de Elementos de Despesa, entre em contato com a SEMGE.
+Erro: br.gov.al.maceio.framework.exception.DaoException: java.sql.SQLException: ORA-04063: view "SIGEF2026.VPORTALCONTACONTABILGRUPO" contém erros
+</span><p>br.gov.al.maceio.framework.exception.DaoException: java.sql.SQLException: ORA-04063: view "SIGEF2026.VPORTALCONTACONTABILGRUPO" contém erros
+</p></div><div style="clear: both;"></div></div></div></div><div id="vlibras-access-wrapper"></div></body></html>
