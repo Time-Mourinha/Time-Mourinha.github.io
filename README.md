@@ -48,6 +48,41 @@ O site já diminui as fotos antes de enviar (entre 300 e 500 KB cada, então cab
 Vídeo pesa mais: grave vídeos curtos (até 1 minuto, em 720p). Se o espaço acabar, o plano Pro
 do Supabase custa US$ 25 por mês e dá 100 GB. Nada disso usa o armazenamento do seu celular ou da sua nuvem.
 
+## Ao vivo e lembretes automáticos
+
+- **Painel Ao vivo** (`#/ao-vivo`): os administradores veem, em tempo real, onde está cada integrante,
+  a programação do dia, as atividades e as fotos que acabaram de chegar. Quem não deu sinal no dia aparece em vermelho.
+- **Lembretes para todos os integrantes aprovados**, por e-mail e WhatsApp:
+  08h "já começou sua atividade do dia?", 12h "como estão as visitas?", 15h "já finalizou o dia?",
+  18h resumo do dia por e-mail para os administradores. (O GitHub pode atrasar alguns minutos.)
+- **Respostas pelo WhatsApp** entram direto no painel: "hoje estou em home office com o Mourinha" vira o status;
+  "9h reunião no Sebrae" vira compromisso na agenda do dia.
+- Cada integrante coloca o próprio WhatsApp em **Meu perfil** no site. Telefones e e-mails ficam só no banco
+  do Supabase, **nunca** neste repositório (que é público).
+
+### Ligar o e-mail (grátis)
+1. Numa conta Gmail do time, ative a verificação em duas etapas e crie uma **senha de app**
+   (Conta Google → Segurança → Senhas de app).
+2. No GitHub, em *Settings → Secrets and variables → Actions*, crie:
+   `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` (chave *service_role* do Supabase — é secreta, nunca coloque no site),
+   `SITE_URL` (endereço do site), `GMAIL_USER` e `GMAIL_APP_PASSWORD`.
+
+### Ligar o WhatsApp (API oficial da Meta)
+1. Use um **número só para o robô** (um chip novo), não o WhatsApp pessoal de ninguém.
+2. Em developers.facebook.com crie um app do tipo *Business*, adicione o produto **WhatsApp** e cadastre o número.
+3. Crie o modelo de mensagem **lembrete_time_mourinha** (categoria *Utilidade*, idioma *Português (BR)*) com o texto:
+   `Olá, {{1}}! {{2}} Responda por aqui ou abra: {{3}}`
+4. Gere um token permanente (usuário do sistema) e anote o *Phone number ID*.
+5. No GitHub, crie os segredos `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID` e `WHATSAPP_TEMPLATE` (= lembrete_time_mourinha).
+6. No Supabase, em *Edge Functions*, crie a função **whatsapp** com o conteúdo de `supabase/functions/whatsapp/index.ts`,
+   **desligue "Verify JWT"** e cadastre os segredos `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`,
+   `WHATSAPP_VERIFY_TOKEN` (uma senha que você inventa) e `WHATSAPP_APP_SECRET` (do app da Meta).
+7. Na Meta, em *WhatsApp → Configuração → Webhook*, coloque a URL
+   `https://SEU-PROJETO.supabase.co/functions/v1/whatsapp`, o mesmo `WHATSAPP_VERIFY_TOKEN`, e assine o campo **messages**.
+
+Custo: a Meta cobra cada mensagem de modelo enviada (alguns centavos de dólar por mensagem no Brasil).
+Com 7 integrantes e 3 lembretes por dia, fica na casa de poucos dólares por mês. O e-mail é grátis.
+
 ## Rodar no computador (opcional)
 
 ```bash

@@ -1,0 +1,38 @@
+name: Lembretes do time (e-mail e WhatsApp)
+
+on:
+  schedule:
+    - cron: "0 11 * * *"   # 08h Maceió — já começou a atividade do dia?
+    - cron: "0 15 * * *"   # 12h — como estão as visitas?
+    - cron: "0 18 * * *"   # 15h — já finalizou o dia?
+    - cron: "0 21 * * *"   # 18h — resumo do dia para os administradores
+  workflow_dispatch:
+    inputs:
+      momento:
+        description: "manha, meio_dia, tarde ou resumo"
+        default: manha
+
+jobs:
+  lembrar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install requests
+      - name: Enviar
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          WHATSAPP_TOKEN: ${{ secrets.WHATSAPP_TOKEN }}
+          WHATSAPP_PHONE_ID: ${{ secrets.WHATSAPP_PHONE_ID }}
+          WHATSAPP_TEMPLATE: ${{ secrets.WHATSAPP_TEMPLATE }}
+        run: |
+          M="${{ github.event.inputs.momento }}"
+          case "${{ github.event.schedule }}" in
+            "0 11 * * *") M=manha ;; "0 15 * * *") M=meio_dia ;; "0 18 * * *") M=tarde ;; "0 21 * * *") M=resumo ;;
+          esac
+          python notificacoes/lembrete.py "$M"

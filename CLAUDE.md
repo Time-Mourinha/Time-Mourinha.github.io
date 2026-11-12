@@ -27,6 +27,11 @@ para acrescentar outra no futuro, basta um novo bloco ali. Não incluir nenhuma 
   o que foi resolvido e o que falta.
 - **Painel de cada integrante:** números (atividades, visitas, fotos, vídeos, resolvidas, pendentes), o que fez hoje,
   gráfico dos últimos 30 dias, botões por secretaria em cada time e a linha do tempo.
+- **Ao vivo:** status em tempo real de cada integrante (sinais, agenda do dia, atividades e fotos), Supabase Realtime.
+  Sinais automáticos quando começa atividade, envia fotos ou marca resultado.
+- **Lembretes** para todos os integrantes (e-mail + WhatsApp): 08h, 12h, 15h; resumo 18h para administradores
+  (`notificacoes/lembrete.py`, `.github/workflows/lembretes.yml`). Respostas do WhatsApp entram no painel pela
+  função `supabase/functions/whatsapp`. Telefones e e-mails nunca vão para o repositório.
 - Backend: Supabase (Auth + Postgres + Storage), esquema e regras de segurança em `docs/supabase.sql`.
   Fotos de perfil ficam públicas; fotos e vídeos das atividades são privados (autor + administradores).
 

@@ -161,3 +161,65 @@ create policy midias_apagar on storage.objects for delete
 -- A partir daí o Bené aprova os outros e torna Mourinha e Orlandinho administradores
 -- pela página "Administração" do site.
 -- =====================================================================
+
+-- =====================================================================
+-- AO VIVO: status em tempo real, agenda do dia e lembretes
+-- =====================================================================
+alter table public.perfis add column if not exists telefone text;              -- WhatsApp com DDD, ex.: 5582999999999
+alter table public.perfis add column if not exists notificar_email boolean not null default true;
+alter table public.perfis add column if not exists notificar_whatsapp boolean not null default true;
+
+-- Cada "sinal" do integrante: "em home office com o Mourinha", "indo para o posto X", "enviou 3 fotos"...
+create table if not exists public.atualizacoes (
+  id uuid primary key default gen_random_uuid(),
+  autor uuid not null references public.perfis(id) on delete cascade default auth.uid(),
+  texto text not null,
+  tipo text not null default 'outro',   -- home_office | deslocamento | em_atividade | reuniao | escritorio | encerrado | midia | outro
+  local text,
+  atividade_id uuid references public.atividades(id) on delete set null,
+  origem text not null default 'site' check (origem in ('site','whatsapp','automatico')),
+  criado_em timestamptz not null default now()
+);
+create index if not exists atualizacoes_autor on public.atualizacoes(autor, criado_em desc);
+
+-- Programação do dia: "9h reunião no Sebrae"
+create table if not exists public.agenda (
+  id uuid primary key default gen_random_uuid(),
+  autor uuid not null references public.perfis(id) on delete cascade default auth.uid(),
+  data date not null default (now() at time zone 'America/Maceio')::date,
+  hora time,
+  texto text not null,
+  local text,
+  feito boolean not null default false,
+  origem text not null default 'site',
+  criado_em timestamptz not null default now()
+);
+create index if not exists agenda_autor on public.agenda(autor, data);
+
+alter table public.atualizacoes enable row level security;
+alter table public.agenda enable row level security;
+drop policy if exists atu_ler on public.atualizacoes;
+create policy atu_ler on public.atualizacoes for select using (autor = auth.uid() or public.eh_admin());
+drop policy if exists atu_criar on public.atualizacoes;
+create policy atu_criar on public.atualizacoes for insert with check (public.eh_membro() and autor = auth.uid());
+drop policy if exists atu_apagar on public.atualizacoes;
+create policy atu_apagar on public.atualizacoes for delete using (autor = auth.uid() or public.eh_admin());
+drop policy if exists ag_ler on public.agenda;
+create policy ag_ler on public.agenda for select using (autor = auth.uid() or public.eh_admin());
+drop policy if exists ag_criar on public.agenda;
+create policy ag_criar on public.agenda for insert with check (public.eh_membro() and autor = auth.uid());
+drop policy if exists ag_editar on public.agenda;
+create policy ag_editar on public.agenda for update using (autor = auth.uid() or public.eh_admin());
+drop policy if exists ag_apagar on public.agenda;
+create policy ag_apagar on public.agenda for delete using (autor = auth.uid() or public.eh_admin());
+
+-- Liga o "tempo real" (o painel Ao vivo atualiza sozinho)
+do $$
+declare t text;
+begin
+  foreach t in array array['atualizacoes','agenda','atividades','midias'] loop
+    if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t) then
+      execute format('alter publication supabase_realtime add table public.%I', t);
+    end if;
+  end loop;
+end $$;

@@ -33,7 +33,7 @@
     const a = $("#usuario");
     if (eu?.perfil) {
       a.className = "usuario";
-      a.href = `#/time/${eu.perfil.membro_id || eu.perfil.id}`;
+      a.href = "#/perfil";
       a.innerHTML = `${eu.perfil.foto_path ? `<img src="${esc(fotoPublica(eu.perfil.foto_path))}" alt="">` : `<span class="ini">${esc(iniciais(eu.perfil.nome))}</span>`}${esc((eu.perfil.nome || "").split(" ")[0])}`;
     } else {
       a.className = "usuario sem";
@@ -80,6 +80,7 @@
       <div id="esc"></div>
       ${!sb ? semSupabase : !eu ? `<div class="aviso">Você está como <b>visitante</b>: vê o time, mas não as atividades. <a href="#/entrar">Entrar</a> ou <a href="#/cadastro">fazer cadastro</a>.</div>` : ""}
       <div class="botoes">${souMembro() ? botao({ href: "#/hoje", ic: "📸", t: "Minha atividade do dia", n: "", e: "Registrar o que estou fazendo hoje.", destaque: true }) : ""}
+      ${souMembro() ? botao({ href: "#/ao-vivo", ic: "🔴", t: "Ao vivo", n: "tempo real", e: souAdmin() ? "Onde está cada integrante agora, agenda e fotos do dia." : "Meu andamento de hoje.", destaque: souAdmin() }) : ""}
       ${souAdmin() ? botao({ href: "#/admin", ic: "🛡️", t: "Administração", n: "", e: "Aprovar cadastros e definir quem joga em cada time." }) : ""}
       ${!eu ? botao({ href: "#/cadastro", ic: "✍️", t: "Fazer cadastro", n: "", e: "Foto, e-mail e senha. Um administrador aprova." }) : ""}</div>`;
     $("#fe").value = esf;
@@ -147,6 +148,7 @@
     const esf0 = params.get("esfera") && meusTimes.includes(params.get("esfera")) ? params.get("esfera") : meusTimes[0];
     const { data: deHoje } = await sb.from("atividades").select("*").eq("autor", eu.perfil.id).eq("data", hojeISO()).order("criado_em", { ascending: false });
     app.innerHTML += `<div class="perfil"><span class="rosto">${rosto(fotoPublica(eu.perfil.foto_path), eu.perfil.nome)}</span><div><h1>Atividade do dia</h1><p>${esc(eu.perfil.nome)}, ${new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p></div></div>
+      <div id="status"></div>
       ${(deHoje || []).length ? `<div class="bloco"><h2>Já registrado hoje</h2>${deHoje.map((a) => cartao(a, { nome: eu.perfil.nome }, {})).join("")}</div>` : ""}
       <div class="bloco"><h2>Nova atividade</h2><p class="explica">Diga onde vai e o que vai observar. Depois é só ir enchendo o clipe com fotos e vídeos.</p>
       <form class="form" id="f">
@@ -157,6 +159,7 @@
         <label>O que vou fazer ou observar<textarea name="descricao" placeholder="Ex.: ver a reforma, conferir equipamentos, conversar com a direção"></textarea></label>
         <button class="btn" type="submit">Começar atividade</button>
       </form></div>`;
+    caixaStatus($("#status"));
     const f = $("#f");
     const carregarOrgaos = async () => {
       const e = f.esfera.value;
@@ -179,9 +182,150 @@
       const { data, error } = await sb.from("atividades").insert(reg).select().single();
       if (error) { alertaErro(error); b.disabled = false; b.textContent = "Começar atividade"; return; }
       if (reg.missao_id) await sb.from("missoes_status").upsert({ esfera: reg.esfera, missao_id: reg.missao_id, situacao: "em_andamento", responsavel: eu.perfil.id });
+      await sinal(`${reg.tipo === "Visita" ? "Iniciou visita" : "Iniciou " + reg.tipo.toLowerCase()}: ${reg.local}`, reg.tipo === "Reunião" ? "reuniao" : "em_atividade", { local: reg.local, atividade_id: data.id });
       location.hash = `#/atividade/${data.id}`;
     };
   }
+  /* ---------- sinais (status em tempo real) */
+  const TIPOS_SINAL = [
+    ["home_office", "🏠", "Home office"], ["deslocamento", "🚗", "A caminho"], ["em_atividade", "🔎", "Em atividade"],
+    ["reuniao", "🤝", "Em reunião"], ["escritorio", "🏛️", "No escritório"], ["encerrado", "✅", "Encerrei o dia"],
+  ];
+  const ICONE_SINAL = Object.fromEntries([...TIPOS_SINAL.map(([k, i]) => [k, i]), ["midia", "📸"], ["outro", "💬"]]);
+  async function sinal(texto, tipo = "outro", extra = {}) {
+    if (!sb || !souMembro()) return;
+    await sb.from("atualizacoes").insert({ texto, tipo, origem: extra.origem || "site", local: extra.local || null, atividade_id: extra.atividade_id || null });
+  }
+  const haQuanto = (d) => { const m = Math.round((Date.now() - new Date(d)) / 60000); return m < 1 ? "agora" : m < 60 ? `há ${m} min` : m < 1440 ? `há ${Math.floor(m / 60)}h${String(m % 60).padStart(2, "0")}` : fmtD(d); };
+  const hora = (d) => new Date(d).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const inicioHoje = () => new Date(hojeISO() + "T00:00:00-03:00").toISOString();
+
+  function caixaStatus(el) {
+    el.innerHTML = `<div class="bloco"><h2>Como você está agora?</h2><p class="explica">Aparece na hora no painel Ao vivo dos administradores.</p>
+      <div class="opcoes" id="tiposinal">${TIPOS_SINAL.map(([k, i, t]) => `<label><input type="radio" name="ts" value="${k}"> ${i} ${t}</label>`).join("")}</div>
+      <form class="form" id="fs" style="margin-top:10px;max-width:none"><div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input name="texto" placeholder="Ex.: hoje estou em home office com o Mourinha" style="flex:1;min-width:220px"><button class="btn" type="submit">Enviar</button></div></form>
+      <p class="fonte" id="ultimo"></p></div>
+      <div class="bloco"><h2>Minha programação de hoje</h2><div id="ag"></div>
+      <form class="form" id="fa" style="max-width:none;margin-top:8px"><div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input type="time" name="hora" style="width:120px"><input name="texto" required placeholder="Ex.: reunião no Sebrae" style="flex:1;min-width:200px">
+      <button class="btn azul" type="submit">Adicionar</button></div></form></div>`;
+    const fs = el.querySelector("#fs"), fa = el.querySelector("#fa");
+    const ultimo = async () => {
+      const { data } = await sb.from("atualizacoes").select("*").eq("autor", eu.perfil.id).order("criado_em", { ascending: false }).limit(1);
+      el.querySelector("#ultimo").textContent = data?.[0] ? `Último sinal: ${ICONE_SINAL[data[0].tipo] || ""} ${data[0].texto} (${haQuanto(data[0].criado_em)})` : "Você ainda não deu sinal hoje.";
+    };
+    const agenda = async () => {
+      const { data } = await sb.from("agenda").select("*").eq("autor", eu.perfil.id).eq("data", hojeISO()).order("hora", { ascending: true });
+      el.querySelector("#ag").innerHTML = (data || []).map((x) => `<label class="rank" style="cursor:pointer"><input type="checkbox" data-ag="${x.id}" ${x.feito ? "checked" : ""}>
+        <span class="pos" style="font-size:18px;width:56px">${x.hora ? x.hora.slice(0, 5) : "—"}</span><span class="nome" style="${x.feito ? "text-decoration:line-through;color:var(--cinza)" : ""}">${esc(x.texto)}</span></label>`).join("") || `<p class="vazio">Nada programado ainda.</p>`;
+      el.querySelectorAll("[data-ag]").forEach((c) => (c.onchange = async () => { await sb.from("agenda").update({ feito: c.checked }).eq("id", c.dataset.ag); agenda(); }));
+    };
+    fs.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const tipo = el.querySelector("[name=ts]:checked")?.value || "outro";
+      const rot = TIPOS_SINAL.find((x) => x[0] === tipo)?.[2];
+      const texto = fs.texto.value.trim() || rot;
+      if (!texto) return;
+      await sinal(texto, tipo);
+      fs.reset(); el.querySelectorAll("[name=ts]").forEach((r) => (r.checked = false));
+      ultimo();
+    };
+    fa.onsubmit = async (ev) => {
+      ev.preventDefault();
+      const { error } = await sb.from("agenda").insert({ hora: fa.hora.value || null, texto: fa.texto.value.trim() });
+      if (error) return alertaErro(error);
+      await sinal(`Programou ${fa.hora.value ? fa.hora.value + " " : ""}${fa.texto.value.trim()}`, "outro");
+      fa.reset(); agenda(); ultimo();
+    };
+    ultimo(); agenda();
+  }
+
+  /* ---------- AO VIVO: onde está cada um agora (administradores veem todos) */
+  let canal = null;
+  async function pgAoVivo() {
+    app.innerHTML = `${trilha([["Início", "#/"], ["Ao vivo"]])}${cabeca("Ao vivo", `${new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}. Atualiza sozinho quando alguém dá sinal, começa uma atividade ou envia fotos.`)}<div id="av"></div>`;
+    const el = $("#av");
+    if (!sb) { el.innerHTML = semSupabase; return; }
+    if (!eu) { el.innerHTML = `<div class="aviso">O painel ao vivo é só para o time. <a href="#/entrar">Entrar</a></div>`; return; }
+    if (!souAdmin()) el.insertAdjacentHTML("beforebegin", `<div class="aviso azul">Você vê só o seu andamento. Os administradores veem o time inteiro.</div>`);
+    const desenhar = async (novoId) => {
+      const time = (await elenco()).filter((m) => m.perfil && (souAdmin() || m.perfil.id === eu.perfil.id));
+      const [{ data: atu }, { data: ag }, { data: atv }] = await Promise.all([
+        sb.from("atualizacoes").select("*").gte("criado_em", inicioHoje()).order("criado_em", { ascending: false }).limit(300),
+        sb.from("agenda").select("*").eq("data", hojeISO()).order("hora", { ascending: true }),
+        sb.from("atividades").select("*").eq("data", hojeISO()).order("criado_em", { ascending: false }),
+      ]);
+      const nomeDe = Object.fromEntries(time.map((m) => [m.perfil.id, m]));
+      const ids = (atv || []).map((a) => a.id);
+      const { data: mids } = ids.length ? await sb.from("midias").select("*").in("atividade_id", ids).order("criado_em", { ascending: false }) : { data: [] };
+      const urls = {};
+      const fotos = (mids || []).filter((x) => x.tipo === "foto").slice(0, 60);
+      if (fotos.length) { const { data: u } = await sb.storage.from("midias").createSignedUrls(fotos.map((x) => x.path), 3600); fotos.forEach((x, i) => (urls[x.id] = u?.[i]?.signedUrl)); }
+      const cards = time.map((m) => {
+        const meu = (atu || []).filter((x) => x.autor === m.perfil.id);
+        const ult = meu[0];
+        const agd = (ag || []).filter((x) => x.autor === m.perfil.id);
+        const at = (atv || []).filter((x) => x.autor === m.perfil.id);
+        const fs = (mids || []).filter((x) => at.some((a) => a.id === x.atividade_id));
+        return `<div class="item ${!ult ? "alta" : ult.tipo === "encerrado" ? "" : "media"}" style="border-left-width:6px">
+          <div style="display:flex;gap:12px;align-items:center"><span class="jogador" style="width:auto"><span class="rosto" style="width:58px;height:58px;font-size:22px;border-color:${ult ? "var(--brasa)" : "var(--linha)"};color:#fff">${rosto(m.foto, m.nome)}</span></span>
+          <div style="flex:1"><h3 style="margin:0;font-family:var(--cond);font-size:22px;color:var(--anil)">${esc(m.nome)}</h3>
+          <div style="font-size:16px;font-weight:600">${ult ? `${ICONE_SINAL[ult.tipo] || "💬"} ${esc(ult.texto)}` : `<span style="color:var(--vermelho)">Ainda não deu sinal hoje</span>`}</div>
+          <div class="meta">${ult ? `${haQuanto(ult.criado_em)}${ult.origem === "whatsapp" ? " · pelo WhatsApp" : ""}` : ""}</div></div></div>
+          ${agd.length ? `<div style="margin-top:8px">${agd.map((x) => `<div class="meta" style="font-size:14px">${x.feito ? "✅" : "🕘"} <b>${x.hora ? x.hora.slice(0, 5) : "—"}</b> ${esc(x.texto)}</div>`).join("")}</div>` : ""}
+          ${at.map((a) => `<div class="meta" style="margin-top:8px;font-size:14px"><a href="#/atividade/${a.id}"><b>${esc(a.local || a.titulo)}</b></a> ${tag(SIT[a.situacao], a.situacao)}</div>`).join("")}
+          ${fs.length ? `<div class="midias">${fs.filter((x) => urls[x.id]).slice(0, 6).map((x) => `<figure><a href="#/atividade/${x.atividade_id}"><img src="${esc(urls[x.id])}" alt="${esc(x.legenda || "")}"></a></figure>`).join("")}</div>
+            <div class="meta">📷 ${fs.filter((x) => x.tipo === "foto").length} · 🎥 ${fs.filter((x) => x.tipo === "video").length}</div>` : ""}
+        </div>`;
+      }).join("");
+      const deram = time.filter((m) => (atu || []).some((x) => x.autor === m.perfil.id)).length;
+      el.innerHTML = `<div class="kpis"><div class="kpi"><b>${deram}/${time.length}</b><span>deram sinal hoje</span></div><div class="kpi"><b>${(atv || []).length}</b><span>atividades hoje</span></div>
+        <div class="kpi"><b>${(mids || []).length}</b><span>fotos e vídeos hoje</span></div><div class="kpi"><b>${(ag || []).filter((x) => !x.feito).length}</b><span>compromissos pendentes</span></div></div>
+        <div class="botoes" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))">${cards}</div>
+        <div class="bloco"><h2>Linha do dia</h2>${(atu || []).map((x) => `<div class="rank" style="${x.id === novoId ? "background:var(--brasa-cl)" : ""}"><span class="pos" style="font-size:17px;width:52px">${hora(x.criado_em)}</span>
+          <span class="nome"><b>${esc(nomeDe[x.autor]?.nome || "")}</b> ${ICONE_SINAL[x.tipo] || ""} ${esc(x.texto)}${x.atividade_id ? ` · <a href="#/atividade/${x.atividade_id}">ver</a>` : ""}</span></div>`).join("") || `<p class="vazio">Nenhum sinal ainda hoje.</p>`}</div>`;
+    };
+    await desenhar();
+    if (canal) sb.removeChannel(canal);
+    let espera = null;
+    canal = sb.channel("ao-vivo");
+    ["atualizacoes", "agenda", "atividades", "midias"].forEach((t) => canal.on("postgres_changes", { event: "*", schema: "public", table: t }, (ev) => {
+      if (!location.hash.startsWith("#/ao-vivo")) return;
+      clearTimeout(espera); espera = setTimeout(() => desenhar(ev.new?.id), 400);
+    }));
+    canal.subscribe();
+  }
+
+  /* ---------- meu perfil: WhatsApp, avisos e foto */
+  async function pgPerfil() {
+    app.innerHTML = `${trilha([["Início", "#/"], ["Meu perfil"]])}${cabeca("Meu perfil", "Seu WhatsApp e e-mail ficam guardados só no banco do time, nunca no site público.")}<div id="pf"></div>`;
+    if (!sb || !eu) { $("#pf").innerHTML = sb ? `<div class="aviso"><a href="#/entrar">Entre</a> para ver seu perfil.</div>` : semSupabase; return; }
+    const p = eu.perfil;
+    $("#pf").innerHTML = `<div class="bloco"><form class="form" id="f">
+      <label class="foto-cadastro" id="fc">${p.foto_path ? `<img src="${esc(fotoPublica(p.foto_path))}" alt="Sua foto">` : "Toque para tirar sua foto"}<input type="file" accept="image/*" capture="user" hidden name="foto"></label>
+      <label>WhatsApp com DDD<input name="telefone" inputmode="tel" placeholder="82 9 9999-9999" value="${esc(p.telefone || "")}"></label>
+      <div class="opcoes"><label><input type="checkbox" name="ne" ${p.notificar_email !== false ? "checked" : ""}> Lembrete por e-mail</label>
+      <label><input type="checkbox" name="nw" ${p.notificar_whatsapp !== false ? "checked" : ""}> Lembrete por WhatsApp</label></div>
+      <p class="explica">Todo dia às 8h chega a pergunta "já começou sua atividade do dia?". Pelo WhatsApp é só responder (ex.: "hoje estou em home office com o Mourinha" ou "9h reunião no Sebrae") que aparece no painel Ao vivo.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="submit">Salvar</button><a class="btn claro" href="#/sair">Sair da conta</a></div></form></div>`;
+    const f = $("#f");
+    f.foto.onchange = async () => {
+      if (!f.foto.files[0]) return;
+      const b = await comprimir(f.foto.files[0], 600, 0.85);
+      await salvarFotoPerfil(b); chip(); pgPerfil();
+    };
+    f.onsubmit = async (ev) => {
+      ev.preventDefault();
+      let tel = f.telefone.value.replace(/\D/g, "");
+      if (tel && !tel.startsWith("55")) tel = "55" + tel;
+      const { error } = await sb.from("perfis").update({ telefone: tel || null, notificar_email: f.ne.checked, notificar_whatsapp: f.nw.checked }).eq("id", p.id);
+      if (error) return alertaErro(error);
+      Object.assign(p, { telefone: tel, notificar_email: f.ne.checked, notificar_whatsapp: f.nw.checked });
+      f.querySelector("button").textContent = "Salvo";
+    };
+  }
+
   function alertaErro(e) { const d = document.createElement("div"); d.className = "aviso vermelho"; d.innerHTML = `<b>Não foi possível salvar.</b> ${esc(e.message || e)}`; app.prepend(d); window.scrollTo(0, 0); }
 
   /* ---------- atividade: clipe de fotos e vídeos + fechamento */
@@ -242,6 +386,8 @@
         } catch (e) { linha.innerHTML = `<span class="tag alta">Falhou</span> ${esc(arq.name)}: ${esc(e.message || e)}`; }
       }
       $("#leg").value = "";
+      const ok = arqs.length - $("#envio").children.length;
+      if (ok > 0) await sinal(`Enviou ${ok} ${ok === 1 ? "foto/vídeo" : "fotos/vídeos"} de ${a.local || a.titulo}${leg ? `: ${leg}` : ""}`, "midia", { local: a.local, atividade_id: id });
       await desenharMidias();
     }));
     const fe = $("#fech");
@@ -252,6 +398,8 @@
       if (error) alertaErro(error);
       else {
         if (a.missao_id) await sb.from("missoes_status").upsert({ esfera: a.esfera, missao_id: a.missao_id, situacao: fe.situacao.value === "resolvido" ? "feita" : "em_andamento", responsavel: a.autor });
+        if (meu && fe.situacao.value !== a.situacao) await sinal(`${SIT[fe.situacao.value]}: ${a.local || a.titulo}`, fe.situacao.value === "em_andamento" ? "em_atividade" : "outro", { local: a.local, atividade_id: id });
+        a.situacao = fe.situacao.value;
         b.textContent = "Salvo"; setTimeout(() => { b.textContent = "Salvar resultado"; b.disabled = false; }, 1500);
       }
     };
@@ -389,6 +537,8 @@
     if (p[0] === "entrar") { pgEntrar(); return true; }
     if (p[0] === "cadastro") { pgCadastro(); return true; }
     if (p[0] === "admin") { await pgAdmin(); return true; }
+    if (p[0] === "ao-vivo") { await pgAoVivo(); return true; }
+    if (p[0] === "perfil") { await pgPerfil(); return true; }
     if (p[0] === "sair") { if (sb) await sb.auth.signOut(); eu = null; chip(); location.hash = "#/"; return true; }
     return false;
   }
