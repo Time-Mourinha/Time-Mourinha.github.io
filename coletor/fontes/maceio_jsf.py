@@ -82,11 +82,15 @@ def coletar(ano: int):
                 try:
                     pag.click(f'ul[role="tablist"] >> text="{aba}"', timeout=15_000)
                     pag.wait_for_timeout(1500)
-                    datas = pag.query_selector_all(f'[id="{form}"] input.hasDatepicker, [id="{form}"] input[id$="_input"][type="text"]')
-                    if len(datas) >= 2:
-                        for campo, valor in ((datas[0], f"01/01/{ano}"), (datas[1], fim)):
-                            campo.fill("")
-                            campo.type(valor)
+                    # os dois campos de data do formulário (ids terminados em _input com valor dd/mm/aaaa)
+                    n = pag.evaluate("""([form, ini, fim]) => {
+                        const f = document.getElementById(form);
+                        const cs = [...f.querySelectorAll('input[type=text]')].filter(i => /^\\d{2}\\/\\d{2}\\/\\d{4}$/.test(i.value));
+                        [ini, fim].forEach((v, k) => { if (cs[k]) { cs[k].value = v; cs[k].dispatchEvent(new Event('change', {bubbles: true}));
+                                                                    cs[k].dispatchEvent(new Event('blur', {bubbles: true})); } });
+                        return cs.map(c => c.id + '=' + c.value);
+                    }""", [form, f"01/01/{ano}", fim])
+                    log.info("Maceió %s: datas %s", nome, n)
                     pag.click(f'[id="{form}"] button:has-text("Consultar")')
                     pag.wait_for_timeout(8000)
                     (pasta / f"tabela-{re.sub('[^a-z]+', '-', nome)}.html").write_text(pag.content()[:600_000], encoding="utf-8")
