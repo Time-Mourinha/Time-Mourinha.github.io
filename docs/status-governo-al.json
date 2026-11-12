@@ -1,11 +1,11 @@
 [
   {
-    "nome": "Portal da Transparência — Governo de Alagoas",
-    "url": "https://transparencia.al.gov.br",
+    "nome": "API do Portal da Transparência de Alagoas",
+    "url": "https://transparencia.al.gov.br/portal/api",
     "status": "ok",
-    "registros": 7842,
-    "observacao": "80 páginas visitadas, 39 links de download, 0 respostas JSON, 35 tabelas lidas",
-    "coletado_em": "2026-11-12T12:44:56-03:00"
+    "registros": 12182,
+    "observacao": "12182 linhas de despesa, 66 órgãos, 106 dotações, 8537 favorecidos (400 detalhados por unidade)",
+    "coletado_em": "2026-11-12T13:27:39-03:00"
   },
   {
     "nome": "Alagoas em Dados (CKAN)",
@@ -13,7 +13,7 @@
     "status": "erro",
     "registros": 0,
     "observacao": "HTTPError: 502 Server Error: Bad Gateway for url: https://apqkewsdzwawtiajbmyl.supabase.co/functions/v1/ponte?url=https%3A%2F%2Fdados.al.gov.br%2Fcatalogo%2Fapi%2F3%2Faction%2Fpackage_search%3Fq%3Ddespesa%26rows%3D50",
-    "coletado_em": "2026-11-12T12:53:09-03:00"
+    "coletado_em": "2026-11-12T14:13:03-03:00"
   },
   {
     "nome": "CNES — unidades de saúde",
@@ -21,7 +21,7 @@
     "status": "ok",
     "registros": 9,
     "observacao": "9 unidades de saúde (estadual)",
-    "coletado_em": "2026-11-12T12:53:45-03:00"
+    "coletado_em": "2026-11-12T14:13:40-03:00"
   },
   {
     "nome": "INEP — Censo Escolar (rede estadual)",
@@ -29,7 +29,7 @@
     "status": "ok",
     "registros": 326,
     "observacao": "Censo Escolar 2024: 326 escolas da rede estadual",
-    "coletado_em": "2026-11-12T12:54:06-03:00"
+    "coletado_em": "2026-11-12T14:14:01-03:00"
   },
   {
     "nome": "Notícias oficiais",
@@ -37,15 +37,15 @@
     "status": "erro",
     "registros": 0,
     "observacao": "0 notícias",
-    "coletado_em": "2026-11-12T12:55:01-03:00"
+    "coletado_em": "2026-11-12T14:15:04-03:00"
   },
   {
     "nome": "BrasilAPI — dados de CNPJ",
     "url": "https://brasilapi.com.br",
     "status": "ok",
-    "registros": 0,
-    "observacao": "0 consultas novas hoje; 0 CNPJs em cache",
-    "coletado_em": "2026-11-12T12:55:33-03:00"
+    "registros": 300,
+    "observacao": "300 consultas novas hoje; 300 CNPJs em cache",
+    "coletado_em": "2026-11-12T14:15:37-03:00"
   },
   {
     "nome": "CGU — empresas sancionadas (CEIS/CNEP)",
@@ -53,6 +53,6 @@
     "status": "sem_chave",
     "registros": 0,
     "observacao": "Cadastre o segredo CGU_API_KEY no GitHub para ativar.",
-    "coletado_em": "2026-11-12T12:55:33-03:00"
+    "coletado_em": "2026-11-12T14:22:07-03:00"
   }
 ]
