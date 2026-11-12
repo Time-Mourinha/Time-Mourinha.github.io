@@ -1,0 +1,8 @@
+# Configuração mínima para publicar as funções do Time Mourinha pela CLI do Supabase.
+project_id = "time-mourinha"
+
+[functions.ponte]
+verify_jwt = false
+
+[functions.whatsapp]
+verify_jwt = false

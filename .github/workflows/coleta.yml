@@ -48,13 +48,15 @@ jobs:
           key: dados-${{ github.run_id }}
           restore-keys: dados-
 
+      - name: Pegar as chaves do Supabase (ponte em São Paulo)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: python notificacoes/supabase_setup.py chaves || echo "Sem Supabase, coleta sem a ponte."
+
       - name: Coletar dados (Governo de Alagoas e Prefeitura de Maceió)
         id: coleta
         env:
           CGU_API_KEY: ${{ secrets.CGU_API_KEY }}
-          PONTE_URL: ${{ secrets.PONTE_URL }}
-          PONTE_CHAVE: ${{ secrets.PONTE_CHAVE }}
-          PONTE_ANON: ${{ secrets.PONTE_ANON }}
         run: |
           set +e
           python -m coletor.main

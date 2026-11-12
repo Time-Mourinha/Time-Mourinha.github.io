@@ -122,8 +122,7 @@ class Http:
             params = kw.pop("params", None)
             if params:
                 url = requests.Request("GET", url, params=params).prepare().url
-            kw["headers"] = {**kw.get("headers", {}), "x-chave": os.environ.get("PONTE_CHAVE", ""),
-                             "x-region": "sa-east-1", "Authorization": f"Bearer {os.environ.get('PONTE_ANON', '')}"}
+            kw["headers"] = {**kw.get("headers", {}), "x-chave": os.environ.get("PONTE_CHAVE", ""), "x-region": "sa-east-1"}
             return self.s.get(os.environ["PONTE_URL"], params={"url": url}, **kw)
         if urlparse(url).netloc in HOSTS_SEM_CADEIA:
             import urllib3

@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths: ["site/**", ".github/workflows/publicar.yml"]
   workflow_run:
+    workflows: ["Configurar o Supabase"]
+    types: [completed]
+  workflow_run:
     workflows: ["Coleta diária e publicação", "Notícias da mídia"]
     types: [completed]
   workflow_dispatch:
@@ -34,6 +37,20 @@ jobs:
           path: site/dados
           key: dados-${{ github.run_id }}
           restore-keys: dados-
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Colocar a chave pública do Supabase no site
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          pip install -q requests
+          python notificacoes/supabase_setup.py chaves
+      - name: Gravar a chave no config.js
+        run: |
+          if [ -n "${SUPABASE_ANON_KEY:-}" ]; then
+            sed -i "s|SUPABASE_ANON_KEY: \"\"|SUPABASE_ANON_KEY: \"$SUPABASE_ANON_KEY\"|" site/js/config.js
+            grep -c "SUPABASE_ANON_KEY: \"\"" site/js/config.js || true
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
