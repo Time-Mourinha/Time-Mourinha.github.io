@@ -1,12 +1,7 @@
 # URLs para o robô buscar pela ponte e salvar em docs/explorar/ (diagnóstico para ajustar o coletor)
-https://transparencia.al.gov.br/portal/api/despesas/despesas-por-favorecido/lista-de-ugs
-https://transparencia.al.gov.br/portal/api/despesas/despesas-por-favorecido/lista-de-favorecidos
-https://transparencia.al.gov.br/portal/api/despesas/despesas-por-favorecido/lista-de-subelementos
-https://transparencia.al.gov.br/portal/api/despesas/consulta-avancada
-https://transparencia.al.gov.br/portal/api/orcamento/dotacoes-orcamentarias/lista-de-ugs
-https://transparencia.al.gov.br/portal/api/orcamento/combos/unidades-gestoras
-https://transparencia.al.gov.br/portal/api/obras/obras-obras-publicas
-https://transparencia.al.gov.br/portal/api/exportacao
-https://transparencia.al.gov.br/portal/download-de-dados
-https://transparencia.al.gov.br/despesa/despesas-por-orgao
-https://transparencia.al.gov.br/portal/api/despesas/despesas-por-acao/lista-de-ugs
+https://transparencia.al.gov.br/portal/download-de-dados/despesas/nota-empenho
+https://transparencia.al.gov.br/portal/download-de-dados/despesas/lancamento-pago
+https://transparencia.al.gov.br/portal/download-de-dados/despesas/credor
+https://transparencia.al.gov.br/portal/download-de-dados/orcamento/dotacao-orcamentaria
+https://transparencia.al.gov.br/portal/download-de-dados/despesas/comparativo-de-despesa
+https://transparencia.al.gov.br/portal/download-de-dados/pessoal/orgao-folha
