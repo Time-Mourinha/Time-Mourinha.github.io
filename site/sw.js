@@ -1,6 +1,6 @@
 // Time Mourinha — funciona como aplicativo instalado.
 // Sempre busca a versão nova na internet; o que ficou guardado só é usado sem conexão.
-const CACHE = "tm-v1";
+const CACHE = "tm-v2";
 const BASICO = ["./", "index.html", "css/estilo.css", "js/config.js", "js/guias.js", "js/app.js", "js/time.js",
   "js/instalar.js", "img/marca.svg", "img/icone.svg", "img/app-192.png"];
 
