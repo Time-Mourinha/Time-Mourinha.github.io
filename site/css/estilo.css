@@ -218,3 +218,18 @@ footer{max-width:1200px;margin:10px auto 0;padding:18px 16px 30px;color:var(--ci
 .agir details .explica{padding-left:12px}
 .cobranca{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
 .cobranca select{border:1.5px solid var(--linha);border-radius:10px;padding:8px 10px;background:var(--giz);font-weight:600}
+
+/* Instalar como aplicativo */
+.topo .instalar{margin-left:auto;background:var(--brasa);color:var(--giz);border:0;border-radius:999px;padding:7px 14px;
+  font:700 14px/1 Barlow,sans-serif;cursor:pointer;white-space:nowrap}
+.topo .instalar[hidden]{display:none}
+.topo .instalar:not([hidden]) + .usuario{margin-left:0}
+.topo .instalar:focus-visible{outline:3px solid var(--giz);outline-offset:2px}
+.instalar-aviso{position:fixed;inset:0;background:rgba(10,47,107,.55);display:grid;place-items:end center;z-index:2000;padding:16px}
+.instalar-aviso>div{background:var(--giz);color:var(--tinta);border-radius:18px;padding:20px;max-width:420px;width:100%;
+  border-top:6px solid var(--brasa)}
+.instalar-aviso b{font-family:"Barlow Condensed",sans-serif;font-size:22px}
+.instalar-aviso p{margin:8px 0 16px;line-height:1.5}
+.instalar-aviso p b{font-family:inherit;font-size:inherit}
+.instalar-aviso button{background:var(--anil);color:var(--giz);border:0;border-radius:12px;padding:12px;width:100%;font:700 16px Barlow,sans-serif}
+@media (max-width:420px){.topo .marca small{display:none}}
