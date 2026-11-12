@@ -34,10 +34,18 @@
   botao.hidden = false;
 
   botao.addEventListener("click", async () => {
-    if (convite) { convite.prompt(); await convite.userChoice; convite = null; botao.hidden = true; return; }
+    // Chrome/Edge com convite pronto: abre a janela de instalação do próprio navegador.
+    if (convite) {
+      try {
+        const c = convite; convite = null;
+        await c.prompt();
+        const { outcome } = await c.userChoice;
+        if (outcome === "accepted") { botao.hidden = true; return; }
+      } catch (e) { /* se o navegador recusar, mostra o passo a passo abaixo */ }
+    }
     const aviso = document.createElement("div");
     aviso.className = "instalar-aviso";
-    aviso.innerHTML = `<div><b>Instalar o Time Mourinha</b>
+    aviso.innerHTML = `<div role="dialog" aria-label="Instalar o Time Mourinha"><b>Instalar o Time Mourinha</b>
       <p>${passos()} O escudo do time aparece junto com os seus aplicativos.</p>
       <button type="button">Entendi</button></div>`;
     aviso.addEventListener("click", (ev) => { if (ev.target === aviso || ev.target.tagName === "BUTTON") aviso.remove(); });
