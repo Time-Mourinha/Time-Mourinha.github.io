@@ -93,7 +93,9 @@ def hash_curto(txt: str) -> str:
 # ---------------------------------------------------------------- http
 # Sites do governo que só respondem para acessos de dentro do Brasil. Quando a "ponte"
 # (função no Supabase em São Paulo) está configurada, os pedidos a esses sites passam por ela.
-HOSTS_PONTE = ("al.gov.br", "ibge.gov.br", "inep.gov.br", "saude.gov.br")
+HOSTS_PONTE = ("al.gov.br", "ibge.gov.br")
+# Sites que respondem direto ao GitHub (não precisam da ponte), mesmo sendo .al.gov.br.
+HOSTS_DIRETOS = ("maceio.al.gov.br",)
 # Sites com certificado da cadeia ICP-Brasil, que não vem instalada no Linux do GitHub.
 HOSTS_SEM_CADEIA = ("download.inep.gov.br",)
 
@@ -102,7 +104,8 @@ def precisa_ponte(url: str) -> bool:
     import os
     from urllib.parse import urlparse
     host = urlparse(url).netloc
-    return bool(os.environ.get("PONTE_URL")) and any(host == h or host.endswith("." + h) for h in HOSTS_PONTE)
+    casa = lambda lista: any(host == h or host.endswith("." + h) for h in lista)  # noqa: E731
+    return bool(os.environ.get("PONTE_URL")) and casa(HOSTS_PONTE) and not casa(HOSTS_DIRETOS)
 
 
 class Http:
