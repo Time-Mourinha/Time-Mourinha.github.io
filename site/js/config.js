@@ -3,7 +3,7 @@
 // (Supabase → Project Settings → API). A chave "anon" pode ficar pública: quem protege os
 // dados são as regras de segurança criadas pelo arquivo docs/supabase.sql.
 window.MOURINHA = {
-  SUPABASE_URL: "",
+  SUPABASE_URL: "https://apqkewsdzwawtiajbmyl.supabase.co",
   SUPABASE_ANON_KEY: "",
 
   // Integrantes do time (aparecem no cadastro para cada um escolher o seu nome).
