@@ -3,14 +3,14 @@
     "nome": "Portal da Transparência de Maceió (consultas)",
     "url": "https://www.transparencia.maceio.al.gov.br/transparencia/pages/despesas.faces",
     "status": "ok",
-    "registros": 15,
-    "observacao": "Maceió — despesas por órgão: 11 linhas; Maceió — despesas (empenhos): 2 linhas; Maceió — diárias: 2 linhas",
-    "coletado_em": "2026-11-12T14:21:26-03:00"
+    "registros": 81,
+    "observacao": "Maceió — despesas por órgão: 40 linhas; Maceió — despesas (empenhos): 3 linhas; Maceió — diárias: 38 linhas",
+    "coletado_em": "2026-11-12T14:26:32-03:00"
   },
   "tabelas": [
     {
       "nome": "Maceió — despesas por órgão",
-      "linhas": 11,
+      "linhas": 40,
       "colunas": [
         "Órgão",
         "Orçado (R$)",
@@ -21,98 +21,130 @@
       ],
       "amostra": [
         {
+          "Órgão": "AGENCIA DE LICITACOES, CONTRATOS E CONVENIOS DE MACEIO - ALICC",
+          "Orçado (R$)": "4.627.173,00",
+          "Orçado Atualizado (R$)": "5.093.445,38",
+          "Empenhado (R$)": "4.268.591,60",
+          "Liquidado (R$)": "3.645.737,00",
+          "Pago (R$)": "3.645.737,00"
+        },
+        {
+          "Órgão": "AGENCIA MUNICIPAL DE REGULAÇÃO DE SERVIÇOS DELEGADOS - ARSER (LEI DELEGADA)",
+          "Orçado (R$)": "1.827.880,00",
+          "Orçado Atualizado (R$)": "4.463.612,72",
+          "Empenhado (R$)": "2.369.983,91",
+          "Liquidado (R$)": "1.975.567,97",
+          "Pago (R$)": "1.959.387,97"
+        },
+        {
           "Órgão": "AUTARQUIA DE DESENVOLVIMENTO SUSTENTAVEL E LIMPEZA URBANA - ALURB",
+          "Orçado (R$)": "246.526.710,00",
+          "Orçado Atualizado (R$)": "425.882.554,31",
+          "Empenhado (R$)": "297.585.258,05",
+          "Liquidado (R$)": "277.624.574,44",
+          "Pago (R$)": "277.537.397,86"
+        },
+        {
+          "Órgão": "AUTARQUIA MUNICIPAL DE ILUMINACAO PUBLICA - ILUMINA",
+          "Orçado (R$)": "67.825.299,00",
+          "Orçado Atualizado (R$)": "92.683.184,02",
+          "Empenhado (R$)": "123.942.328,78",
+          "Liquidado (R$)": "102.944.753,06",
+          "Pago (R$)": "97.792.879,27"
+        },
+        {
+          "Órgão": "CÂMARA MUNICIPAL DE MACEIÓ",
+          "Orçado (R$)": "138.929.868,00",
+          "Orçado Atualizado (R$)": "138.929.868,00",
+          "Empenhado (R$)": "114.190.203,37",
+          "Liquidado (R$)": "87.399.878,22",
+          "Pago (R$)": "84.502.400,92"
+        },
+        {
+          "Órgão": "COMPANHIA MUNICIPAL DE ADMINISTRAÇÃO, RECURSOS HUMANOS E PATRIMÔNIO",
+          "Orçado (R$)": "39.033.317,00",
+          "Orçado Atualizado (R$)": "45.698.673,67",
+          "Empenhado (R$)": "33.661.802,98",
+          "Liquidado (R$)": "33.157.610,21",
+          "Pago (R$)": "33.128.898,67"
+        },
+        {
+          "Órgão": "CONTROLADORIA-GERAL DO MUNICIPIO - CGM",
+          "Orçado (R$)": "3.027.547,00",
+          "Orçado Atualizado (R$)": "4.560.734,56",
+          "Empenhado (R$)": "2.750.880,60",
+          "Liquidado (R$)": "2.235.370,76",
+          "Pago (R$)": "2.225.070,66"
+        },
+        {
+          "Órgão": "COORDENADORIA MUNICIPAL DE PROTEÇÃO, DEFESA CIVIL E MUDANÇAS CLIMÁTICAS",
           "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "988.000,00",
-          "Empenhado (R$)": "50.000,00",
-          "Liquidado (R$)": "0,00",
-          "Pago (R$)": "0,00"
+          "Orçado Atualizado (R$)": "9.494.490,34",
+          "Empenhado (R$)": "3.496.142,37",
+          "Liquidado (R$)": "3.435.334,22",
+          "Pago (R$)": "3.435.334,22"
         },
         {
           "Órgão": "DEPARTAMENTO MUNICIPAL DE TRANSPORTE E TRANSITO - DMTT",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "0,00",
-          "Empenhado (R$)": "1.723,87",
-          "Liquidado (R$)": "0,00",
-          "Pago (R$)": "0,00"
+          "Orçado (R$)": "135.695.033,00",
+          "Orçado Atualizado (R$)": "319.455.899,33",
+          "Empenhado (R$)": "253.944.150,15",
+          "Liquidado (R$)": "247.789.620,35",
+          "Pago (R$)": "246.509.579,52"
         },
         {
           "Órgão": "EMPRESA DE TECNOLOGIA E INLCUSÃO DIGITAL DE MACEIÓ - MACEIÓ DIGITAL S/A",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "0,00",
-          "Empenhado (R$)": "35.000,00",
-          "Liquidado (R$)": "0,00",
-          "Pago (R$)": "0,00"
+          "Orçado (R$)": "40.935.090,00",
+          "Orçado Atualizado (R$)": "47.965.741,81",
+          "Empenhado (R$)": "9.867.102,97",
+          "Liquidado (R$)": "8.226.357,73",
+          "Pago (R$)": "8.075.234,34"
         },
         {
           "Órgão": "ENCARGOS GERAIS DO MUNICÍPIO",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "0,00",
-          "Empenhado (R$)": "12.698,50",
-          "Liquidado (R$)": "12.698,50",
-          "Pago (R$)": "0,00"
+          "Orçado (R$)": "481.375.594,00",
+          "Orçado Atualizado (R$)": "690.163.361,41",
+          "Empenhado (R$)": "372.654.882,81",
+          "Liquidado (R$)": "319.723.194,62",
+          "Pago (R$)": "319.260.072,76"
         },
         {
           "Órgão": "FUNDAÇÃO MUNICIPAL DE AÇÃO CULTURAL",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "0,00",
-          "Empenhado (R$)": "5.000,00",
-          "Liquidado (R$)": "0,00",
-          "Pago (R$)": "0,00"
+          "Orçado (R$)": "16.098.213,00",
+          "Orçado Atualizado (R$)": "60.590.436,75",
+          "Empenhado (R$)": "45.836.749,45",
+          "Liquidado (R$)": "41.357.939,59",
+          "Pago (R$)": "40.217.812,39"
         },
         {
-          "Órgão": "INSTITUTO DE PREVIDENCIA DOS SERVIDORES PUBLICOS DE MACEIO - IPREV",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "0,00",
-          "Empenhado (R$)": "5.795,34",
-          "Liquidado (R$)": "5.795,34",
-          "Pago (R$)": "354,49"
+          "Órgão": "GABINETE CIVIL DE MACEIO",
+          "Orçado (R$)": "12.304.530,00",
+          "Orçado Atualizado (R$)": "18.319.816,41",
+          "Empenhado (R$)": "15.170.661,39",
+          "Liquidado (R$)": "12.015.245,49",
+          "Pago (R$)": "11.921.187,21"
         },
         {
-          "Órgão": "SECRETARIA MUNICIPAL DE ABASTECIMENTO, AGRICULTURA, PESCA E AQUICULTURA - SEMAPA",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "588.000,00",
-          "Empenhado (R$)": "166.000,00",
-          "Liquidado (R$)": "0,00",
-          "Pago (R$)": "0,00"
+          "Órgão": "GABINETE DO VICE-PREFEITO",
+          "Orçado (R$)": "3.527.330,00",
+          "Orçado Atualizado (R$)": "5.000.383,82",
+          "Empenhado (R$)": "2.365.940,15",
+          "Liquidado (R$)": "1.054.407,80",
+          "Pago (R$)": "1.054.407,80"
         },
         {
-          "Órgão": "SECRETARIA MUNICIPAL DE DESENVOLVIMENTO HABITACIONAL - SEMHAB",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "0,00",
-          "Empenhado (R$)": "54.453,80",
-          "Liquidado (R$)": "0,00",
-          "Pago (R$)": "0,00"
-        },
-        {
-          "Órgão": "SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL, PRIMEIRA INFANCIA E SEGURANCA ALIMENTAR",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "7.473.854,00",
-          "Empenhado (R$)": "217.324,00",
-          "Liquidado (R$)": "0,00",
-          "Pago (R$)": "0,00"
-        },
-        {
-          "Órgão": "SECRETARIA MUNICIPAL DE EDUCAÇÃO",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "4.747,46",
-          "Empenhado (R$)": "4.186.735,74",
-          "Liquidado (R$)": "3.536.842,51",
-          "Pago (R$)": "0,00"
-        },
-        {
-          "Órgão": "SECRETARIA MUNICIPAL DE SAÚDE",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "11.328.926,00",
-          "Empenhado (R$)": "5.624.766,31",
-          "Liquidado (R$)": "640.203,00",
-          "Pago (R$)": "0,00"
+          "Órgão": "INSTITUTO DE PESQUISA, PLANEJAMENTO E LINCENCIAMENTO URBANO E AMBIENTAL DE MACEIO - IPLAM",
+          "Orçado (R$)": "27.936.597,00",
+          "Orçado Atualizado (R$)": "47.235.325,31",
+          "Empenhado (R$)": "33.589.217,71",
+          "Liquidado (R$)": "31.292.658,00",
+          "Pago (R$)": "30.980.281,80"
         }
       ]
     },
     {
       "nome": "Maceió — despesas (empenhos)",
-      "linhas": 2,
+      "linhas": 3,
       "colunas": [
         "",
         "Elemento da Despesa",
@@ -128,19 +160,29 @@
           "": "Detalhes",
           "Elemento da Despesa": "30000000000",
           "Conta Despesa": "DESPESAS CORRENTES",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "20.028.527,46",
-          "Empenhado (R$)": "10.499.628,50",
-          "Liquidado (R$)": "4.195.539,35",
-          "Pago (R$)": "354,49"
+          "Orçado (R$)": "4.510.072.237,00",
+          "Orçado Atualizado (R$)": "7.501.302.909,46",
+          "Empenhado (R$)": "4.267.688.084,87",
+          "Liquidado (R$)": "4.194.944.628,03",
+          "Pago (R$)": "4.141.377.206,84"
         },
         {
           "": "Detalhes",
           "Elemento da Despesa": "40000000000",
           "Conta Despesa": "DESPESAS DE CAPITAL",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "455.000,00",
-          "Empenhado (R$)": "64.869,06",
+          "Orçado (R$)": "931.262.439,00",
+          "Orçado Atualizado (R$)": "1.455.577.261,12",
+          "Empenhado (R$)": "456.712.816,98",
+          "Liquidado (R$)": "431.920.905,09",
+          "Pago (R$)": "426.063.792,30"
+        },
+        {
+          "": "Detalhes",
+          "Elemento da Despesa": "90000000000",
+          "Conta Despesa": "RESERVA DE CONTINGÊNCIA E RESERVA DO RPPS",
+          "Orçado (R$)": "196.400.028,00",
+          "Orçado Atualizado (R$)": "287.400.028,00",
+          "Empenhado (R$)": "0,00",
           "Liquidado (R$)": "0,00",
           "Pago (R$)": "0,00"
         }
@@ -148,7 +190,7 @@
     },
     {
       "nome": "Maceió — diárias",
-      "linhas": 2,
+      "linhas": 38,
       "colunas": [
         "Órgão",
         "Conta Despesa",
@@ -160,22 +202,139 @@
       ],
       "amostra": [
         {
-          "Órgão": "SECRETARIA MUNICIPAL DE SAÚDE",
+          "Órgão": "AGENCIA MUNICIPAL DE REGULAÇÃO DE SERVIÇOS DELEGADOS - ARSER (LEI DELEGADA)",
           "Conta Despesa": "DIÁRIAS - CIVIL",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "192.871.800,00",
+          "Orçado (R$)": "10.200.000,00",
+          "Orçado Atualizado (R$)": "26.356.800,00",
+          "Empenho (R$)": "6.321.409,20",
+          "Liquidado (R$)": "6.179.010,06",
+          "Pago (R$)": "6.179.010,06"
+        },
+        {
+          "Órgão": "GABINETE CIVIL DE MACEIO",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "48.900.000,00",
+          "Orçado Atualizado (R$)": "57.156.197,76",
+          "Empenho (R$)": "23.862.557,78",
+          "Liquidado (R$)": "22.801.072,44",
+          "Pago (R$)": "22.801.072,44"
+        },
+        {
+          "Órgão": "SECRETARIA EXTRAORDINÁRIA DE JUVENTUDE E LAZER",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "870.000,00",
+          "Orçado Atualizado (R$)": "1.740.000,00",
           "Empenho (R$)": "0,00",
           "Liquidado (R$)": "0,00",
           "Pago (R$)": "0,00"
         },
         {
-          "Órgão": "SECRETARIA MUNICIPAL DE DESENVOLVIMENTO SOCIAL, PRIMEIRA INFANCIA E SEGURANCA ALIMENTAR",
+          "Órgão": "SECRETARIA MUNICIPAL DE ABASTECIMENTO, AGRICULTURA, PESCA E AQUICULTURA - SEMAPA",
           "Conta Despesa": "DIÁRIAS - CIVIL",
-          "Orçado (R$)": "0,00",
-          "Orçado Atualizado (R$)": "7.250.000,00",
+          "Orçado (R$)": "1.136.000,00",
+          "Orçado Atualizado (R$)": "2.272.000,00",
           "Empenho (R$)": "0,00",
           "Liquidado (R$)": "0,00",
           "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "EMPRESA DE TECNOLOGIA E INLCUSÃO DIGITAL DE MACEIÓ - MACEIÓ DIGITAL S/A",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "43.350.000,00",
+          "Orçado Atualizado (R$)": "59.744.030,75",
+          "Empenho (R$)": "27.499.930,83",
+          "Liquidado (R$)": "20.924.383,19",
+          "Pago (R$)": "20.924.383,19"
+        },
+        {
+          "Órgão": "INSTITUTO DE PREVIDENCIA DOS SERVIDORES PUBLICOS DE MACEIO - IPREV",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "51.600.000,00",
+          "Orçado Atualizado (R$)": "51.600.000,00",
+          "Empenho (R$)": "12.893.147,52",
+          "Liquidado (R$)": "12.893.147,52",
+          "Pago (R$)": "12.893.147,52"
+        },
+        {
+          "Órgão": "COMPANHIA MUNICIPAL DE ADMINISTRAÇÃO, RECURSOS HUMANOS E PATRIMÔNIO",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "5.040.000,00",
+          "Orçado Atualizado (R$)": "10.080.000,00",
+          "Empenho (R$)": "0,00",
+          "Liquidado (R$)": "0,00",
+          "Pago (R$)": "0,00"
+        },
+        {
+          "Órgão": "CÂMARA MUNICIPAL DE MACEIÓ",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "189.880.000,00",
+          "Orçado Atualizado (R$)": "189.880.000,00",
+          "Empenho (R$)": "6.666.000,00",
+          "Liquidado (R$)": "6.666.000,00",
+          "Pago (R$)": "6.666.000,00"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE GESTAO DE PESSOAS E PATRIMONIO - SEMGE",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "73.600.000,00",
+          "Orçado Atualizado (R$)": "124.577.153,32",
+          "Empenho (R$)": "14.524.936,72",
+          "Liquidado (R$)": "13.437.008,32",
+          "Pago (R$)": "13.437.008,32"
+        },
+        {
+          "Órgão": "AGENCIA DE LICITACOES, CONTRATOS E CONVENIOS DE MACEIO - ALICC",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "10.560.000,00",
+          "Orçado Atualizado (R$)": "12.371.004,80",
+          "Empenho (R$)": "2.644.473,92",
+          "Liquidado (R$)": "2.644.473,92",
+          "Pago (R$)": "2.644.473,92"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE COMUNICAÇÃO",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "13.400.000,00",
+          "Orçado Atualizado (R$)": "18.868.797,95",
+          "Empenho (R$)": "11.443.040,55",
+          "Liquidado (R$)": "11.443.040,55",
+          "Pago (R$)": "11.443.040,55"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE GOVERNO E SUBPREFEITURAS - SEGOV",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "32.075.200,00",
+          "Orçado Atualizado (R$)": "60.626.528,10",
+          "Empenho (R$)": "3.804.978,46",
+          "Liquidado (R$)": "3.736.170,70",
+          "Pago (R$)": "3.736.170,70"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE TURISMO - SEMTUR",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "100.350.000,00",
+          "Orçado Atualizado (R$)": "173.384.964,15",
+          "Empenho (R$)": "23.886.076,35",
+          "Liquidado (R$)": "19.118.407,71",
+          "Pago (R$)": "19.118.407,71"
+        },
+        {
+          "Órgão": "COORDENADORIA MUNICIPAL DE PROTEÇÃO, DEFESA CIVIL E MUDANÇAS CLIMÁTICAS",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "0,00",
+          "Orçado Atualizado (R$)": "12.086.449,02",
+          "Empenho (R$)": "351.467,91",
+          "Liquidado (R$)": "351.467,91",
+          "Pago (R$)": "351.467,91"
+        },
+        {
+          "Órgão": "SECRETARIA MUNICIPAL DE SEGURANCA CIDADA - SEMSC",
+          "Conta Despesa": "DIÁRIAS - CIVIL",
+          "Orçado (R$)": "10.600.000,00",
+          "Orçado Atualizado (R$)": "19.844.071,85",
+          "Empenho (R$)": "1.355.928,15",
+          "Liquidado (R$)": "1.355.928,15",
+          "Pago (R$)": "1.355.928,15"
         }
       ]
     }
