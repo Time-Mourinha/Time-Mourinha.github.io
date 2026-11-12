@@ -589,11 +589,12 @@
 
   /* ---------- rotas desta área */
   async function rota(p, params) {
+    // dono sem o código do e-mail: qualquer página da área do time pede o código primeiro
+    if (precisaCodigo() && !["sair", "cadastro", "entrar"].includes(p[0])) { await pedirCodigo(); return true; }
     if (p[0] === "time") { if (!p[1]) await pgTime(params); else await pgMembro(p[1], p[2], p[3] && p[3] !== "-" ? p[3] : null); return true; }
     if (p[0] === "hoje") { await pgHoje(params); return true; }
     if (p[0] === "atividade") { await pgAtividade(p[1]); return true; }
     if (p[0] === "entrar") { precisaCodigo() ? await pedirCodigo() : pgEntrar(); return true; }
-    if (precisaCodigo() && !["sair", "cadastro"].includes(p[0])) { await pedirCodigo(); return true; }
     if (p[0] === "cadastro") { pgCadastro(); return true; }
     if (p[0] === "admin") { await pgAdmin(); return true; }
     if (p[0] === "ao-vivo") { await pgAoVivo(); return true; }
