@@ -6,13 +6,12 @@ on:
   workflow_dispatch:         # botão "Run workflow" para rodar na hora
   push:
     branches: [main]
-    paths: ["site/**", "coletor/**", ".github/workflows/**"]
+    paths: ["coletor/**", ".github/workflows/coleta.yml"]
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
   issues: write
+  actions: write
 
 concurrency:
   group: coleta
@@ -22,9 +21,6 @@ jobs:
   coletar-e-publicar:
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -87,10 +83,3 @@ jobs:
         run: |
           gh issue create --title "Coleta de $(date +%d/%m/%Y) com problema" \
             --body "A coleta automática não conseguiu despesas de pelo menos uma esfera. Veja o log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} e a página Saúde dos dados do site. O site continua mostrando os dados da última coleta boa." || true
-
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-      - id: deploy
-        uses: actions/deploy-pages@v4

@@ -1,0 +1,42 @@
+name: Publicar o site
+
+# Publica o site na hora: quando o layout muda e sempre que uma coleta termina.
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/publicar.yml"]
+  workflow_run:
+    workflows: ["Coleta diária e publicação"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pegar os dados da última coleta
+        uses: actions/cache/restore@v4
+        with:
+          path: site/dados
+          key: dados-${{ github.run_id }}
+          restore-keys: dados-
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
