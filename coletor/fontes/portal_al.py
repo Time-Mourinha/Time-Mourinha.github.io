@@ -27,6 +27,53 @@ from ..util import (BRUTOS, DOCS, AMOSTRAS, Http, StatusFonte, achar_lista_regis
 EXT_DOWNLOAD = (".csv", ".txt", ".xlsx", ".xls", ".zip", ".json")
 
 
+def descobrir_pela_ponte(cfg: dict, ano: int, PASTA: Path, esfera_id: str, http: Http) -> dict:
+    """Para portais que bloqueiam acessos de fora do Brasil: navega pelo HTML usando a ponte em São Paulo."""
+    import html as H
+    pcfg = cfg["portal"]
+    dominio = urlparse(pcfg["base"]).netloc.removeprefix("www.")
+    palavras = [norm(p) for p in pcfg["palavras_links"]]
+    fila, visitadas, paginas, downloads, apis = list(pcfg["sementes"]), set(), [], {}, {}
+    (DOCS / "paginas" / esfera_id).mkdir(parents=True, exist_ok=True)
+    (PASTA / "xhr").mkdir(parents=True, exist_ok=True)
+    while fila and len(visitadas) < pcfg["max_paginas"]:
+        url = fila.pop(0)
+        if url in visitadas:
+            continue
+        visitadas.add(url)
+        try:
+            r = http.get(url)
+        except Exception as e:  # noqa: BLE001
+            paginas.append({"url": url, "erro": str(e)[:200]})
+            continue
+        ct = r.headers.get("content-type", "")
+        if "json" in ct:
+            chave = hash_curto(url)
+            (PASTA / "xhr" / f"{chave}.json").write_bytes(r.content)
+            lista = achar_lista_registros(r.json())
+            apis[url] = {"arquivo": f"xhr/{chave}.json", "registros": len(lista), "campos": sorted(lista[0].keys())[:60] if lista else []}
+            continue
+        texto = r.text
+        (DOCS / "paginas" / esfera_id / f"{len(paginas) + 1:02d}-{hash_curto(url)}.html").write_text(texto[:400_000], encoding="utf-8")
+        links = [(urljoin(url, H.unescape(h)), re.sub(r"<[^>]+>", " ", t).strip()[:120])
+                 for h, t in re.findall(r'<a[^>]+href=["\']([^"\'#]+)["\'][^>]*>(.*?)</a>', texto, flags=re.S | re.I)]
+        # endereços de API escritos no próprio JavaScript da página
+        for api in set(re.findall(r'["\'](/[\w/.-]*(?:api|json|rest|servico|dados)[\w/.-]*)["\']', texto, flags=re.I)):
+            fila.append(urljoin(url, api))
+        titulo = (re.search(r"<title>(.*?)</title>", texto, flags=re.S | re.I) or [None, ""])[1].strip()
+        paginas.append({"url": url, "titulo": titulo, "links": len(links), "lista_links": [list(x) for x in links][:250], "via": "ponte"})
+        for href, t in links:
+            h = urlparse(href)
+            if h.path.lower().endswith(EXT_DOWNLOAD) or "download" in h.path.lower() or "exportar" in h.path.lower():
+                downloads[href] = {"texto": t, "pagina": url}
+            elif h.netloc.removeprefix("www.").endswith(dominio) and any(p in norm(href + " " + t) for p in palavras) and href not in visitadas:
+                fila.append(href)
+    mapa = {"ano": ano, "via": "ponte", "paginas": paginas, "downloads": downloads, "apis": apis}
+    salvar_json(DOCS / f"mapa-portal-{esfera_id}.json", mapa, compacto=False)
+    log.info("Portal (ponte): %d páginas, %d downloads, %d APIs JSON", len(paginas), len(downloads), len(apis))
+    return mapa
+
+
 def descobrir(cfg: dict, ano: int, PASTA: Path, esfera_id: str) -> dict:
     """Navega o portal e grava o mapa. Retorna o mapa."""
     from playwright.sync_api import sync_playwright
@@ -181,7 +228,9 @@ def coletar(cfg: dict, ano: int, http: Http, esfera_id: str = "governo-al", nome
     PASTA = BRUTOS / esfera_id / "portal"
     tabelas = []
     try:
-        mapa = descobrir(cfg, ano, PASTA, esfera_id)
+        from ..util import precisa_ponte
+        mapa = (descobrir_pela_ponte(cfg, ano, PASTA, esfera_id, http) if precisa_ponte(cfg["portal"]["base"])
+                else descobrir(cfg, ano, PASTA, esfera_id))
         arquivos = baixar(mapa, ano, http, PASTA)
         for nome, url, df in extrair(mapa, arquivos, PASTA):
             tabelas.append((nome, url, df))

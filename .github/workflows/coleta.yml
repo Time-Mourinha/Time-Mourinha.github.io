@@ -52,6 +52,9 @@ jobs:
         id: coleta
         env:
           CGU_API_KEY: ${{ secrets.CGU_API_KEY }}
+          PONTE_URL: ${{ secrets.PONTE_URL }}
+          PONTE_CHAVE: ${{ secrets.PONTE_CHAVE }}
+          PONTE_ANON: ${{ secrets.PONTE_ANON }}
         run: |
           set +e
           python -m coletor.main

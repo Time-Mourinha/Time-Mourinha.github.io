@@ -41,6 +41,15 @@ com a área do time (cadastro com foto, atividades do dia com fotos e vídeos).
    `update public.perfis set papel = 'admin' where email = 'EMAIL-DO-BENE';`
    A partir daí o Bené aprova os outros pela página **Administração** e torna Mourinha e Orlandinho administradores.
 
+### Ponte em São Paulo (para os sites que bloqueiam acesso de fora do Brasil)
+
+O Portal da Transparência de Alagoas, o IBGE e outros sites do governo não respondem para os servidores do GitHub,
+que ficam fora do Brasil. A função `supabase/functions/ponte` roda no Supabase em São Paulo e busca essas páginas.
+1. No Supabase, em *Edge Functions*, crie a função **ponte** com o conteúdo de `supabase/functions/ponte/index.ts`
+   e **desligue "Verify JWT"**. Em *Secrets*, crie `PONTE_CHAVE` com uma senha longa inventada.
+2. No GitHub, crie os segredos `PONTE_URL` (= `https://SEU-PROJETO.supabase.co/functions/v1/ponte`),
+   `PONTE_CHAVE` (a mesma senha) e `PONTE_ANON` (a chave *anon public* do Supabase).
+
 ### Espaço para fotos e vídeos
 
 O plano grátis do Supabase guarda **1 GB** de arquivos, com no máximo **50 MB por arquivo**.

@@ -91,34 +91,66 @@ def hash_curto(txt: str) -> str:
 
 
 # ---------------------------------------------------------------- http
+# Sites do governo que só respondem para acessos de dentro do Brasil. Quando a "ponte"
+# (função no Supabase em São Paulo) está configurada, os pedidos a esses sites passam por ela.
+HOSTS_PONTE = ("al.gov.br", "ibge.gov.br", "inep.gov.br", "saude.gov.br")
+# Sites com certificado da cadeia ICP-Brasil, que não vem instalada no Linux do GitHub.
+HOSTS_SEM_CADEIA = ("download.inep.gov.br",)
+
+
+def precisa_ponte(url: str) -> bool:
+    import os
+    from urllib.parse import urlparse
+    host = urlparse(url).netloc
+    return bool(os.environ.get("PONTE_URL")) and any(host == h or host.endswith("." + h) for h in HOSTS_PONTE)
+
+
 class Http:
     """Sessão HTTP educada: no máximo 1 requisição por segundo por padrão."""
 
-    def __init__(self, intervalo: float = 1.0, timeout: int = 60):
+    def __init__(self, intervalo: float = 1.0, timeout: int = 90):
         self.s = requests.Session()
         self.s.headers["User-Agent"] = UA
         self.intervalo = intervalo
         self.timeout = timeout
         self._ultimo = 0.0
 
+    def _pedido(self, url, kw):
+        import os
+        from urllib.parse import urlparse
+        if precisa_ponte(url):
+            params = kw.pop("params", None)
+            if params:
+                url = requests.Request("GET", url, params=params).prepare().url
+            kw["headers"] = {**kw.get("headers", {}), "x-chave": os.environ.get("PONTE_CHAVE", ""),
+                             "x-region": "sa-east-1", "Authorization": f"Bearer {os.environ.get('PONTE_ANON', '')}"}
+            return self.s.get(os.environ["PONTE_URL"], params={"url": url}, **kw)
+        if urlparse(url).netloc in HOSTS_SEM_CADEIA:
+            import urllib3
+            urllib3.disable_warnings()
+            kw.setdefault("verify", False)  # dado público; só falta a cadeia ICP-Brasil no servidor
+        return self.s.get(url, **kw)
+
     def get(self, url, **kw) -> requests.Response:
         espera = self.intervalo - (time.time() - self._ultimo)
         if espera > 0:
             time.sleep(espera)
-        kw.setdefault("timeout", self.timeout)
-        for tentativa in range(3):
+        kw.setdefault("timeout", (15, self.timeout))  # 15 s para conectar; site que não atende não trava a coleta
+        ultimo_erro = None
+        for tentativa in range(2):
             try:
-                r = self.s.get(url, **kw)
+                r = self._pedido(url, dict(kw))
                 self._ultimo = time.time()
                 if r.status_code in (429, 502, 503, 504):
                     time.sleep(5 * (tentativa + 1))
                     continue
                 return r
             except requests.RequestException as e:
-                log.warning("Falha em %s (%s), tentativa %d", url, e, tentativa + 1)
-                time.sleep(5 * (tentativa + 1))
-        r = self.s.get(url, **kw)
-        self._ultimo = time.time()
+                ultimo_erro = e
+                log.warning("Falha em %s (%s), tentativa %d", url, str(e)[:160], tentativa + 1)
+                time.sleep(3)
+        if ultimo_erro:
+            raise ultimo_erro
         return r
 
 
