@@ -187,9 +187,9 @@ def rodar_esfera(cfg, esf, ano, http, mun, so_portal=False) -> dict:
                "n_unidades": len([u for u in unidades if u.get("orgao_id") == o["id"]]),
                "n_entregas": len([n for n in noticias_por_org.get(o["id"], []) if n["tipo"] == "entrega"])}
         lista.append(reg)
+    salvar_json(DOCS / f"status-{esf['id']}.json", [s.como_dict() for s in status], compacto=False)
     if not lista:
         log.warning("%s: nenhuma despesa coletada; os dados anteriores continuam no ar", esf["id"])
-        salvar_json(DOCS / f"status-{esf['id']}.json", [s.como_dict() for s in status], compacto=False)
         return {"tem_dados": False, "erro": "; ".join(f"{s.nome}: {s.status} {s.observacao}" for s in status)[:600]}
     analise.calcular_indice(lista, det, alertas, noticias_por_org, cfg, hoje.month)
     missoes, melhorar = analise.missoes_e_melhorias(lista, obras, alertas, unidades, gastos_unid, hoje.month)

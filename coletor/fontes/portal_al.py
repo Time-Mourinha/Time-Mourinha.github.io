@@ -32,7 +32,7 @@ def descobrir(cfg: dict, ano: int, PASTA: Path, esfera_id: str) -> dict:
     from playwright.sync_api import sync_playwright
 
     pcfg = cfg["portal"]
-    base_host = urlparse(pcfg["base"]).netloc
+    dominio = urlparse(pcfg["base"]).netloc.removeprefix("www.")
     palavras = [norm(p) for p in pcfg["palavras_links"]]
     fila = list(pcfg["sementes"])
     visitadas: set[str] = set()
@@ -71,14 +71,23 @@ def descobrir(cfg: dict, ano: int, PASTA: Path, esfera_id: str) -> dict:
                 continue
             visitadas.add(url)
             try:
-                pag.goto(url, wait_until="networkidle", timeout=60_000)
+                # "networkidle" nunca chega em portais com conexões abertas; espera o HTML e dá um tempo
+                pag.goto(url, wait_until="domcontentloaded", timeout=120_000)
+                pag.wait_for_timeout(5000)
             except Exception as e:  # noqa: BLE001
                 paginas.append({"url": url, "erro": str(e)[:200]})
                 continue
             titulo = pag.title()
             links = pag.eval_on_selector_all(
                 "a[href]", "els => els.map(e => [e.href, (e.innerText||'').trim().slice(0,120)])")
-            paginas.append({"url": url, "titulo": titulo, "links": len(links)})
+            paginas.append({"url": url, "titulo": titulo, "links": len(links),
+                            "lista_links": [[h, t] for h, t in links if h.startswith("http")][:250],
+                            "formularios": pag.eval_on_selector_all("form", "fs => fs.map(f => [f.action, f.id, f.querySelectorAll('input,select').length])")[:20]})
+            try:  # guarda o HTML para o time ajustar o coletor depois
+                (DOCS / "paginas" / esfera_id).mkdir(parents=True, exist_ok=True)
+                (DOCS / "paginas" / esfera_id / f"{len(paginas):02d}-{hash_curto(url)}.html").write_text(pag.content()[:400_000], encoding="utf-8")
+            except Exception:  # noqa: BLE001
+                pass
             for href, texto in links:
                 if not href.startswith("http"):
                     continue
@@ -87,7 +96,7 @@ def descobrir(cfg: dict, ano: int, PASTA: Path, esfera_id: str) -> dict:
                 if caminho.endswith(EXT_DOWNLOAD) or "download" in caminho or "exportar" in caminho:
                     downloads[href] = {"texto": texto, "pagina": url}
                     continue
-                if h.netloc != base_host:
+                if not h.netloc.removeprefix("www.").endswith(dominio):
                     continue
                 alvo = norm(href + " " + texto)
                 if any(p in alvo for p in palavras) and href not in visitadas:
