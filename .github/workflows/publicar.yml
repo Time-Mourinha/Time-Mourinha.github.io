@@ -29,11 +29,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Pegar os dados da última coleta
+        id: c1
         uses: actions/cache/restore@v4
         with:
           path: site/dados
           key: dados-${{ github.run_id }}
           restore-keys: dados-
+      - name: Esperar o GitHub registrar os dados recém-salvos
+        if: steps.c1.outputs.cache-matched-key == ''
+        run: sleep 90
+      - name: Pegar os dados da última coleta (segunda tentativa)
+        id: c2
+        if: steps.c1.outputs.cache-matched-key == ''
+        uses: actions/cache/restore@v4
+        with:
+          path: site/dados
+          key: dados-${{ github.run_id }}
+          restore-keys: dados-
+      - name: Conferir se há dados
+        run: |
+          ls site/dados 2>/dev/null || echo "::warning::Sem dados de coleta: o site vai mostrar 'Aguardando a primeira coleta'."
+          ls site/dados/*/orgaos.json 2>/dev/null | xargs -r -n1 sh -c 'echo "$0: $(python3 -c "import json,sys; print(len(json.load(open(sys.argv[1]))))" $0) órgãos"' 
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - name: Colocar a chave pública do Supabase no site
