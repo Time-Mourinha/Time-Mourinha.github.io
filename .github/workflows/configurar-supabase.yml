@@ -36,9 +36,9 @@ jobs:
         with: { version: latest }
       - name: Publicar a ponte e a função do WhatsApp
         run: |
-          supabase secrets set --project-ref "$SUPABASE_REF" PONTE_CHAVE="$PONTE_CHAVE"
-          supabase functions deploy ponte --project-ref "$SUPABASE_REF" --no-verify-jwt --use-api
-          supabase functions deploy whatsapp --project-ref "$SUPABASE_REF" --no-verify-jwt --use-api
+          supabase secrets set --yes --project-ref "$SUPABASE_REF" PONTE_CHAVE="$PONTE_CHAVE"
+          supabase functions deploy ponte --project-ref "$SUPABASE_REF" --no-verify-jwt --use-api --yes
+          supabase functions deploy whatsapp --project-ref "$SUPABASE_REF" --no-verify-jwt --use-api --yes
       - name: Testar a ponte (portal do Governo de Alagoas, a partir de São Paulo)
         run: |
           code=$(curl -s -o /tmp/p.html -w "%{http_code}" -H "x-chave: $PONTE_CHAVE" "$PONTE_URL?url=https://transparencia.al.gov.br/")
