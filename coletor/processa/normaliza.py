@@ -36,14 +36,15 @@ SINONIMOS = {
     "liquidado": ["VALORLIQUIDADO", "LIQUIDADO", "VLLIQUIDADO", "TOTALLIQUIDADO"],
     "pago": ["VALORPAGO", "PAGO", "VLPAGO", "TOTALPAGO", "VALORPAGAMENTO"],
     "orcado": ["DOTACAOINICIAL", "ORCAMENTOINICIAL", "VALORORCADO", "ORCADO", "PREVISTO", "VALORPREVISTO"],
-    "atualizado": ["DOTACAOATUALIZADA", "ORCAMENTOATUALIZADO", "AUTORIZADO", "VALORAUTORIZADO", "DOTACAOAUTORIZADA"],
+    "atualizado": ["DOTACAOATUALIZADA", "ORCAMENTOATUALIZADO", "ORCADOATUALIZADO", "AUTORIZADO", "VALORAUTORIZADO", "DOTACAOAUTORIZADA"],
     "valor": ["VALOR", "VALORDOCUMENTO", "VALORTOTAL", "VLDOCUMENTO", "VALORBRUTO"],
 }
 VALORES = ["empenhado", "liquidado", "pago", "orcado", "atualizado", "valor"]
 
 
 def chave_col(c: str) -> str:
-    return re.sub(r"[^A-Z0-9]", "", norm(c))
+    # tira a unidade do cabeçalho: "Pago (R$)" → "PAGO"
+    return re.sub(r"[^A-Z0-9]", "", re.sub(r"\(?\s*R\$\s*\)?|\(EM REAIS\)", "", norm(c)))
 
 
 def mapear_colunas(colunas) -> dict[str, str]:
@@ -148,8 +149,9 @@ def juntar_despesas(tabelas: list[pd.DataFrame]):
     det = tudo[tudo["detalhado"]].copy()
     tot = tudo[~tudo["detalhado"]].copy()
     chave = ["orgao", "numero", "data", "favorecido", "documento", "empenhado", "liquidado", "pago", "historico"]
-    det["_k"] = det[chave].astype(str).agg("|".join, axis=1)
-    det = det.drop_duplicates("_k").drop(columns="_k")
+    if not det.empty:  # (DataFrame vazio + agg devolve DataFrame e quebra a atribuição)
+        det["_k"] = det[chave].astype(str).agg("|".join, axis=1)
+        det = det.drop_duplicates("_k").drop(columns="_k")
     tot = tot.groupby("orgao", as_index=False)[["orcado", "atualizado", "empenhado", "liquidado", "pago"]].max()
     return det.reset_index(drop=True), tot
 

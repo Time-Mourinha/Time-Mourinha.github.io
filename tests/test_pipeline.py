@@ -134,3 +134,14 @@ def test_api_al_agregada(monkeypatch):
     assert det["empenhado"].sum() == 1_500_000
     assert tot.loc[0, "atualizado"] == 12_000_000 and tot.loc[0, "orgao"] == "SECRETARIA DE ESTADO DA SAUDE"
     assert forn.loc[0, "orgao"] == "SECRETARIA DE ESTADO DA SAUDE"
+
+
+def test_maceio_so_totais(rodada, monkeypatch):
+    """Maceió entrega só os totais por órgão (sem empenhos): tem de publicar mesmo assim."""
+    from coletor.fontes import maceio_jsf
+    t = pd.DataFrame([["SECRETARIA MUNICIPAL DE SAÚDE", "1.000,00", "1.100,00", "900,00", "800,00", "700,00"]],
+                     columns=["Órgão", "Orçado (R$)", "Orçado Atualizado (R$)", "Empenhado (R$)", "Liquidado (R$)", "Pago (R$)"])
+    monkeypatch.setattr(maceio_jsf, "coletar", lambda a: (StatusFonte("m", "x", status="ok"), [("Despesas por órgão", "http://m", t)]))
+    assert main.rodar(so_esfera="prefeitura-maceio") == 0
+    org = json.loads((rodada.parent / "prefeitura-maceio" / "orgaos.json").read_text())
+    assert len(org) == 1 and org[0]["pago"] == 700.0
