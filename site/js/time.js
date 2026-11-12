@@ -4,7 +4,7 @@
   const C = window.MOURINHA;
   const { dados, esc, fmtD, fmtN, botao, trilha, cabeca, tag, ESFERAS, $, abrirMidia } = window.MOURINHA_APP;
   const sb = C.SUPABASE_URL && C.SUPABASE_ANON_KEY && window.supabase ? window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY) : null;
-  const NUM = { mourinha: "T", orlandinho: 10, bene: 7, diogo: 9, fabio: 8, rhamona: 11, ricardo: 5 };
+  const NUM = { mourinha: "T", orlandinho: 10, bene: 7, diogo: 9, fabio: 8, hamona: 11, ricardo: 5 };
   const SIT = { em_andamento: "Em andamento", resolvido: "Resolvido", nao_resolvido: "Não resolvido" };
   const LIMITE_VIDEO = 50 * 1024 * 1024;
   let eu = null; // { user, perfil }

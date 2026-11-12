@@ -13,7 +13,7 @@ window.MOURINHA = {
     { id: "bene",       nome: "Bené",       funcao: "Administrador" },
     { id: "diogo",      nome: "Diogo",      funcao: "Fiscal" },
     { id: "fabio",      nome: "Fábio",      funcao: "Fiscal" },
-    { id: "rhamona",    nome: "Rhamona",    funcao: "Fiscal" },
+    { id: "hamona",    nome: "Hamona",    funcao: "Fiscal" },
     { id: "ricardo",    nome: "Ricardo",    funcao: "Fiscal" },
   ],
 

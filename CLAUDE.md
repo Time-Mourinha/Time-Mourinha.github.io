@@ -17,7 +17,7 @@ para acrescentar outra no futuro, basta um novo bloco ali. Não incluir nenhuma 
 
 ## 1B. Área do Time Mourinha
 
-- Integrantes: **Mourinha** (chefe), **Orlandinho**, **Bené**, **Diogo**, **Fábio**, **Rhamona** (com H) e **Ricardo**.
+- Integrantes: **Mourinha** (chefe), **Orlandinho**, **Bené**, **Diogo**, **Fábio**, **Hamona** (com H no começo) e **Ricardo**.
   Todos jogam nos dois times (Governo e Prefeitura); o administrador pode tirar alguém de um dos times.
 - **Administradores:** Bené, Mourinha e Orlandinho. Aprovam cadastros e veem as atividades de todos.
 - **Cadastro:** foto do rosto tirada na hora + e-mail + senha. Fica "aguardando aprovação" até um administrador aprovar.
