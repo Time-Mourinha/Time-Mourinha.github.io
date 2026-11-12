@@ -4,6 +4,9 @@ project_id = "time-mourinha"
 [functions.ponte]
 verify_jwt = false
 
+[functions.enviar]
+verify_jwt = false
+
 [functions.whatsapp]
 verify_jwt = false
 # configurado em 2026-11-12

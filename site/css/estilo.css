@@ -233,3 +233,60 @@ footer{max-width:1200px;margin:10px auto 0;padding:18px 16px 30px;color:var(--ci
 .instalar-aviso p b{font-family:inherit;font-size:inherit}
 .instalar-aviso button{background:var(--anil);color:var(--giz);border:0;border-radius:12px;padding:12px;width:100%;font:700 16px Barlow,sans-serif}
 @media (max-width:420px){.topo .marca small{display:none}}
+
+/* Agenda do Mourinha, tarefas e assistente */
+.grade2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.grade2{grid-template-columns:1fr}}
+.form .check{display:flex;align-items:center;gap:10px;font-weight:600}
+.form .check input{width:22px;height:22px;flex:none}
+details.novo{margin:0 0 18px}
+details.novo>summary{list-style:none;display:inline-flex;margin-bottom:12px}
+details.novo>summary::-webkit-details-marker{display:none}
+details.novo[open]>summary{opacity:.7}
+.secao{font-family:"Barlow Condensed",sans-serif;font-size:24px;color:var(--anil);margin:22px 0 10px}
+.secao small{font-size:16px;color:var(--cinza);margin-left:6px}
+.acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.prazo{border:1.5px solid var(--linha);border-radius:12px;padding:12px;display:grid;gap:10px;background:var(--nevoa)}
+.prazo legend{font-weight:700;padding:0 6px}
+.prazo .opcoes label{padding:7px 12px}
+.prazo-livre{display:flex;gap:8px;align-items:center}
+.prazo-livre input{max-width:96px}.prazo-livre select{max-width:120px}
+.prazo-data{margin:0;font-size:15px}.prazo-data b{color:var(--anil)}
+.tarefa{border-left-color:var(--ambar)}
+.tarefa.resolvido{border-left-color:var(--verde)}
+.tarefa.nao_resolvido{border-left-color:var(--vermelho)}
+.tarefa h3 a{color:inherit;text-decoration:none}
+.atrasada{color:var(--vermelho)}
+.cob{display:inline-block;border-radius:10px;padding:6px 10px;font-size:14px;background:var(--nevoa)}
+.cob.espera{background:var(--ambar-cl);color:#6b4500}
+.cob.resp{background:var(--anil-cl)}
+.cob.ok{background:var(--verde-cl);color:var(--verde)}
+.cob.nada{color:var(--cinza)}
+.tempo{list-style:none;padding:0;margin:0;border-left:3px solid var(--linha);margin-left:14px}
+.tempo li{display:flex;gap:10px;padding:0 0 16px 0;margin-left:-15px}
+.tempo .ic{width:28px;height:28px;flex:none;border-radius:50%;background:var(--giz);border:2px solid var(--linha);display:grid;place-items:center;font-size:14px}
+.tempo .meta{display:block;font-size:13px;color:var(--cinza)}
+.tempo p{margin:4px 0 0;background:var(--giz);border:1px solid var(--linha);border-radius:10px;padding:8px 10px}
+.tempo .resposta p{background:var(--anil-cl);border-color:transparent}
+.dia{font-family:"Barlow Condensed",sans-serif;font-size:20px;color:var(--anil);margin:18px 0 8px;text-transform:capitalize}
+.dia.hoje{color:var(--brasa)}
+a.item.compromisso{display:flex;gap:14px;align-items:flex-start;text-decoration:none;color:var(--tinta)}
+.compromisso .hora{font-family:"Barlow Condensed",sans-serif;font-size:24px;font-weight:800;color:var(--anil);min-width:58px}
+.compromisso .meta{display:block}
+.compromisso.cancelado{opacity:.55;text-decoration:line-through}
+.passados summary{cursor:pointer;font-weight:700;color:var(--anil-2);margin-top:16px}
+.pauta{margin:6px 0 0;padding-left:20px}
+.exemplos{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--linha);background:var(--giz);border-radius:999px;padding:7px 12px;font:600 13.5px Barlow,sans-serif;color:var(--anil);cursor:pointer;text-align:left}
+.previa{border-left-color:var(--brasa)}
+.poderes{display:grid;gap:6px;margin-top:10px;background:var(--nevoa);border-radius:10px;padding:10px 12px}
+.poderes label{display:flex;gap:8px;align-items:center;font-weight:600}
+.poderes[hidden]{display:none}
+[data-novo][hidden],[data-para][hidden],[data-prazo][hidden],[data-quando][hidden],[data-ag][hidden]{display:none}
+@media (max-width:480px){
+  .topo-in{gap:8px;padding:8px 12px}
+  .topo .marca b{font-size:22px}
+  .topo .instalar{padding:7px 10px;font-size:13px}
+  .topo .usuario{font-size:0;padding:4px}
+  .topo .usuario.sem{font-size:13px;padding:6px 10px}
+}

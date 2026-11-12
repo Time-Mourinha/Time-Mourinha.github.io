@@ -93,7 +93,7 @@ def cartao(titulo: str, corpo: str, botao: str = "Abrir a atividade do dia", lin
 
 def lembrar(momento: str) -> None:
     data, inicio = hoje()
-    perfis = get("perfis", select="*", papel="in.(membro,admin)")
+    perfis = get("perfis", select="*", papel="in.(membro,admin,dono)")
     sinais = get("atualizacoes", select="autor,criado_em,texto", criado_em=f"gte.{inicio}", order="criado_em.desc")
     atvs = get("atividades", select="id,autor,situacao,local", data=f"eq.{data}")
     enviados = 0
@@ -118,7 +118,7 @@ def lembrar(momento: str) -> None:
 
 def resumo() -> None:
     data, inicio = hoje()
-    perfis = get("perfis", select="*", papel="in.(membro,admin)")
+    perfis = get("perfis", select="*", papel="in.(membro,admin,dono)")
     sinais = get("atualizacoes", select="*", criado_em=f"gte.{inicio}", order="criado_em.asc")
     atvs = get("atividades", select="*", data=f"eq.{data}")
     mids = get("midias", select="atividade_id,tipo", criado_em=f"gte.{inicio}")
@@ -134,7 +134,7 @@ def resumo() -> None:
         blocos.append(f"<h3 style='color:#0A2F6B;margin:18px 0 4px'>{escape(p.get('nome') or '')}</h3>"
                       f"<p style='margin:0;color:#5A6680'>{len(minhas)} atividades · {nf} fotos/vídeos</p><ul>{linhas}</ul>{f'<ul>{ativ}</ul>' if ativ else ''}")
     html = cartao(f"Resumo do dia {datetime.now(FUSO):%d/%m/%Y}", "".join(blocos), "Abrir o painel Ao vivo", "/#/ao-vivo")
-    n = sum(enviar_email(p.get("email"), "Time Mourinha: resumo do dia", html) for p in perfis if p["papel"] == "admin" and p.get("notificar_email", True))
+    n = sum(enviar_email(p.get("email"), "Time Mourinha: resumo do dia", html) for p in perfis if p["papel"] in ("admin", "dono") and p.get("notificar_email", True))
     print(f"resumo enviado para {n} administradores")
 
 

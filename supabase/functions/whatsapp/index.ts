@@ -43,6 +43,39 @@ function compromissos(texto: string): { hora: string; texto: string }[] {
   return itens;
 }
 
+// "Resolvido, trocamos os aparelhos" → resolvido; "parcial..." → parcial; "não resolvido..." → nao_resolvido
+function situacaoDaResposta(t: string): string | null {
+  const s = semAcento(t);
+  if (/\b(nao|ainda nao|nada)\b.{0,20}(resolv|feito|conclu)|nao deu|sem solucao|nao foi/.test(s)) return "nao_resolvido";
+  if (/parcial|em parte|metade|em andamento|andamento|falta(m)? /.test(s)) return "parcial";
+  if (/resolvid|resolvemos|resolvi|conclu|feito|pronto|finalizad|ja foi|entregue|ok\b/.test(s)) return "resolvido";
+  return null;
+}
+const ROTULO: Record<string, string> = { resolvido: "Resolvido", parcial: "Resolvido em parte", nao_resolvido: "Não resolvido" };
+
+/* Resposta de quem foi cobrado (Sônia, Fernando...): vai para a linha do tempo da tarefa */
+async function respostaDeTarefa(de: string, texto: string, ehMembro: boolean): Promise<boolean> {
+  const { data: abertas } = await sb.from("tarefas").select("id,numero,titulo,telefone,responsavel_nome,situacao,ultima_cobranca")
+    .not("telefone", "is", null).order("ultima_cobranca", { ascending: false, nullsFirst: false }).limit(500);
+  const minhas = (abertas ?? []).filter((t: any) => mesmoNumero(t.telefone, de));
+  if (!minhas.length) return false;
+  const cod = texto.match(/\bT\s?(\d{1,6})\b/i);
+  // cobradas nos últimos 10 dias e ainda não resolvidas; integrante do time só entra aqui se estiver sendo cobrado
+  const ativas = minhas.filter((t: any) => t.situacao !== "resolvido" && t.ultima_cobranca && Date.now() - Date.parse(t.ultima_cobranca) < 10 * 864e5);
+  const t: any = (cod && minhas.find((x: any) => String(x.numero) === cod[1])) || ativas[0] || (ehMembro ? null : minhas[0]);
+  if (!t) return false;
+  const nome = (t.responsavel_nome || "").split(" ")[0];
+  if (!texto.trim()) { await responder(de, `${nome}, responda em texto, por favor: RESOLVIDO, PARCIAL ou NÃO RESOLVIDO e o que foi feito.`); return true; }
+  const sit = situacaoDaResposta(texto);
+  const agora = new Date().toISOString();
+  await sb.from("tarefa_eventos").insert({ tarefa_id: t.id, tipo: "resposta", texto: texto.slice(0, 2000), situacao: sit, canal: "whatsapp", autor: null });
+  await sb.from("tarefas").update({ ...(sit ? { situacao: sit } : {}), ultima_resposta: texto.slice(0, 500), ultima_resposta_em: agora, atualizado_em: agora }).eq("id", t.id);
+  await responder(de, sit
+    ? `✅ Obrigado, ${nome}! Registrado na tarefa T${t.numero} (${t.titulo}) como: ${ROTULO[sit]}.${sit !== "resolvido" ? " Quando avançar, mande outra mensagem contando." : ""}`
+    : `✅ Recebido, ${nome}, e anotado na tarefa T${t.numero} (${t.titulo}). A situação está como? Responda RESOLVIDO, PARCIAL ou NÃO RESOLVIDO.`);
+  return true;
+}
+
 async function responder(para: string, texto: string) {
   if (!TOKEN || !PHONE_ID) return;
   await fetch(`https://graph.facebook.com/v21.0/${PHONE_ID}/messages`, {
@@ -75,11 +108,13 @@ Deno.serve(async (req) => {
   const msgs = (dados.entry ?? []).flatMap((e: any) => (e.changes ?? []).flatMap((c: any) => c.value?.messages ?? []));
   if (!msgs.length) return new Response("ok");
 
-  const { data: perfis } = await sb.from("perfis").select("id,nome,telefone,papel").in("papel", ["membro", "admin"]);
+  const { data: perfis } = await sb.from("perfis").select("id,nome,telefone,papel").in("papel", ["membro", "admin", "dono"]);
   for (const m of msgs) {
     const de = m.from as string;
     const texto: string = m.type === "text" ? m.text?.body ?? "" : m.type === "button" ? m.button?.text ?? "" : "";
+    // 1º: é resposta a uma cobrança? (vale para quem é de fora do time e para integrantes cobrados)
     const p = (perfis ?? []).find((x: any) => x.telefone && mesmoNumero(x.telefone, de));
+    if (await respostaDeTarefa(de, texto, Boolean(p))) continue;
     if (!p) { await responder(de, "Este número não está cadastrado no Time Mourinha. Coloque seu WhatsApp em Meu perfil, no site."); continue; }
     const nome = (p.nome || "").split(" ")[0];
     if (!texto.trim()) {

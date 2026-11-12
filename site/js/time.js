@@ -13,8 +13,12 @@
   const iniciais = (n) => (n || "?").split(" ").map((x) => x[0]).slice(0, 2).join("").toUpperCase();
   const rosto = (foto, nome) => (foto ? `<img src="${esc(foto)}" alt="Foto de ${esc(nome)}" loading="lazy">` : esc(iniciais(nome)));
   const visitante = () => localStorage.getItem("mourinha_visitante") === "1";
-  const souMembro = () => eu?.perfil && ["membro", "admin"].includes(eu.perfil.papel);
-  const souAdmin = () => eu?.perfil?.papel === "admin";
+  const souMembro = () => eu?.perfil && ["membro", "admin", "dono"].includes(eu.perfil.papel);
+  const souAdmin = () => ["admin", "dono"].includes(eu?.perfil?.papel);
+  const souDono = () => eu?.perfil?.papel === "dono";
+  // dono pode tudo; administrador só o que o dono liberou (aprovar, agenda, cobrancas)
+  const temPoder = (p) => souDono() || (eu?.perfil?.papel === "admin" && (eu.perfil.poderes || []).includes(p));
+  const PODERES = { aprovar: "Aprovar cadastros", agenda: "Agenda do Mourinha", cobrancas: "Tarefas e cobranças pelo WhatsApp" };
   const hojeISO = () => new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
   const semSupabase = `<div class="aviso azul"><b>A área do time ainda não está ligada.</b> Falta colar o endereço e a chave do Supabase no arquivo site/js/config.js. O passo a passo está no README.</div>`;
 
@@ -55,7 +59,7 @@
       return { ...m, perfil: p, foto: fotoPublica(p?.foto_path), chave: m.id, esferas: p?.esferas || ["governo-al", "prefeitura-maceio"] };
     });
     v.filter((p) => !C.MEMBROS.some((m) => m.id === p.membro_id)).forEach((p) =>
-      lista.push({ id: p.id, nome: p.nome, funcao: p.papel === "admin" ? "Administrador" : "Fiscal", perfil: p, foto: fotoPublica(p.foto_path), chave: p.id, esferas: p.esferas }));
+      lista.push({ id: p.id, nome: p.nome, funcao: p.papel === "dono" ? "Dono" : p.papel === "admin" ? "Administrador" : "Fiscal", perfil: p, foto: fotoPublica(p.foto_path), chave: p.id, esferas: p.esferas }));
     return lista;
   }
 
@@ -81,7 +85,11 @@
       ${!sb ? semSupabase : !eu ? `<div class="aviso">Você está como <b>visitante</b>: vê o time, mas não as atividades. <a href="#/entrar">Entrar</a> ou <a href="#/cadastro">fazer cadastro</a>.</div>` : ""}
       <div class="botoes">${souMembro() ? botao({ href: "#/hoje", ic: "📸", t: "Minha atividade do dia", n: "", e: "Registrar o que estou fazendo hoje.", destaque: true }) : ""}
       ${souMembro() ? botao({ href: "#/ao-vivo", ic: "🔴", t: "Ao vivo", n: "tempo real", e: souAdmin() ? "Onde está cada integrante agora, agenda e fotos do dia." : "Meu andamento de hoje.", destaque: souAdmin() }) : ""}
-      ${souAdmin() ? botao({ href: "#/admin", ic: "🛡️", t: "Administração", n: "", e: "Aprovar cadastros e definir quem joga em cada time." }) : ""}
+      ${souMembro() ? botao({ href: "#/agenda", ic: "📅", t: "Agenda do Mourinha", n: "", e: "Compromissos, reuniões e a pauta de cada uma.", destaque: true }) : ""}
+      ${souMembro() ? botao({ href: "#/tarefas", ic: "✅", t: "Tarefas e cobranças", n: "", e: "O que foi combinado, com quem, até quando, e o que ainda não foi resolvido." }) : ""}
+      ${temPoder("cobrancas") ? botao({ href: "#/assistente", ic: "🤖", t: "Assistente", n: "", e: "Escreva do seu jeito: \"Fernando, amanhã lembrar da agenda do Mourinha\"." }) : ""}
+      ${temPoder("cobrancas") ? botao({ href: "#/contatos", ic: "📇", t: "Contatos", n: "", e: "Quem recebe cobranças e lembretes pelo WhatsApp." }) : ""}
+      ${souDono() || temPoder("aprovar") ? botao({ href: "#/admin", ic: "🛡️", t: "Administração", n: "", e: souDono() ? "Cadastros, administradores e os poderes de cada um." : "Aprovar cadastros e definir quem joga em cada time." }) : ""}
       ${!eu ? botao({ href: "#/cadastro", ic: "✍️", t: "Fazer cadastro", n: "", e: "Foto, e-mail e senha. Um administrador aprova." }) : ""}</div>`;
     $("#fe").value = esf;
     $("#fe").onchange = () => (location.hash = `#/time${$("#fe").value ? "?esfera=" + $("#fe").value : ""}`);
@@ -507,23 +515,36 @@
     };
   }
   async function pgAdmin() {
-    app.innerHTML = `${trilha([["Início", "#/"], ["Time Mourinha", "#/time"], ["Administração"]])}${cabeca("Administração", "Aprove cadastros, defina administradores e em quais times cada um joga.")}<div id="adm"></div>`;
-    if (!souAdmin()) { $("#adm").innerHTML = `<div class="aviso">Só administradores abrem esta página.</div>`; return; }
+    app.innerHTML = `${trilha([["Início", "#/"], ["Time Mourinha", "#/time"], ["Administração"]])}${cabeca("Administração", souDono() ? "Você é o dono: define quem é administrador e o que cada um pode fazer." : "Aprove cadastros e defina em quais times cada um joga.")}<div id="adm"></div>`;
+    if (!souDono() && !temPoder("aprovar")) { $("#adm").innerHTML = `<div class="aviso">Só o dono e quem tem o poder de aprovar cadastros abrem esta página.</div>`; return; }
     const { data: ps } = await sb.from("perfis").select("*").order("papel").order("criado_em");
-    const ordem = { pendente: 0, admin: 1, membro: 2, bloqueado: 3 };
+    const ordem = { pendente: 0, dono: 1, admin: 2, membro: 3, bloqueado: 4 };
+    const NOMES = { pendente: "Aguardando aprovação", membro: "Integrante", admin: "Administrador", dono: "Dono", bloqueado: "Bloqueado" };
     ps.sort((a, b) => ordem[a.papel] - ordem[b.papel]);
-    $("#adm").innerHTML = ps.map((p) => `<div class="item ${p.papel === "pendente" ? "media" : ""}" data-id="${p.id}">
+    $("#adm").innerHTML = ps.map((p) => {
+      const mexivel = souDono() ? p.id !== eu.perfil.id : !["admin", "dono"].includes(p.papel);
+      const opcoes = souDono() ? ["pendente", "membro", "admin", "bloqueado"] : ["pendente", "membro", "bloqueado"];
+      return `<div class="item ${p.papel === "pendente" ? "media" : ""}" data-id="${p.id}">
       <div style="display:flex;gap:12px;align-items:center"><span class="jogador" style="width:auto"><span class="rosto" style="width:56px;height:56px;font-size:20px;border-color:var(--linha);color:#fff">${rosto(fotoPublica(p.foto_path), p.nome)}</span></span>
-      <div style="flex:1"><h3 style="margin:0">${esc(p.nome || "(sem nome)")}</h3><div class="meta">${esc(p.email || "")} · cadastrado em ${fmtD(p.criado_em)}</div></div></div>
-      <div class="ferramentas" style="margin-top:10px"><select data-k="papel">${["pendente", "membro", "admin", "bloqueado"].map((x) => `<option value="${x}" ${p.papel === x ? "selected" : ""}>${{ pendente: "Aguardando aprovação", membro: "Integrante", admin: "Administrador", bloqueado: "Bloqueado" }[x]}</option>`).join("")}</select>
-      ${Object.entries(ESFERAS).map(([k, v]) => `<label class="opcoes" style="flex:none"><label><input type="checkbox" data-esf="${k}" ${p.esferas.includes(k) ? "checked" : ""}> Time ${v.curto}</label></label>`).join("")}
-      <button class="btn peq" data-salvar>${p.papel === "pendente" ? "Aprovar e salvar" : "Salvar"}</button></div></div>`).join("") || `<p class="vazio">Nenhum cadastro.</p>`;
+      <div style="flex:1"><h3 style="margin:0">${esc(p.nome || "(sem nome)")} ${tag(NOMES[p.papel], p.papel === "dono" ? "azul" : "")}</h3><div class="meta">${esc(p.email || "")} · cadastrado em ${fmtD(p.criado_em)}</div></div></div>
+      ${!mexivel ? `<p class="meta" style="margin-top:8px">${p.papel === "dono" ? "O dono tem todos os poderes." : "Só o dono mexe nos administradores."}</p>` : `
+      <div class="ferramentas" style="margin-top:10px"><select data-k="papel" aria-label="Papel">${opcoes.map((x) => `<option value="${x}" ${p.papel === x ? "selected" : ""}>${NOMES[x]}</option>`).join("")}</select>
+      ${Object.entries(ESFERAS).map(([k, v]) => `<label class="opcoes" style="flex:none"><label><input type="checkbox" data-esf="${k}" ${p.esferas.includes(k) ? "checked" : ""}> Time ${v.curto}</label></label>`).join("")}</div>
+      ${souDono() ? `<div class="poderes" data-poderes ${p.papel === "admin" ? "" : "hidden"}><b>Poderes deste administrador</b>${Object.entries(PODERES).map(([k, v]) => `<label><input type="checkbox" data-poder="${k}" ${(p.poderes || []).includes(k) || (p.papel !== "admin") ? "checked" : ""}> ${v}</label>`).join("")}</div>` : ""}
+      <button class="btn peq" data-salvar style="margin-top:8px">${p.papel === "pendente" ? "Aprovar e salvar" : "Salvar"}</button>`}</div>`;
+    }).join("") || `<p class="vazio">Nenhum cadastro.</p>`;
+    document.querySelectorAll("[data-k=papel]").forEach((s) => (s.onchange = () => {
+      const pd = s.closest("[data-id]").querySelector("[data-poderes]");
+      if (pd) pd.hidden = s.value !== "admin";
+    }));
     document.querySelectorAll("[data-salvar]").forEach((b) => (b.onclick = async () => {
       const box = b.closest("[data-id]");
       let papel = box.querySelector("[data-k=papel]").value;
       if (papel === "pendente" && b.textContent.startsWith("Aprovar")) papel = "membro";
       const esferas = [...box.querySelectorAll("[data-esf]:checked")].map((x) => x.dataset.esf);
-      const { error } = await sb.from("perfis").update({ papel, esferas }).eq("id", box.dataset.id);
+      const mud = { papel, esferas };
+      if (souDono()) mud.poderes = papel === "admin" ? [...box.querySelectorAll("[data-poder]:checked")].map((x) => x.dataset.poder) : [];
+      const { error } = await sb.from("perfis").update(mud).eq("id", box.dataset.id);
       if (error) return alertaErro(error);
       pgAdmin();
     }));
@@ -539,6 +560,7 @@
     if (p[0] === "admin") { await pgAdmin(); return true; }
     if (p[0] === "ao-vivo") { await pgAoVivo(); return true; }
     if (p[0] === "perfil") { await pgPerfil(); return true; }
+    if (window.Gestao && (await window.Gestao.rota(p, params))) return true;
     if (p[0] === "sair") { if (sb) await sb.auth.signOut(); eu = null; chip(); location.hash = "#/"; return true; }
     return false;
   }
@@ -564,7 +586,8 @@
     });
   }
 
-  window.Time = { rota, escalacao, atividadesDoOrgao, statusCobranca };
+  window.Time = { rota, escalacao, atividadesDoOrgao, statusCobranca,
+    ctx: { sb, eu: () => eu, souMembro, souAdmin, souDono, temPoder, alertaErro: (e) => alertaErro(e), sinal: (...a) => sinal(...a), semSupabase } };
   const app = document.getElementById("app");
   const pronto = carregarEu().then(chip).catch(chip);
   // garante que o usuário já foi carregado antes da primeira página da área do time

@@ -61,6 +61,37 @@ def aplicar_sql():
     print("Banco aplicado: tabelas, regras de segurança, Storage e tempo real.")
 
 
+def chave_enviar(servico: str) -> str:
+    """Senha que o relógio do banco usa para chamar a função que envia os lembretes."""
+    import hashlib
+    return hashlib.sha256(f"{servico}|enviar-time-mourinha".encode()).hexdigest()
+
+
+def instalar_relogio():
+    """A cada 5 minutos o banco chama a função 'enviar', que manda os lembretes programados."""
+    c = chaves()
+    if not c["servico"]:
+        print("Sem chave de serviço; relógio dos lembretes não instalado.")
+        return
+    url = f"https://{ref()}.supabase.co/functions/v1/enviar"
+    cab = json.dumps({"Content-Type": "application/json", "x-chave": chave_enviar(c["servico"])})
+    sql = f"""
+select cron.unschedule(jobid) from cron.job where jobname = 'tm-lembretes';
+select cron.schedule('tm-lembretes', '*/5 * * * *',
+  $job$select net.http_post(url := '{url}', headers := '{cab}'::jsonb, body := '{{"acao":"processar"}}'::jsonb)$job$);
+"""
+    api("POST", f"/projects/{ref()}/database/query", json={"query": sql})
+    print("Relógio dos lembretes instalado (a cada 5 minutos).")
+
+
+def resumo_time():
+    """Mostra no log quantos cadastros há em cada papel (sem nomes nem e-mails)."""
+    r = api("POST", f"/projects/{ref()}/database/query", json={"query":
+        "select papel, count(*) as n, string_agg(coalesce(membro_id,'outro'), ',' order by membro_id) as quem from public.perfis group by papel order by papel"})
+    for linha in r or []:
+        print(f"Cadastros {linha['papel']}: {linha['n']} ({linha['quem']})")
+
+
 def ajustar_login():
     api("PATCH", f"/projects/{ref()}/config/auth", json={
         "site_url": SITE,
@@ -87,6 +118,8 @@ def exportar_para_github():
             f.write(f"SUPABASE_URL=https://{ref()}.supabase.co\nPONTE_URL=https://{ref()}.supabase.co/functions/v1/ponte\n")
             if c["servico"]:
                 print(f"::add-mask::{chave_ponte(c['servico'])}")
+                print(f"::add-mask::{chave_enviar(c['servico'])}")
+                f.write(f"ENVIAR_CHAVE={chave_enviar(c['servico'])}\n")
                 f.write(f"PONTE_CHAVE={chave_ponte(c['servico'])}\nPONTE_ANON={c['publica'] or ''}\nSUPABASE_REF={ref()}\n")
 
 
@@ -100,4 +133,6 @@ if __name__ == "__main__":
     else:
         aplicar_sql()
         ajustar_login()
+        instalar_relogio()
+        resumo_time()
         exportar_para_github()
