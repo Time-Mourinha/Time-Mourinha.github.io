@@ -13,7 +13,7 @@ export function Instalar() {
       {ajuda && (
         <div className="instalar-aviso" role="dialog" aria-label="Instalar o aplicativo" onClick={(e) => { if (e.target === e.currentTarget) setAjuda(false) }}>
           <div>
-            <h3>Instalar o Formulário de Vistoria Saúde</h3>
+            <h3>Instalar Fiscalização da Saúde</h3>
             <p>{passosInstalacao()} O ícone da Prefeitura aparece junto com os seus aplicativos.</p>
             <button className="primary" onClick={() => setAjuda(false)}>Entendi</button>
           </div>

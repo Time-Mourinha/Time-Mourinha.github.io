@@ -1,4 +1,6 @@
-# Secretaria Executiva · Formulário de Vistoria Saúde
+# Secretaria Executiva · Fiscalização da Saúde
+
+A Secretaria Executiva, ligada ao Gabinete do Prefeito de Maceió, faz a fiscalização das unidades. Este site é o da área da Saúde; as próximas áreas (Educação e outras) terão o próprio site no mesmo modelo.
 
 Aplicativo React, TypeScript e Vite, com 80 registros dos oito distritos sanitários, identificados na lista da SMS de 13/11/2026. O repositório inclui a marca fornecida, SQL para Supabase e os workflows do GitHub Actions que configuram o banco e publicam no GitHub Pages.
 

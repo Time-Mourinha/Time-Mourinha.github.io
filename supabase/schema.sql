@@ -239,7 +239,7 @@ revoke all on function public.notify_admins(text, text, text) from public, anon,
 create or replace function public.notify_new_request() returns trigger language plpgsql security definer set search_path = public as $$
 begin
   if not new.approved then
-    perform public.notify_admins('Novo pedido de acesso', new.email || ' pediu acesso ao Formulário de Vistoria Saúde. Toque para aprovar.', './#acessos');
+    perform public.notify_admins('Novo pedido de acesso', new.email || ' pediu acesso à Fiscalização da Saúde (Secretaria Executiva). Toque para aprovar.', './#acessos');
   end if;
   return new;
 end $$;

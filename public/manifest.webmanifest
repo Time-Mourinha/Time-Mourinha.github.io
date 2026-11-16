@@ -1,7 +1,7 @@
 {
-  "name": "Secretaria Executiva · Formulário de Vistoria Saúde",
-  "short_name": "Vistoria Saúde",
-  "description": "Formulário de vistoria das unidades da rede municipal de saúde de Maceió.",
+  "name": "Secretaria Executiva · Fiscalização da Saúde",
+  "short_name": "Fiscalização Saúde",
+  "description": "Secretaria Executiva (Gabinete do Prefeito): fiscalização das unidades da rede municipal de saúde de Maceió.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",

@@ -247,7 +247,7 @@ export default function App() {
   const cabecalho = (
     <header>
       <img src={marca} alt="Prefeitura de Maceió — Cidade de Todos Nós" />
-      <span className="titulo-app"><b>Formulário de Vistoria Saúde</b><small>Secretaria Executiva</small></span>
+      <span className="titulo-app"><b>Secretaria Executiva</b><small>Gabinete do Prefeito · Fiscalização da Saúde</small></span>
       <Instalar />
       <Aparencia />
       {!DEMO && sessao && perfil && <span className="quem" title={perfil.email}>{(perfil.name || perfil.email).split(/[ @]/)[0]}</span>}
@@ -383,9 +383,9 @@ export default function App() {
           ) : (
             <>
               <div className="hero">
-                <p className="eyebrow">REDE MUNICIPAL DE SAÚDE · MACEIÓ</p>
+                <p className="eyebrow">SECRETARIA EXECUTIVA · GABINETE DO PREFEITO</p>
                 <h1>{perfil?.name ? `Olá, ${perfil.name.split(' ')[0]}!` : 'Vistorias das unidades'}</h1>
-                <p>Escolha a unidade e toque em <b>Nova vistoria</b>. Tudo é salvo sozinho enquanto você preenche.</p>
+                <p>Fiscalização das unidades da rede municipal de saúde. Escolha a unidade e toque em <b>Nova vistoria</b>; tudo é salvo sozinho enquanto você preenche.</p>
               </div>
               {!DEMO && perfil && !perfil.name && <PedirNome aoSalvar={(n) => setPerfil({ ...perfil, name: n })} />}
               {meusRascunhos.length > 0 && (

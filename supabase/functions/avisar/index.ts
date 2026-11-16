@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
   // o banco já manda título, texto e destino; sem eles, cai no aviso de pedido de acesso
   const aviso = JSON.stringify({
     title: corpo.title ?? 'Novo pedido de acesso',
-    body: corpo.body ?? `${corpo.email ?? 'Alguém'} pediu acesso ao Formulário de Vistoria Saúde. Toque para aprovar.`,
+    body: corpo.body ?? `${corpo.email ?? 'Alguém'} pediu acesso à Fiscalização da Saúde (Secretaria Executiva). Toque para aprovar.`,
     url: corpo.url ?? './#acessos',
     tag: String(Date.now()),
   })

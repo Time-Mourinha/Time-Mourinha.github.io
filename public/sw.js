@@ -21,7 +21,7 @@ self.addEventListener('fetch', (e) => {
 self.addEventListener('push', (e) => {
   let d = {}
   try { d = e.data ? e.data.json() : {} } catch { d = { body: e.data ? e.data.text() : '' } }
-  e.waitUntil(self.registration.showNotification(d.title || 'Formulário de Vistoria Saúde', {
+  e.waitUntil(self.registration.showNotification(d.title || 'Secretaria Executiva · Fiscalização da Saúde', {
     body: d.body || 'Há um novo pedido de acesso para aprovar.',
     icon: 'icones/icone-192.png',
     badge: 'icones/icone-192.png',
