@@ -263,3 +263,5 @@ header .instalar+.quiet{margin-left:0}
 .rel-foto img,.rel-foto video{max-height:170px}
 @media print{.rel-fotos{grid-template-columns:repeat(3,1fr)}.rel-foto img{max-height:150px}.relatorio{font-size:10pt}.rel-bloco{margin-bottom:1rem}.rel-assinaturas{margin-top:1.6rem}}
 @media (width<=650px){.rel-fotos{grid-template-columns:repeat(2,1fr)}}
+
+.ia{color:#076493;font-weight:600}

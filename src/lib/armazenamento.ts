@@ -117,3 +117,13 @@ export async function confirmarCodigoAdmin(codigo: string): Promise<boolean> {
   falhou(error)
   return Boolean(data)
 }
+
+/** Pede à IA a descrição do problema visível na foto. Devolve null se a IA não estiver ligada ou falhar. */
+export type DescricaoFoto = { descricao: string; item?: string; gravidade?: string }
+export async function descreverFoto(caminho: string): Promise<DescricaoFoto | null> {
+  try {
+    const { data, error } = await sb!.functions.invoke('descrever', { body: { path: caminho } })
+    if (error || !data?.ativo || !data.descricao) return null
+    return data as DescricaoFoto
+  } catch { return null }
+}

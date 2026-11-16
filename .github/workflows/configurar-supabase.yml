@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25,5 +26,13 @@ jobs:
           python scripts/supabase_setup.py
       - uses: supabase/setup-cli@v1
         with: { version: latest }
-      - name: Publicar a função de avisos
-        run: supabase functions deploy avisar --project-ref apqkewsdzwawtiajbmyl --no-verify-jwt --use-api --yes
+      - name: Publicar as funções (avisos e descrição de fotos)
+        run: |
+          supabase functions deploy avisar --project-ref apqkewsdzwawtiajbmyl --no-verify-jwt --use-api --yes
+          supabase functions deploy descrever --project-ref apqkewsdzwawtiajbmyl --use-api --yes
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            supabase secrets set --yes --project-ref apqkewsdzwawtiajbmyl ANTHROPIC_API_KEY="$ANTHROPIC_API_KEY"
+            echo "Descrição automática das fotos: ligada."
+          else
+            echo "Descrição automática das fotos: falta o segredo ANTHROPIC_API_KEY no GitHub."
+          fi

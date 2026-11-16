@@ -37,6 +37,7 @@ export function VerMidia({ media }: { media: Midia }) {
         : <video src={url} controls preload="metadata" />)
         : <span>{falha ? 'Anexo indisponível' : 'Carregando anexo…'}</span>}
       <figcaption>{media.caption || media.name}
+        {media.ai && media.caption === media.ai && <small className="ia"> · descrição automática</small>}
         {media.type.startsWith('video/') && <span className="print-only"> · vídeo disponível no aplicativo</span>}
       </figcaption>
     </figure>

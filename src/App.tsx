@@ -6,7 +6,7 @@ import {
   type Ambiente, type Midia, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
-  DEMO, caminhoMidia, carregarPerfil, carregarUnidades, carregarVistorias, enviarMidia, gravarDemo, lerDemo,
+  DEMO, caminhoMidia, descreverFoto, type DescricaoFoto, carregarPerfil, carregarUnidades, carregarVistorias, enviarMidia, gravarDemo, lerDemo,
   midiaDemo, salvarVistoria, sb, urlMidia,
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
@@ -15,7 +15,8 @@ import { Formulario } from './Formulario'
 import { Instalar } from './Instalar'
 import { Painel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
-import { resumir } from './lib/analise'
+import { IMPACTOS, resumir } from './lib/analise'
+import { reduzirImagem } from './lib/imagem'
 
 type Tela = 'unidades' | 'painel' | 'vistoria' | 'relatorios' | 'acessos'
 
@@ -154,18 +155,36 @@ export default function App() {
     await executar(async () => {
       if (base.status === 'draft' && pendente) { await gravar(base); setPendente(false) }
       let atual = base
-      for (const arq of arquivos) {
-        if (!TIPOS_ACEITOS.includes(arq.type) || arq.size > LIMITE_BYTES) throw new Error('Use JPG, PNG, WebP, MP4, WebM ou MOV de até 50 MB.')
+      let descritas = 0
+      for (const original of arquivos) {
+        if (!TIPOS_ACEITOS.includes(original.type) || original.size > LIMITE_BYTES) throw new Error('Use JPG, PNG, WebP, MP4, WebM ou MOV de até 50 MB.')
+        const arq = await reduzirImagem(original)
         const m: Midia = { id: novoId(), type: arq.type, name: arq.name, caption: '' }
+        let ia: DescricaoFoto | null = null
         if (DEMO) await midiaDemo(m.id, arq)
-        else { m.path = caminhoMidia(atual, m, arq); await enviarMidia(m.path, arq) }
+        else {
+          m.path = caminhoMidia(atual, m, arq); await enviarMidia(m.path, arq)
+          if (arq.type.startsWith('image/')) { setAviso('Foto enviada. Descrevendo o que aparece nela…'); ia = await descreverFoto(m.path) }
+        }
+        if (ia && !/^sem problema/i.test(ia.descricao)) { m.ai = ia.descricao; m.caption = ia.descricao; descritas++ }
         const amb = atual.rooms.find((r) => r.id === a.id)!
         atual = { ...atual, rooms: atual.rooms.map((r) => (r.id === a.id
-          ? { ...amb, findings: amb.findings.map((f) => (f.id === o.id ? { ...f, media: [...f.media, m] } : f)) } : r)) }
+          ? { ...amb, findings: amb.findings.map((f) => {
+              if (f.id !== o.id) return f
+              const g = { ...f, media: [...f.media, m] }
+              if (m.ai) {
+                // a descrição da foto entra no problema; item e motivo, se ainda estiverem vazios
+                if (!g.issue.includes(m.ai)) g.issue = g.issue ? `${g.issue} Na foto: ${m.ai}` : m.ai
+                if (!g.item && ia?.item) g.item = ia.item
+                if (!g.reason && ia?.item && IMPACTOS[ia.item]) g.reason = IMPACTOS[ia.item]
+                if (!g.action && ia?.item) g.action = `Corrigir: ${ia.item.toLowerCase()}.`
+              }
+              return g
+            }) } : r)) }
         setAberta(atual); setPendente(true)
         await gravar(atual); setPendente(false)
       }
-      setAviso('Anexos salvos.')
+      setAviso(descritas ? `Anexos salvos. ${descritas === 1 ? 'A foto foi descrita' : `${descritas} fotos foram descritas`} automaticamente; confira o texto do problema.` : 'Anexos salvos.')
     })
   }
 

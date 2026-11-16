@@ -1,2 +1,5 @@
 [functions.avisar]
 verify_jwt = false
+
+[functions.descrever]
+verify_jwt = true

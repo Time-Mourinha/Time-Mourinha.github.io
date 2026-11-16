@@ -1,7 +1,7 @@
 import unidadesJson from '../data/unidades.json'
 
 export type Unidade = { id: number; name: string; district: string; kind: string; address: string; cnes: string; status: string }
-export type Midia = { id: string; type: string; name: string; caption: string; path?: string }
+export type Midia = { id: string; type: string; name: string; caption: string; path?: string; ai?: string }
 export type Ocorrencia = {
   id: string; check?: string; item: string; point: string; issue: string; action: string; priority: string
   reason: string; owner: string; due: string; media: Midia[]
