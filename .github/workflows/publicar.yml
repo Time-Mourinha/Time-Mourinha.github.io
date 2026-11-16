@@ -1,20 +1,18 @@
-name: Publicar o site
+name: Publicar interface
 
-# Publica o site na hora: quando o layout muda e sempre que uma coleta termina.
 on:
+  workflow_dispatch:
   push:
     branches: [main]
-    paths: ["site/**", ".github/workflows/publicar.yml"]
+    paths: ["src/**", "public/**", "index.html", "package.json", "package-lock.json", "vite.config.ts", "tsconfig.json", ".github/workflows/publicar.yml"]
   workflow_run:
-    workflows: ["Coleta diária e publicação", "Notícias da mídia", "Configurar o Supabase"]
+    workflows: ["Configurar banco"]
     types: [completed]
-  workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
-  actions: read
 
 concurrency:
   group: pages
@@ -28,53 +26,26 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Pegar os dados da última coleta
-        id: c1
-        uses: actions/cache/restore@v4
-        with:
-          # tem que ser exatamente os mesmos caminhos usados ao salvar (senão o GitHub não acha)
-          path: |
-            site/dados
-            dados/brutos/cnpj_cache.json
-            dados/brutos/sancoes_cache.json
-          key: dados-${{ github.run_id }}
-          restore-keys: dados-
-      - name: Esperar o GitHub registrar os dados recém-salvos
-        if: steps.c1.outputs.cache-matched-key == ''
-        run: sleep 90
-      - name: Pegar os dados da última coleta (segunda tentativa)
-        id: c2
-        if: steps.c1.outputs.cache-matched-key == ''
-        uses: actions/cache/restore@v4
-        with:
-          # tem que ser exatamente os mesmos caminhos usados ao salvar (senão o GitHub não acha)
-          path: |
-            site/dados
-            dados/brutos/cnpj_cache.json
-            dados/brutos/sancoes_cache.json
-          key: dados-${{ github.run_id }}
-          restore-keys: dados-
-      - name: Conferir se há dados
-        run: |
-          ls site/dados 2>/dev/null || echo "::warning::Sem dados de coleta: o site vai mostrar 'Aguardando a primeira coleta'."
-          ls site/dados/*/orgaos.json 2>/dev/null | xargs -r -n1 sh -c 'echo "$0: $(python3 -c "import json,sys; print(len(json.load(open(sys.argv[1]))))" $0) órgãos"' 
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - name: Colocar a chave pública do Supabase no site
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - name: Endereço e chave pública do Supabase
         env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
-          pip install -q requests
-          python notificacoes/supabase_setup.py chaves
-      - name: Gravar a chave no config.js
-        run: |
-          if [ -n "${SUPABASE_ANON_KEY:-}" ]; then
-            sed -i "s|SUPABASE_ANON_KEY: \"\"|SUPABASE_ANON_KEY: \"$SUPABASE_ANON_KEY\"|" site/js/config.js
-            grep -c "SUPABASE_ANON_KEY: \"\"" site/js/config.js || true
+          if [ -n "$VITE_SUPABASE_URL" ] && [ -n "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "VITE_SUPABASE_URL=$VITE_SUPABASE_URL" >> "$GITHUB_ENV"
+            echo "VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY" >> "$GITHUB_ENV"
+          elif [ -n "$SUPABASE_ACCESS_TOKEN" ]; then
+            pip install -q requests && python scripts/supabase_setup.py chaves
+          else
+            echo "::warning::Sem Supabase: o site sai em modo de demonstração."
           fi
+      - run: npm ci
+      - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
+        with: { path: dist }
       - id: deploy
         uses: actions/deploy-pages@v4

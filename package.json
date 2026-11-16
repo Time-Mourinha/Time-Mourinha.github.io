@@ -1,0 +1,25 @@
+{
+  "name": "vistoria-maceio",
+  "version": "1.0.0",
+  "description": "Vistorias da Saúde de Maceió: checklist de vistoria das unidades de saúde, com fotos, vídeos e relatório em PDF.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
+  }
+}

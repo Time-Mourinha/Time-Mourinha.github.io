@@ -1,115 +1,31 @@
-# Time Mourinha
+# Vistorias da Saúde de Maceió
 
-Monitor da gestão do **Governo de Alagoas** e da **Prefeitura de Maceió**, secretaria por secretaria,
-com a área do time (cadastro com foto, atividades do dia com fotos e vídeos).
+Aplicativo React, TypeScript e Vite, com 80 registros dos oito distritos sanitários, identificados na lista da SMS de 13/11/2026. O repositório inclui a marca fornecida, SQL para Supabase e os workflows do GitHub Actions que configuram o banco e publicam no GitHub Pages.
 
-- **Dados públicos** (qualquer pessoa vê): secretarias, despesas, receitas, obras e reformas, escolas,
-  unidades de saúde, alertas, missões, ranking, fornecedores e entregas.
-- **Área do time**: visitante vê o time e as fotos dos integrantes, mas **não vê as atividades**.
-  Cada integrante vê as próprias atividades. **Administradores** (Bené, Mourinha e Orlandinho) veem todas
-  e aprovam os cadastros.
+Endereço publicado: https://time-mourinha.github.io
 
-## Como está organizado
+## Teste local
 
-| Pasta | O que tem |
-|---|---|
-| `site/` | O site (HTML, CSS e JavaScript). É o que vai para o GitHub Pages. |
-| `coletor/` | O robô em Python que coleta os dados todo dia à meia-noite. |
-| `coletor/config/geral.yaml` | Endereços dos portais das duas esferas. Dá para acrescentar outra esfera aqui. |
-| `coletor/config/regras.yaml` | Regras dos alertas e pesos do Índice Mourinha. |
-| `docs/supabase.sql` | Banco de dados da área do time (rodar uma vez no Supabase). |
-| `docs/mapa-portal-*.json` | Mapa de cada portal, gerado pelo robô. Serve para ajustar o coletor. |
-| `.github/workflows/coleta.yml` | Roda a coleta todo dia e publica o site. |
+Execute `npm ci` e `npm run dev`. Sem variáveis de ambiente, o aplicativo abre um modo de demonstração com rascunhos no armazenamento local e anexos no IndexedDB. Use somente dados fictícios. A demonstração usa o catálogo real de endereços.
 
-## Colocar no ar (uma vez)
+## Operação com usuários e armazenamento privado
 
-1. **GitHub Pages:** em *Settings → Pages → Source*, escolha **GitHub Actions**.
-2. **Permissões:** em *Settings → Actions → General → Workflow permissions*, marque **Read and write permissions** e clique em *Save*.
-3. **Primeira coleta:** na aba *Actions*, abra **Coleta diária e publicação**, clique em **Run workflow** e espere ficar verde (pode levar de 20 a 60 minutos).
-   O site fica em `https://SEU-USUARIO.github.io/time-mourinha/`.
-4. *(Opcional)* **Empresas punidas:** peça a chave grátis da API do Portal da Transparência federal e cadastre em
-   *Settings → Secrets and variables → Actions → New repository secret* com o nome `CGU_API_KEY`.
+O workflow **Configurar banco** faz a configuração sozinho, usando o segredo `SUPABASE_ACCESS_TOKEN`. Ele roda quando algo muda em `supabase/` e também pode ser disparado à mão. O que ele faz:
 
-## Ligar a área do time (Supabase, grátis)
+1. Executa `supabase/schema.sql` e depois `supabase/seed.sql`. O esquema pode ser repetido sem perder dados.
+2. Habilita o login por e-mail e senha e configura a URL oficial e as URLs de redirecionamento de produção e de desenvolvimento.
+3. Define a primeira administração pelo e-mail guardado em uma tabela privada do banco. Esse e-mail nunca vai para o repositório. Ao entrar pela primeira vez, essa conta pede um código de segurança enviado ao e-mail e só então fica liberada.
 
-1. Crie uma conta em supabase.com e um projeto novo (região *South America (São Paulo)*).
-2. Em **SQL Editor → New query**, cole todo o conteúdo de `docs/supabase.sql` e clique em **Run**.
-3. Em **Authentication → Sign In / Providers → Email**, desligue **Confirm email**. Assim o cadastro já entra direto (a aprovação continua sendo feita pelo administrador).
-4. Em **Authentication → URL Configuration**, coloque o endereço do site em *Site URL*.
-5. Em **Project Settings → API**, copie a **Project URL** e a chave **anon public** e cole em `site/js/config.js`.
-6. No site, o Bené faz o cadastro. Depois, no SQL Editor, rode:
-   `update public.perfis set papel = 'admin' where email = 'EMAIL-DO-BENE';`
-   A partir daí o Bené aprova os outros pela página **Administração** e torna Mourinha e Orlandinho administradores.
+Para definir a administração manualmente, use o SQL Editor: `update public.profiles set approved=true, role='admin', needs_code=false where email='SEU_EMAIL';`. Confirme que uma única linha foi atualizada.
 
-### Ponte em São Paulo (para os sites que bloqueiam acesso de fora do Brasil)
+**Confirmação de e-mail.** O e-mail gratuito do Supabase só entrega mensagens para quem faz parte da equipe do projeto. Por isso o cadastro entra direto, e quem libera o uso é a administração. Para exigir a confirmação por e-mail de todos, configure um SMTP próprio no Supabase (Authentication → Emails) e mude `mailer_autoconfirm` para `false` em `scripts/supabase_setup.py`.
 
-O Portal da Transparência de Alagoas, o IBGE e outros sites do governo não respondem para os servidores do GitHub,
-que ficam fora do Brasil. A função `supabase/functions/ponte` roda no Supabase em São Paulo e busca essas páginas.
-1. No Supabase, em *Edge Functions*, crie a função **ponte** com o conteúdo de `supabase/functions/ponte/index.ts`
-   e **desligue "Verify JWT"**. Em *Secrets*, crie `PONTE_CHAVE` com uma senha longa inventada.
-2. No GitHub, crie os segredos `PONTE_URL` (= `https://SEU-PROJETO.supabase.co/functions/v1/ponte`),
-   `PONTE_CHAVE` (a mesma senha) e `PONTE_ANON` (a chave *anon public* do Supabase).
+A conta administradora aprova usuários no menu **Acessos** e atribui as unidades que cada um pode consultar. Os anexos ficam no bucket privado `vistorias`, com acesso limitado às atribuições. O relatório é salvo em PDF pela impressão do navegador. O vídeo é acessado pela vistoria no aplicativo. Vistorias concluídas só podem ser alteradas pela administração.
 
-### Espaço para fotos e vídeos
+Para rodar localmente contra o Supabase, copie `.env.example` para `.env.local` e informe a URL e a chave pública do projeto. Nunca coloque uma chave service role no frontend.
 
-O plano grátis do Supabase guarda **1 GB** de arquivos, com no máximo **50 MB por arquivo**.
-O site já diminui as fotos antes de enviar (entre 300 e 500 KB cada, então cabem umas 2 mil fotos).
-Vídeo pesa mais: grave vídeos curtos (até 1 minuto, em 720p). Se o espaço acabar, o plano Pro
-do Supabase custa US$ 25 por mês e dá 100 GB. Nada disso usa o armazenamento do seu celular ou da sua nuvem.
+## GitHub Pages
 
-## Na mídia e Manual do fiscal
+O workflow **Publicar interface** gera o site e o publica no GitHub Pages (Settings → Pages → GitHub Actions). Ele roda a cada mudança no código e também pode ser disparado à mão. A URL e a chave pública vêm das variáveis de Actions `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`. Se elas não existirem, o workflow busca os dois valores pelo `SUPABASE_ACCESS_TOKEN`. As inspeções e os anexos ficam no Supabase. O frontend do Pages pode ser acessado publicamente.
 
-- **Na mídia (72h):** notícias negativas da imprensa sobre cada secretaria, atualizadas todo dia à meia-noite, junto com os portais.
-  Cada uma mostra o que cobrar, o que fazer e a situação da cobrança.
-- **Manual do fiscal:** página com o que cobrar e o que fazer em cada tipo de problema.
-
-## Ao vivo e lembretes automáticos
-
-- **Painel Ao vivo** (`#/ao-vivo`): os administradores veem, em tempo real, onde está cada integrante,
-  a programação do dia, as atividades e as fotos que acabaram de chegar. Quem não deu sinal no dia aparece em vermelho.
-- **Lembretes para todos os integrantes aprovados**, por e-mail e WhatsApp:
-  08h "já começou sua atividade do dia?", 12h "como estão as visitas?", 15h "já finalizou o dia?",
-  18h resumo do dia por e-mail para os administradores. (O GitHub pode atrasar alguns minutos.)
-- **Respostas pelo WhatsApp** entram direto no painel: "hoje estou em home office com o Mourinha" vira o status;
-  "9h reunião no Sebrae" vira compromisso na agenda do dia.
-- Cada integrante coloca o próprio WhatsApp em **Meu perfil** no site. Telefones e e-mails ficam só no banco
-  do Supabase, **nunca** neste repositório (que é público).
-
-### Ligar o e-mail (grátis)
-1. Numa conta Gmail do time, ative a verificação em duas etapas e crie uma **senha de app**
-   (Conta Google → Segurança → Senhas de app).
-2. No GitHub, em *Settings → Secrets and variables → Actions*, crie:
-   `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` (chave *service_role* do Supabase — é secreta, nunca coloque no site),
-   `SITE_URL` (endereço do site), `GMAIL_USER` e `GMAIL_APP_PASSWORD`.
-
-### Ligar o WhatsApp (API oficial da Meta)
-1. Use um **número só para o robô** (um chip novo), não o WhatsApp pessoal de ninguém.
-2. Em developers.facebook.com crie um app do tipo *Business*, adicione o produto **WhatsApp** e cadastre o número.
-3. Crie o modelo de mensagem **lembrete_time_mourinha** (categoria *Utilidade*, idioma *Português (BR)*) com o texto:
-   `Olá, {{1}}! {{2}} Responda por aqui ou abra: {{3}}`
-4. Gere um token permanente (usuário do sistema) e anote o *Phone number ID*.
-5. No GitHub, crie os segredos `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID` e `WHATSAPP_TEMPLATE` (= lembrete_time_mourinha).
-6. No Supabase, em *Edge Functions*, crie a função **whatsapp** com o conteúdo de `supabase/functions/whatsapp/index.ts`,
-   **desligue "Verify JWT"** e cadastre os segredos `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`,
-   `WHATSAPP_VERIFY_TOKEN` (uma senha que você inventa) e `WHATSAPP_APP_SECRET` (do app da Meta).
-7. Na Meta, em *WhatsApp → Configuração → Webhook*, coloque a URL
-   `https://SEU-PROJETO.supabase.co/functions/v1/whatsapp`, o mesmo `WHATSAPP_VERIFY_TOKEN`, e assine o campo **messages**.
-
-Custo: a Meta cobra cada mensagem de modelo enviada (alguns centavos de dólar por mensagem no Brasil).
-Com 7 integrantes e 3 lembretes por dia, fica na casa de poucos dólares por mês. O e-mail é grátis.
-
-## Rodar no computador (opcional)
-
-```bash
-pip install -r requirements.txt
-python -m playwright install chromium
-python -m coletor.main                      # coleta as duas esferas
-python -m coletor.main --esfera governo-al  # só uma
-python -m pytest -q tests
-cd site && python -m http.server 8000       # abre em http://localhost:8000
-```
-
-## Regras de ouro
-
-Nenhum dado inventado. Sem excluir nenhuma despesa. Fonte e data em tudo.
-Alerta é ponto de atenção, não acusação. Detalhes em `CLAUDE.md`.
+Antes de usar dados reais, confira com contas de teste a aprovação, o isolamento entre duas unidades, o upload privado e a impressão. Defina com a SMS os responsáveis pelos acessos e a guarda dos relatórios.

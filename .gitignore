@@ -1,6 +1,4 @@
-__pycache__/
-*.pyc
-.pytest_cache/
-dados/brutos/
-site/dados/
-.venv/
+node_modules/
+dist/
+.env
+.env.local
