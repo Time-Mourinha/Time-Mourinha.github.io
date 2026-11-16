@@ -20,7 +20,7 @@ API = "https://api.supabase.com/v1"
 TOKEN = os.environ.get("SUPABASE_ACCESS_TOKEN", "")
 REF = os.environ.get("SUPABASE_REF") or "apqkewsdzwawtiajbmyl"
 URL = f"https://{REF}.supabase.co"
-SITE = os.environ.get("SITE_URL", "https://time-mourinha.github.io")
+SITE = os.environ.get("SITE_URL", "https://vistoria-saude.github.io")
 
 
 def api(metodo: str, caminho: str, ok404: bool = False, **kw):

@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
   if (!c.aviso_chave || req.headers.get('x-chave') !== c.aviso_chave) return new Response('proibido', { status: 403 })
 
   const corpo = await req.json().catch(() => ({}))
-  webpush.setVapidDetails(c.site_url || 'https://time-mourinha.github.io', c.vapid_public, c.vapid_private)
+  webpush.setVapidDetails(c.site_url || 'https://vistoria-saude.github.io', c.vapid_public, c.vapid_private)
 
   const { data: admins } = await sb.from('profiles').select('id').eq('role', 'admin').eq('approved', true)
   const ids = (admins ?? []).map((a: { id: string }) => a.id)
