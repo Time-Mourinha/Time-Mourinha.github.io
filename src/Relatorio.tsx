@@ -1,5 +1,5 @@
 import marca from './assets/marca.png'
-import { impactoDaOcorrencia, principaisProblemas, resumir } from './lib/analise'
+import { principaisProblemas, resumir } from './lib/analise'
 import { PRIORIDADES, dataBR, type Unidade, type Vistoria } from './lib/modelo'
 import { Selo, VerMidia } from './ui'
 
@@ -15,12 +15,13 @@ const hojeBR = () => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Macei
 /** Relatório de visita técnica: pronto para imprimir em PDF ou apresentar. */
 export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Vistoria; unidade?: Unidade; estilo: EstiloRelatorio }) {
   const r = resumir(v)
-  const principais = principaisProblemas(v)
+  const principais = principaisProblemas(v, 6)
   const acoes = v.rooms.flatMap((amb) => amb.findings.map((o) => ({ amb, o })))
     .sort((a, b) => PRIORIDADES.indexOf(a.o.priority) - PRIORIDADES.indexOf(b.o.priority))
   const numero = v.id.slice(0, 8).toUpperCase()
   const pct = r.respondidos ? Math.round((r.problemas / r.respondidos) * 100) : 0
-  let foto = 0
+  // todas as fotos num só bloco, pequenas e numeradas (o relatório fica curto)
+  const fotos = v.rooms.flatMap((amb) => amb.findings.flatMap((o) => o.media.map((m) => ({ m, amb, o }))))
 
   return (
     <article className={`relatorio estilo-${estilo}`}>
@@ -74,8 +75,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
             {principais.map((p) => (
               <li key={p.titulo}>
                 <div className="p-topo"><strong>{p.titulo}</strong><Selo value={p.gravidade} /></div>
-                <p className="p-onde">Onde: {[...new Set(p.onde)].join('; ')}</p>
-                {p.impacto && <p className="p-impacto"><span>O que causa:</span> {p.impacto}</p>}
+                <p className="p-onde">{[...new Set(p.onde)].join('; ')}{p.impacto && <> — <span className="p-causa">{p.impacto}</span></>}</p>
               </li>
             ))}
           </ol>
@@ -86,16 +86,15 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
         <section className="rel-bloco">
           <h2>4. Ações recomendadas</h2>
           <table className="rel-tabela">
-            <thead><tr><th>Prioridade</th><th>Local</th><th>Problema</th><th>Ação indicada</th><th>Responsável</th><th>Prazo</th></tr></thead>
+            <thead><tr><th>Prioridade</th><th>Local</th><th>Problema</th><th>Ação indicada</th><th>Responsável · prazo</th></tr></thead>
             <tbody>
               {acoes.map(({ amb, o }) => (
                 <tr key={o.id}>
                   <td><Selo value={o.priority} /></td>
-                  <td>{amb.name}{o.point && <><br /><small>{o.point}</small></>}</td>
+                  <td>{amb.name}{o.point && o.point !== amb.name && <><br /><small>{o.point}</small></>}</td>
                   <td>{o.item && <strong>{o.item}: </strong>}{o.issue}</td>
                   <td>{o.action}</td>
-                  <td>{o.owner || '—'}</td>
-                  <td>{o.due ? dataBR(o.due) : '—'}</td>
+                  <td>{[o.owner, o.due && dataBR(o.due)].filter(Boolean).join(' · ') || '—'}</td>
                 </tr>
               ))}
             </tbody>
@@ -103,43 +102,39 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
         </section>
       )}
 
+      {fotos.length > 0 && (
+        <section className="rel-bloco">
+          <h2>{acoes.length ? 5 : 4}. Registro fotográfico</h2>
+          <div className="rel-fotos">
+            {fotos.map(({ m, amb, o }, i) => (
+              <div className="rel-foto" key={m.id}>
+                <span className="f-num">Foto {i + 1}</span>
+                <VerMidia media={{ ...m, caption: [m.caption, o.item || o.issue, amb.name].filter(Boolean).join(' · ') }} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="rel-bloco">
-        <h2>{acoes.length ? 5 : 4}. Detalhe por ambiente</h2>
-        {v.rooms.map((amb, i) => {
-          const probs = r.listaChecklist.filter((p) => p.ambiente === amb.name)
-          const respostas = Object.values(amb.checks).filter(Boolean)
-          const oks = respostas.filter((x) => x === 'OK').length
-          return (
-            <div className="rel-ambiente" key={amb.id}>
-              <h3>{i + 1}. {amb.name}</h3>
-              <p className="rel-mini">{respostas.length} itens verificados · {oks} adequados · {probs.length} com problema</p>
-              {probs.length > 0 && (
-                <table className="rel-tabela compacta">
-                  <thead><tr><th>Item</th><th>Situação</th><th>O que causa</th></tr></thead>
-                  <tbody>{probs.map((p) => <tr key={p.grupo + p.item}><td>{p.item}<br /><small>{p.grupo}</small></td><td><Selo value={p.resposta} /></td><td>{p.impacto}</td></tr>)}</tbody>
-                </table>
-              )}
-              {amb.findings.map((o, n) => (
-                <div className="rel-ocorrencia" key={o.id}>
-                  <div className="p-topo"><strong>Ocorrência {n + 1}{o.item ? ` · ${o.item}` : ''}</strong><Selo value={o.priority} /></div>
-                  <dl>
-                    {o.point && <><dt>Local exato</dt><dd>{o.point}</dd></>}
-                    <dt>Problema observado</dt><dd>{o.issue}</dd>
-                    <dt>Ação indicada</dt><dd>{o.action}</dd>
-                    {o.reason && <><dt>Justificativa</dt><dd>{o.reason}</dd></>}
-                    {(impactoDaOcorrencia(o)) && <><dt>O que causa</dt><dd>{impactoDaOcorrencia(o)}</dd></>}
-                    {(o.owner || o.due) && <><dt>Responsável e prazo</dt><dd>{[o.owner, o.due && dataBR(o.due)].filter(Boolean).join(' · ')}</dd></>}
-                  </dl>
-                  {o.media.length > 0 && (
-                    <div className="rel-fotos">
-                      {o.media.map((m) => { foto++; return <div className="rel-foto" key={m.id}><span className="f-num">Foto {foto}</span><VerMidia media={m} /></div> })}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )
-        })}
+        <h2>{4 + (acoes.length ? 1 : 0) + (fotos.length ? 1 : 0)}. Itens verificados por ambiente</h2>
+        <table className="rel-tabela compacta">
+          <thead><tr><th>Ambiente</th><th>Verificados</th><th>Adequados</th><th>Com problema</th></tr></thead>
+          <tbody>
+            {v.rooms.map((amb) => {
+              const respostas = Object.values(amb.checks).filter(Boolean)
+              const probs = r.listaChecklist.filter((p) => p.ambiente === amb.name)
+              return (
+                <tr key={amb.id}>
+                  <td><strong>{amb.name}</strong></td>
+                  <td>{respostas.length}</td>
+                  <td>{respostas.filter((x) => x === 'OK').length}</td>
+                  <td>{probs.length ? probs.map((p) => `${p.item} (${p.resposta.toLowerCase()})`).join('; ') : '—'}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </section>
 
       <section className="rel-bloco rel-assinaturas">

@@ -254,3 +254,12 @@ header .instalar+.quiet{margin-left:0}
   .estilo-moderno{background:#fff}.estilo-moderno .rel-bloco{box-shadow:none;border:1px solid #e3ebf1}
   .barra-final,.em-visita-lista{display:none!important}
 }
+
+/* Relatório enxuto */
+.rel-principais li{margin:0 0 .45rem}
+.p-onde{font-size:.86rem}
+.p-causa{color:#14233a}
+.rel-fotos{grid-template-columns:repeat(3,1fr)}
+.rel-foto img,.rel-foto video{max-height:170px}
+@media print{.rel-fotos{grid-template-columns:repeat(3,1fr)}.rel-foto img{max-height:150px}.relatorio{font-size:10pt}.rel-bloco{margin-bottom:1rem}.rel-assinaturas{margin-top:1.6rem}}
+@media (width<=650px){.rel-fotos{grid-template-columns:repeat(2,1fr)}}
