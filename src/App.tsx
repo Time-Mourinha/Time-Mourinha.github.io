@@ -6,7 +6,7 @@ import {
   type Ambiente, type Midia, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
-  DEMO, caminhoMidia, descreverFoto, type DescricaoFoto, carregarPerfil, carregarUnidades, carregarVistorias, enviarMidia, gravarDemo, lerDemo,
+  DEMO, caminhoMidia, descreverFoto, excluirVistoria, type DescricaoFoto, carregarPerfil, carregarUnidades, carregarVistorias, enviarMidia, gravarDemo, lerDemo,
   midiaDemo, salvarVistoria, sb, urlMidia,
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
@@ -211,6 +211,17 @@ export default function App() {
     })
   }
 
+  function excluir(v: Vistoria) {
+    const u = unidades.find((x) => x.id === v.unit_id)
+    if (!confirm(`Excluir o rascunho da vistoria em ${u?.name ?? 'unidade'}? As fotos dele também saem. Não dá para desfazer.`)) return
+    void executar(async () => {
+      await excluirVistoria(v)
+      setVistorias((l) => l.filter((x) => x.id !== v.id))
+      if (aberta?.id === v.id) { setAberta(null); setPendente(false); ir('unidades') }
+      setAviso('Rascunho excluído.')
+    })
+  }
+
   async function concluir() {
     if (!aberta) return
     await executar(async () => {
@@ -309,6 +320,7 @@ export default function App() {
           tela === 'vistoria' && aberta && unidadeAberta ? (
             <Formulario v={aberta} u={unidadeAberta} ocupado={ocupado} bloqueada={bloqueada} pendente={pendente} mudar={mudar}
               anexar={(destino, l) => void anexar(destino, l)} concluir={() => void concluir()}
+              excluir={aberta.status === 'draft' && (DEMO || admin || aberta.owner === perfil?.id || !aberta.owner) ? () => excluir(aberta) : undefined}
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
           ) :
 
@@ -382,10 +394,13 @@ export default function App() {
                   {meusRascunhos.map((v) => {
                     const u = unidades.find((x) => x.id === v.unit_id)
                     return u && (
-                      <button key={v.id} className="continuar-item" onClick={() => abrir(u, v)}>
-                        <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.reduce((s, r) => s + r.findings.length, 0)} problema(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
-                        <b>Retomar →</b>
-                      </button>
+                      <div key={v.id} className="continuar-linha">
+                        <button className="continuar-item" onClick={() => abrir(u, v)}>
+                          <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.reduce((s, r) => s + r.findings.length, 0)} problema(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
+                          <b>Retomar →</b>
+                        </button>
+                        <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho" title="Excluir rascunho">🗑️</button>
+                      </div>
                     )
                   })}
                 </div>

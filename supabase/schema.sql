@@ -175,7 +175,8 @@ create policy insp_update on public.inspections for update to authenticated
   using (public.can_access_unit(unit_id) and (owner = auth.uid() or public.is_admin()))
   with check (public.can_access_unit(unit_id));
 drop policy if exists insp_delete on public.inspections;
-create policy insp_delete on public.inspections for delete to authenticated using (public.is_admin());
+create policy insp_delete on public.inspections for delete to authenticated
+  using (public.is_admin() or (status = 'draft' and owner = auth.uid()));  -- rascunho: quem começou pode excluir
 
 -- ------------------------------------------------------------------ anexos privados
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

@@ -127,3 +127,15 @@ export async function descreverFoto(caminho: string): Promise<DescricaoFoto | nu
     return data as DescricaoFoto
   } catch { return null }
 }
+
+/** Exclui um rascunho (e tenta apagar as fotos dele). */
+export async function excluirVistoria(v: Vistoria) {
+  if (!sb) {
+    localStorage.setItem(CHAVE_DEMO, JSON.stringify(lerDemo().filter((x) => x.id !== v.id)))
+    return
+  }
+  const caminhos = [...(v.photos ?? []), ...v.rooms.flatMap((r) => r.findings.flatMap((f) => f.media))].map((m) => m.path).filter(Boolean) as string[]
+  const { error } = await sb.from('inspections').delete().eq('id', v.id)
+  falhou(error)
+  if (caminhos.length) await sb.storage.from(BUCKET).remove(caminhos).catch(() => null)
+}

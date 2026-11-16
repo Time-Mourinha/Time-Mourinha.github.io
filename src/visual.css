@@ -141,3 +141,8 @@ main{padding:clamp(1rem,3vw,2.2rem)}
 .barra-final .btn-arquivo{display:flex;align-items:center}
 .btn-arquivo{display:inline-flex;align-items:center;justify-content:center;gap:.3rem}
 .form-vistoria .media figcaption{display:none}
+
+.continuar-linha{display:flex;gap:.5rem;align-items:stretch;margin:.4rem 0}
+.continuar-linha .continuar-item{margin:0}
+.excluir{background:#fff;border-color:#f1b8b8;color:#a11d1d}
+.topo-acoes{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}

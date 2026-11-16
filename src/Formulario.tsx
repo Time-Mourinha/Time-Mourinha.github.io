@@ -10,7 +10,7 @@ type Props = {
   v: Vistoria; u: Unidade; ocupado: boolean; bloqueada: boolean; pendente: boolean
   mudar: (v: Vistoria) => void
   anexar: (destino: { roomId?: string; ocorrencia?: Ocorrencia }, arquivos: File[]) => void
-  salvar: () => void; concluir: () => void
+  salvar: () => void; concluir: () => void; excluir?: () => void
 }
 
 /* Botões de resposta: rótulo curto no botão, resposta gravada igual ao relatório */
@@ -35,7 +35,7 @@ function ocorrenciaAutomatica(amb: Ambiente, chave: string, item: string, respos
 }
 
 /** Formulário de vistoria feito para o celular: quase tudo em botões. */
-export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, salvar, concluir }: Props) {
+export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, salvar, concluir, excluir }: Props) {
   const [outro, setOutro] = useState('')
   const [abertoAmb, setAbertoAmb] = useState<string>(v.rooms.at(-1)?.id ?? '')
   const [detalhe, setDetalhe] = useState<string>('')
@@ -111,7 +111,10 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
           <h1>{u.name}</h1>
           <p>{u.address}</p>
         </div>
-        <Selo value={v.status === 'completed' ? 'Concluída' : pendente ? 'Salvando…' : 'Rascunho salvo'} />
+        <div className="topo-acoes">
+          <Selo value={v.status === 'completed' ? 'Concluída' : pendente ? 'Salvando…' : 'Rascunho salvo'} />
+          {excluir && <button className="excluir" disabled={ocupado} onClick={excluir}>🗑️ Excluir rascunho</button>}
+        </div>
       </div>
       {bloqueada && <div className="banner">Vistoria concluída: só a administração pode alterar.</div>}
 
