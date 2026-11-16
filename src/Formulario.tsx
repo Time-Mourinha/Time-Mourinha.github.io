@@ -121,7 +121,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
       <fieldset disabled={ocupado || bloqueada} className="plain">
         <div className="panel grid">
           <Campo label="Data"><input type="date" value={v.inspected_on} onChange={(e) => mudar({ ...v, inspected_on: e.target.value })} /></Campo>
-          <Campo label="Fiscal"><input value={v.inspector} onChange={(e) => mudar({ ...v, inspector: e.target.value })} /></Campo>
+          <Campo label="Vistoriador(a)"><input value={v.inspector} onChange={(e) => mudar({ ...v, inspector: e.target.value })} /></Campo>
         </div>
 
         <div className="panel">

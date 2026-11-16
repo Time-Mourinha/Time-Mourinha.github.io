@@ -46,7 +46,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
           <tr><th>Tipo</th><td>{u?.kind}</td><th>Distrito sanitário</th><td>{u?.district}</td></tr>
           <tr><th>Endereço</th><td colSpan={3}>{u?.address}</td></tr>
           <tr><th>CNES</th><td>{u?.cnes || 'pendente'}</td><th>Data da vistoria</th><td>{dataBR(v.inspected_on)}</td></tr>
-          <tr><th>Fiscal</th><td colSpan={3}>{v.inspector} · Secretaria Executiva</td></tr>
+          <tr><th>Vistoriador(a)</th><td colSpan={3}>{v.inspector} · Secretaria Executiva</td></tr>
         </tbody></table>
       </section>
 
@@ -143,7 +143,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
       </section>
 
       <section className="rel-bloco rel-assinaturas">
-        <div><span />{v.inspector || 'Fiscal'}<small>Fiscal da Secretaria Executiva</small></div>
+        <div><span />{v.inspector || 'Vistoriador(a)'}<small>Vistoriador(a) da Secretaria Executiva</small></div>
         <div><span />Responsável pela unidade<small>Nome e matrícula</small></div>
         {v.general_by && <div><span />{v.general_by}<small>Validação da intervenção</small></div>}
       </section>
