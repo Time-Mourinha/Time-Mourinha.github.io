@@ -7,6 +7,7 @@ type Props = { sessao: boolean; perfil: Perfil | null; aoMudar: () => void }
 /** Entrada, pedido de acesso, espera da aprovação e código da primeira administradora. */
 export function Entrada({ sessao, perfil, aoMudar }: Props) {
   const [modo, setModo] = useState<'login' | 'cadastro' | 'senha'>('login')
+  const [nome, setNome] = useState('')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [codigo, setCodigo] = useState('')
@@ -33,7 +34,8 @@ export function Entrada({ sessao, perfil, aoMudar }: Props) {
         aoMudar()
       } else if (modo === 'cadastro') {
         if (senha.length < 8) throw new Error('A senha precisa ter pelo menos 8 caracteres.')
-        const { data, error } = await sb!.auth.signUp({ email: email.trim(), password: senha, options: { emailRedirectTo: location.origin + location.pathname } })
+        if (nome.trim().split(/\s+/).length < 2) throw new Error('Escreva seu nome e sobrenome.')
+        const { data, error } = await sb!.auth.signUp({ email: email.trim(), password: senha, options: { emailRedirectTo: location.origin + location.pathname, data: { nome: nome.trim() } } })
         if (error) throw new Error(traduzir(error.message))
         if (data.session) aoMudar()
         else setAviso('Pedido enviado. Confirme o e-mail pelo link que chegou na sua caixa de entrada e depois entre.')
@@ -81,6 +83,7 @@ export function Entrada({ sessao, perfil, aoMudar }: Props) {
       {erro && <div role="alert" className="error">{erro}</div>}
       {aviso && <div role="status" className="notice">{aviso}</div>}
       <form onSubmit={enviar}>
+        {modo === 'cadastro' && <label className="field">Nome e sobrenome<input autoComplete="name" value={nome} onChange={(e) => setNome(e.target.value)} required placeholder="Como aparece nos relatórios" /></label>}
         <label className="field">E-mail<input type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required /></label>
         {modo !== 'senha' && <label className="field">Senha<input type="password" autoComplete={modo === 'login' ? 'current-password' : 'new-password'} minLength={modo === 'cadastro' ? 8 : undefined} value={senha} onChange={(e) => setSenha(e.target.value)} required /></label>}
         <button className="primary" disabled={ocupado}>{modo === 'login' ? 'Entrar' : modo === 'cadastro' ? 'Solicitar acesso' : 'Enviar link'}</button>

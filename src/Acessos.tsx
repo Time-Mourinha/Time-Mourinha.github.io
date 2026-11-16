@@ -67,7 +67,7 @@ function EditorAcesso(props: {
   return (
     <article className="panel">
       <div className="heading">
-        <div><h3>{perfil.email}</h3>
+        <div><h3>{perfil.name || perfil.email}</h3>{perfil.name && <small>{perfil.email} </small>}
           <span className={'badge ' + (perfil.approved ? '' : 'priority')}>{perfil.needs_code ? 'Aguardando código' : perfil.approved ? (perfil.role === 'admin' ? 'Administração' : 'Com acesso') : 'Aguardando aprovação'}</span>
 </div>
         <button onClick={props.abrir}>{props.aberto ? 'Fechar' : 'Editar'}</button>

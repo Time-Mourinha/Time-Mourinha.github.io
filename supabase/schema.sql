@@ -22,6 +22,7 @@ create table if not exists public.profiles (
   needs_code boolean not null default false,       -- primeira administradora: falta confirmar o código do e-mail
   created_at timestamptz not null default now()
 );
+alter table public.profiles add column if not exists name text not null default '';
 
 create table if not exists public.unit_assignments (
   user_id uuid not null references public.profiles(id) on delete cascade,
@@ -72,8 +73,8 @@ declare admin_email text;
 begin
   select value into admin_email from private_config where key = 'admin_email';
   -- o e-mail da administração entra direto, já aprovado; os demais esperam a aprovação dela
-  insert into profiles (id, email, role, approved, needs_code)
-  values (new.id, coalesce(new.email,''),
+  insert into profiles (id, email, name, role, approved, needs_code)
+  values (new.id, coalesce(new.email,''), coalesce(new.raw_user_meta_data->>'nome', ''),
           case when admin_email is not null and lower(new.email) = lower(admin_email) then 'admin' else 'inspector' end,
           admin_email is not null and lower(new.email) = lower(admin_email),
           false)
@@ -115,8 +116,11 @@ begin
   if auth.uid() is null or current_setting('app.admin_code', true) = 'ok' then return new; end if;
   if (new.approved is distinct from old.approved or new.role is distinct from old.role or new.needs_code is distinct from old.needs_code
       or new.email is distinct from old.email) then
-    if not public.is_admin() then raise exception 'Só a administração altera acessos.'; end if;
-    if new.id = auth.uid() then raise exception 'Peça a outra pessoa da administração para alterar a sua conta.'; end if;
+    if new.id = auth.uid() and new.email is distinct from old.email then raise exception 'O e-mail não pode ser trocado aqui.'; end if;
+    if new.approved is distinct from old.approved or new.role is distinct from old.role or new.needs_code is distinct from old.needs_code then
+      if not public.is_admin() then raise exception 'Só a administração altera acessos.'; end if;
+      if new.id = auth.uid() then raise exception 'Peça a outra pessoa da administração para alterar a sua conta.'; end if;
+    end if;
   end if;
   return new;
 end $$;
@@ -262,3 +266,7 @@ do $$ begin
     alter publication supabase_realtime add table public.profiles;
   end if;
 end $$;
+
+-- Cada pessoa pode corrigir o próprio nome (aparece como vistoriador e no "em visita agora")
+drop policy if exists profiles_own_name on public.profiles;
+create policy profiles_own_name on public.profiles for update to authenticated using (id = auth.uid()) with check (id = auth.uid());

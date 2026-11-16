@@ -11,7 +11,7 @@ export type Vistoria = {
   id: string; unit_id: number; owner?: string; inspected_on: string; inspector: string
   status: 'draft' | 'completed'; rooms: Ambiente[]; general_reason: string; general_by: string; updated_at?: string; created_at?: string
 }
-export type Perfil = { id: string; email: string; approved: boolean; role: 'inspector' | 'admin'; needs_code: boolean; created_at?: string }
+export type Perfil = { id: string; email: string; name?: string; approved: boolean; role: 'inspector' | 'admin'; needs_code: boolean; created_at?: string }
 
 /** Catálogo das 80 unidades dos oito distritos sanitários (lista da SMS de 13/11/2026). */
 export const UNIDADES = unidadesJson as Unidade[]

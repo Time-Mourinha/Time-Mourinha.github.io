@@ -1,0 +1,128 @@
+/* =====================================================================
+   Visual 2: mais moderno, pensado para o celular do fiscal.
+   Três aparências: [data-tema=padrao] institucional, [data-tema=moderno] claro, [data-tema=sol] alto contraste.
+   ===================================================================== */
+:root{--bg:#f3f6fa;--card:#fff;--ink:#14233a;--muted:#5a6f82;--line:#dde6ee;--radius:16px;--shadow:0 1px 2px #1036560d,0 6px 20px #1036560f;
+  --nav-bg:var(--navy);--nav-ink:#fff;--nav-active:#ffffff1f;font-size:16px}
+:root{background:var(--bg);color:var(--ink)}
+body{-webkit-tap-highlight-color:transparent}
+button,.btn-arquivo{min-height:44px;border-radius:12px;transition:background .15s,border-color .15s}
+.primary{box-shadow:0 2px 6px #10365633}
+.panel{border-radius:var(--radius);border-color:var(--line);box-shadow:var(--shadow);background:var(--card)}
+h1{font-size:clamp(1.5rem,3.2vw,2.2rem)}
+
+/* Cabeçalho */
+header{position:sticky;top:0;z-index:20;gap:.8rem;padding:.55rem clamp(.8rem,3vw,2rem);border-bottom:3px solid var(--orange);box-shadow:0 2px 10px #10365614}
+header img{width:132px}
+.titulo-app{display:grid;line-height:1.15;border-left:1px solid var(--line);padding-left:.8rem}
+.titulo-app b{font-size:.98rem;color:var(--navy)}
+.titulo-app small{font-weight:600;color:var(--muted)}
+.quem{background:#eef4f9;color:var(--navy);border-radius:999px;padding:.4rem .75rem;font-size:.85rem;font-weight:700;text-transform:capitalize}
+header button,header .instalar{margin-left:0}
+.titulo-app{flex:1}
+header .quiet{padding:.5rem .7rem;border-color:var(--line)}
+.aparencia{position:relative}
+.aparencia-menu{position:absolute;right:0;top:calc(100% + .4rem);z-index:30;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 30px #10365633;padding:.6rem;display:grid;gap:.35rem;width:min(300px,86vw)}
+.aparencia-menu>strong{padding:.2rem .4rem;color:var(--navy)}
+.aparencia-menu button{display:flex;gap:.6rem;align-items:center;text-align:left;border-color:transparent;background:#f7fafc}
+.aparencia-menu button.ativo{border-color:var(--blue);background:#eaf4fb}
+.aparencia-menu small{display:block;font-weight:500;color:var(--muted)}
+.amostra{width:30px;height:30px;border-radius:9px;flex:none;border:1px solid #0002}
+.amostra-padrao{background:linear-gradient(135deg,#103656 55%,#ed890d 55%)}
+.amostra-moderno{background:linear-gradient(135deg,#fff 55%,#076da5 55%)}
+.amostra-sol{background:linear-gradient(135deg,#000 55%,#ffd400 55%)}
+
+/* Menu */
+.layout{grid-template-columns:210px minmax(0,1fr);min-height:calc(100vh - 70px)}
+nav{background:var(--nav-bg);padding:1rem .7rem;gap:.3rem;position:sticky;top:70px;align-self:start;height:calc(100vh - 70px)}
+nav button{display:flex;align-items:center;gap:.6rem;color:var(--nav-ink);border:0;border-radius:12px;padding:.7rem .8rem;font-weight:650}
+nav button i{font-style:normal;font-size:1.15rem;width:1.5rem;text-align:center}
+nav button.active{background:var(--nav-active);border-left:0;box-shadow:inset 3px 0 0 var(--orange)}
+nav button.aberta{color:#ffd9a8}
+main{padding:clamp(1rem,3vw,2.2rem)}
+
+/* Início */
+.hero{background:linear-gradient(120deg,#103656,#0b5a8c 70%,#076da5);color:#fff;border-radius:20px;padding:clamp(1.1rem,3vw,1.8rem);margin-bottom:1rem;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:#ed890d33}
+.hero .eyebrow{color:#ffc27a}
+.hero h1{color:#fff;margin:.2rem 0 .4rem}
+.hero p{color:#dce8f2;max-width:56ch}
+.stats{gap:.6rem}
+.stats div{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:14px}
+.stats strong{color:var(--navy)}
+.continuar{border-left:4px solid var(--orange)}
+.continuar h2{margin-top:0;font-size:1.1rem}
+.continuar-item{display:flex;justify-content:space-between;align-items:center;gap:.8rem;width:100%;text-align:left;margin:.4rem 0;background:#fff8ee;border-color:#f6d3a3}
+.continuar-item small{display:block;font-weight:500;color:var(--muted)}
+.continuar-item b{color:#b35f00;white-space:nowrap}
+.busca{display:grid;gap:.7rem}
+.busca-campo{width:100%;border:1.5px solid #bdcedb;border-radius:14px;padding:.85rem 1rem;font-size:1rem;background:#fff}
+.chips{display:flex;gap:.45rem;overflow-x:auto;padding-bottom:.15rem;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:40px;white-space:nowrap}
+.chip.ativo{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip-select{flex:none;border:1px solid #cfe0ec;border-radius:999px;padding:.45rem .8rem;background:#eef5fa;color:var(--navy);font-weight:650}
+.cards{gap:.8rem}
+.unit{border-left:5px solid #cfdae4}
+.unit.nivel-critica{border-left-color:#c0392b}.unit.nivel-alta{border-left-color:var(--orange)}
+.unit.nivel-moderada{border-left-color:var(--blue)}.unit.nivel-baixa{border-left-color:#1e8a55}
+.unit h3{font-size:1.02rem;line-height:1.3}
+.unit p{font-size:.9rem}
+.unit .primary{flex:1}
+
+/* Formulário */
+.form-vistoria .heading h1{font-size:clamp(1.3rem,3vw,1.9rem)}
+.amb-cabeca{min-height:64px}
+.resp{min-height:44px}
+.barra-final{border-top:1px solid var(--line)}
+
+/* ---------- celular: menu vira barra de abas embaixo ---------- */
+@media (width<=650px){
+  header{padding:.45rem .7rem;gap:.45rem}
+  header img{width:96px;margin-right:auto}
+  .titulo-app{display:none}
+  .quem{display:none}
+  .layout{display:block}
+  nav{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:25;flex-direction:row;justify-content:space-around;padding:.3rem .2rem calc(.3rem + env(safe-area-inset-bottom));gap:0;border-top:1px solid #ffffff22;box-shadow:0 -4px 16px #10365626}
+  nav button{flex:1;flex-direction:column;gap:.1rem;font-size:.72rem;padding:.35rem .1rem;min-height:54px;justify-content:center;position:relative}
+  nav button i{font-size:1.3rem}
+  nav button.active{box-shadow:inset 0 3px 0 var(--orange)}
+  nav .contador{position:absolute;top:2px;right:18%;margin:0}
+  main{padding:1rem .8rem calc(90px + env(safe-area-inset-bottom))}
+  .barra-final{bottom:calc(64px + env(safe-area-inset-bottom))}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .hero{border-radius:16px}
+}
+
+/* ---------- Tema Institucional (padrão antigo) ---------- */
+[data-tema=padrao]{--bg:#f3f7fa}
+[data-tema=padrao] .hero{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
+[data-tema=padrao] .hero::after{display:none}
+[data-tema=padrao] .hero h1{color:var(--navy)}
+[data-tema=padrao] .hero p{color:var(--muted)}
+[data-tema=padrao] .hero .eyebrow{color:#076493}
+
+/* ---------- Tema Moderno (claro) ---------- */
+[data-tema=moderno]{--bg:#f5f7fb;--nav-bg:#ffffff;--nav-ink:#16344c;--nav-active:#eaf2f9}
+@media (width>650px){[data-tema=moderno] nav{border-right:1px solid var(--line)}}
+[data-tema=moderno] nav button.aberta{color:#b35f00}
+[data-tema=moderno] nav button.active{color:var(--navy)}
+
+/* ---------- Tema Sol forte (alto contraste para a rua) ---------- */
+[data-tema=sol]{--bg:#fff;--card:#fff;--ink:#000;--muted:#222;--line:#000;--shadow:none;--nav-bg:#000;--nav-ink:#fff;--nav-active:#333;font-size:17.5px}
+[data-tema=sol] .panel,[data-tema=sol] .stats div,[data-tema=sol] .finding{border:2px solid #000}
+[data-tema=sol] button,[data-tema=sol] .btn-arquivo,[data-tema=sol] .chip{border:2px solid #000;color:#000;font-weight:800}
+[data-tema=sol] .primary,[data-tema=sol] .chip.ativo{background:#000;color:#ffd400;border-color:#000}
+[data-tema=sol] nav button{border:0;color:#fff}
+[data-tema=sol] nav button.active{box-shadow:inset 0 -4px 0 #ffd400}
+[data-tema=sol] .hero{background:#000;color:#fff}
+[data-tema=sol] .hero::after{display:none}
+[data-tema=sol] .hero h1,[data-tema=sol] .hero p{color:#fff}
+[data-tema=sol] .hero .eyebrow{color:#ffd400}
+[data-tema=sol] .resp.marcado.ok{background:#006b2e}
+[data-tema=sol] .resp.marcado.falta,[data-tema=sol] .resp.marcado.prio-i{background:#b00000}
+[data-tema=sol] .resp.marcado{color:#fff!important}
+[data-tema=sol] .field input,[data-tema=sol] .field select,[data-tema=sol] .field textarea,[data-tema=sol] .busca-campo{border:2px solid #000}
+[data-tema=sol] header{border-bottom:4px solid #000}
+
+@media print{header,nav,.aparencia,.continuar,.hero{display:none!important}main{padding:0!important}:root{background:#fff}}

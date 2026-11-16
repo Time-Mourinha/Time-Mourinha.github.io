@@ -12,6 +12,7 @@ import {
 import { Acessos } from './Acessos'
 import { Entrada } from './Entrada'
 import { Formulario } from './Formulario'
+import { Aparencia } from './Aparencia'
 import { Instalar } from './Instalar'
 import { Painel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
@@ -19,6 +20,25 @@ import { IMPACTOS, resumir } from './lib/analise'
 import { reduzirImagem } from './lib/imagem'
 
 type Tela = 'unidades' | 'painel' | 'vistoria' | 'relatorios' | 'acessos'
+
+function PedirNome({ aoSalvar }: { aoSalvar: (nome: string) => void }) {
+  const [nome, setNome] = useState('')
+  const [erro, setErro] = useState('')
+  return (
+    <form className="panel continuar" onSubmit={async (e) => {
+      e.preventDefault()
+      if (nome.trim().split(/\s+/).length < 2) { setErro('Escreva nome e sobrenome.'); return }
+      const { data } = await sb!.auth.getUser()
+      const { error } = await sb!.from('profiles').update({ name: nome.trim() }).eq('id', data.user!.id)
+      if (error) setErro(error.message); else aoSalvar(nome.trim())
+    }}>
+      <h2>Como você quer aparecer nos relatórios?</h2>
+      <div className="row"><input className="busca-campo" style={{ flex: 1 }} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome e sobrenome" autoComplete="name" />
+        <button className="primary">Salvar</button></div>
+      {erro && <p className="error">{erro}</p>}
+    </form>
+  )
+}
 
 export default function App() {
   const [perfil, setPerfil] = useState<Perfil | null>(null)
@@ -32,6 +52,7 @@ export default function App() {
   const [busca, setBusca] = useState('')
   const [distrito, setDistrito] = useState('')
   const [tipo, setTipo] = useState('')
+  const [situacao, setSituacao] = useState('')
   const [fPrioridade, setFPrioridade] = useState('')
   const [fUnidade, setFUnidade] = useState('')
   const [fAmbiente, setFAmbiente] = useState('')
@@ -140,7 +161,7 @@ export default function App() {
     void executar(async () => {
       if (pendente && aberta && !bloqueada) await gravar(aberta)
       const v: Vistoria = existente ?? {
-        id: novoId(), unit_id: u.id, inspected_on: hoje(), inspector: perfil?.email ?? '',
+        id: novoId(), unit_id: u.id, inspected_on: hoje(), inspector: perfil?.name || perfil?.email || '',
         status: 'draft', rooms: [], general_reason: '', general_by: '',
       }
       if (!existente) await gravar(v)
@@ -213,8 +234,10 @@ export default function App() {
   const cabecalho = (
     <header>
       <img src={marca} alt="Prefeitura de Maceió — Cidade de Todos Nós" />
-      <span>Secretaria Executiva</span>
+      <span className="titulo-app"><b>Formulário de Vistoria Saúde</b><small>Secretaria Executiva</small></span>
       <Instalar />
+      <Aparencia />
+      {!DEMO && sessao && perfil && <span className="quem" title={perfil.email}>{(perfil.name || perfil.email).split(/[ @]/)[0]}</span>}
       {!DEMO && sessao && <button className="quiet" disabled={ocupado} onClick={() => void sair()}>Sair</button>}
     </header>
   )
@@ -231,8 +254,14 @@ export default function App() {
 
   /* ---------------------------------------------------------------- dados derivados */
   const concluidas = vistorias.filter((v) => v.status === 'completed')
+  const ultimaDe = (id: number) => concluidas.filter((v) => v.unit_id === id).sort((a, b) => b.inspected_on.localeCompare(a.inspected_on))[0]
   const filtradas = unidades.filter((u) => (!distrito || u.district === distrito) && (!tipo || u.kind === tipo)
-    && semAcento(u.name + ' ' + u.cnes + ' ' + u.address).includes(semAcento(busca)))
+    && semAcento(u.name + ' ' + u.cnes + ' ' + u.address).includes(semAcento(busca))
+    && (!situacao
+      || (situacao === 'nunca' && !vistorias.some((v) => v.unit_id === u.id))
+      || (situacao === 'rascunho' && vistorias.some((v) => v.unit_id === u.id && v.status === 'draft'))
+      || (situacao === 'critica' && ultimaDe(u.id) && ['Crítica', 'Alta'].includes(resumir(ultimaDe(u.id)).nivel.nome))))
+  const meusRascunhos = vistorias.filter((v) => v.status === 'draft' && (DEMO || v.owner === perfil?.id))
   const relatorio = concluidas.find((v) => v.id === relatorioId)
   const recorte = concluidas.filter((v) => {
     const u = unidades.find((x) => x.id === v.unit_id)
@@ -261,11 +290,11 @@ export default function App() {
       {cabecalho}
       <div className="layout">
         <nav aria-label="Navegação principal">
-          <button className={tela === 'unidades' ? 'active' : ''} onClick={() => ir('unidades')}>Unidades</button>
-          <button className={tela === 'painel' ? 'active' : ''} onClick={() => ir('painel')}>Painel</button>
-          {aberta && <button className={tela === 'vistoria' ? 'active' : ''} onClick={() => ir('vistoria')}>Vistoria aberta</button>}
-          <button className={tela === 'relatorios' ? 'active' : ''} onClick={() => { setRelatorioId(''); ir('relatorios') }}>Relatórios</button>
-          {admin && <button className={tela === 'acessos' ? 'active' : ''} onClick={() => ir('acessos')}>Acessos{pedidos > 0 && <span className="contador">{pedidos}</span>}</button>}
+          <button className={tela === 'unidades' ? 'active' : ''} onClick={() => ir('unidades')}><i aria-hidden="true">🏥</i>Unidades</button>
+          {aberta && <button className={'aberta ' + (tela === 'vistoria' ? 'active' : '')} onClick={() => ir('vistoria')}><i aria-hidden="true">📝</i>Vistoria</button>}
+          <button className={tela === 'painel' ? 'active' : ''} onClick={() => ir('painel')}><i aria-hidden="true">📊</i>Painel</button>
+          <button className={tela === 'relatorios' ? 'active' : ''} onClick={() => { setRelatorioId(''); ir('relatorios') }}><i aria-hidden="true">📄</i>Relatórios</button>
+          {admin && <button className={tela === 'acessos' ? 'active' : ''} onClick={() => ir('acessos')}><i aria-hidden="true">👥</i>Acessos{pedidos > 0 && <span className="contador">{pedidos}</span>}</button>}
         </nav>
         <main>
           {DEMO && <div className="banner no-print">Modo de demonstração · Use dados fictícios. As vistorias e mídias ficam neste navegador.</div>}
@@ -339,11 +368,26 @@ export default function App() {
             </>
           ) : (
             <>
-              <div className="heading"><div>
-                <p className="eyebrow">REDE MUNICIPAL DE SAÚDE</p>
-                <h1>Formulário de Vistoria Saúde</h1>
-                <p>Selecione uma unidade para iniciar ou retomar uma vistoria.</p>
-              </div></div>
+              <div className="hero">
+                <p className="eyebrow">REDE MUNICIPAL DE SAÚDE · MACEIÓ</p>
+                <h1>{perfil?.name ? `Olá, ${perfil.name.split(' ')[0]}!` : 'Vistorias das unidades'}</h1>
+                <p>Escolha a unidade e toque em <b>Nova vistoria</b>. Tudo é salvo sozinho enquanto você preenche.</p>
+              </div>
+              {!DEMO && perfil && !perfil.name && <PedirNome aoSalvar={(n) => setPerfil({ ...perfil, name: n })} />}
+              {meusRascunhos.length > 0 && (
+                <div className="panel continuar">
+                  <h2>Continue de onde parou</h2>
+                  {meusRascunhos.map((v) => {
+                    const u = unidades.find((x) => x.id === v.unit_id)
+                    return u && (
+                      <button key={v.id} className="continuar-item" onClick={() => abrir(u, v)}>
+                        <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.reduce((s, r) => s + r.findings.length, 0)} problema(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
+                        <b>Retomar →</b>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
               {emVisita.length > 0 && (
                 <div className="panel em-visita-lista">
                   <h2>🟢 Em visita agora <small>{emVisita.length}</small></h2>
@@ -355,10 +399,18 @@ export default function App() {
                 <div><strong>{vistorias.filter((v) => v.status === 'draft').length}</strong><span>Rascunhos</span></div>
                 <div><strong>{concluidas.length}</strong><span>Vistorias concluídas</span></div>
               </div>
-              <div className="panel filters">
-                <Campo label="Buscar unidade"><input type="search" placeholder="Nome, CNES ou endereço" value={busca} onChange={(e) => setBusca(e.target.value)} /></Campo>
-                <Campo label="Distrito"><select value={distrito} onChange={(e) => setDistrito(e.target.value)}><option value="">Todos</option>{distritos.map((d) => <option key={d}>{d}</option>)}</select></Campo>
-                <Campo label="Tipo"><select value={tipo} onChange={(e) => setTipo(e.target.value)}><option value="">Todos</option>{[...new Set(unidades.map((u) => u.kind))].sort().map((k) => <option key={k}>{k}</option>)}</select></Campo>
+              <div className="panel busca">
+                <input type="search" className="busca-campo" placeholder="🔎 Buscar por nome, bairro, CNES ou endereço" value={busca} onChange={(e) => setBusca(e.target.value)} aria-label="Buscar unidade" />
+                <div className="chips" role="group" aria-label="Distrito">
+                  <button className={'chip' + (!distrito ? ' ativo' : '')} onClick={() => setDistrito('')}>Todos os distritos</button>
+                  {distritos.map((d) => <button key={d} className={'chip' + (distrito === d ? ' ativo' : '')} onClick={() => setDistrito(distrito === d ? '' : d)}>Distrito {d}</button>)}
+                </div>
+                <div className="chips" role="group" aria-label="Situação">
+                  {[['', 'Todas'], ['nunca', 'Nunca vistoriadas'], ['rascunho', 'Com rascunho'], ['critica', 'Situação crítica ou alta']].map(([k, t]) => (
+                    <button key={k} className={'chip' + (situacao === k ? ' ativo' : '')} onClick={() => setSituacao(k)}>{t}</button>
+                  ))}
+                  <select className="chip-select" value={tipo} onChange={(e) => setTipo(e.target.value)} aria-label="Tipo de unidade"><option value="">Todos os tipos</option>{[...new Set(unidades.map((u) => u.kind))].sort().map((k) => <option key={k}>{k}</option>)}</select>
+                </div>
               </div>
               <h2>Unidades <small>{filtradas.length}</small></h2>
               {!filtradas.length && <p>Nenhuma unidade disponível neste recorte.</p>}
@@ -368,7 +420,7 @@ export default function App() {
                   const rascunho = dela.find((v) => v.status === 'draft' && (DEMO || admin || v.owner === perfil?.id))
                   const ultima = dela.find((v) => v.status === 'completed')
                   return (
-                    <article className="panel unit" key={u.id}>
+                    <article className={'panel unit' + (ultima ? ' nivel-' + resumir(ultima).nivel.classe : '')} key={u.id}>
                       <div className="row"><Selo value={u.kind} /><span>Distrito {u.district}</span></div>
                       <h3>{u.name}</h3>
                       <p>{u.address}</p>
