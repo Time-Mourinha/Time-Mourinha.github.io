@@ -75,9 +75,9 @@ export function Entrada({ sessao, perfil, aoMudar }: Props) {
 
   return (
     <section className="panel auth">
-      <p className="eyebrow">SECRETARIA MUNICIPAL DE SAÚDE</p>
+      <p className="eyebrow">SECRETARIA EXECUTIVA</p>
       <h1>{modo === 'login' ? 'Entrar' : modo === 'cadastro' ? 'Solicitar acesso' : 'Recuperar senha'}</h1>
-      <p>Vistorias das unidades da rede municipal de saúde de Maceió.</p>
+      <p>Formulário de Vistoria Saúde · unidades da rede municipal de Maceió.</p>
       {erro && <div role="alert" className="error">{erro}</div>}
       {aviso && <div role="status" className="notice">{aviso}</div>}
       <form onSubmit={enviar}>

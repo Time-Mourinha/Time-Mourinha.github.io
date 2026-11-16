@@ -224,7 +224,7 @@ export default function App() {
   const cabecalho = (
     <header>
       <img src={marca} alt="Prefeitura de Maceió — Cidade de Todos Nós" />
-      <span>Secretaria Municipal de Saúde</span>
+      <span>Secretaria Executiva</span>
       {!DEMO && sessao && <button className="quiet" disabled={ocupado} onClick={() => void sair()}>Sair</button>}
     </header>
   )
@@ -462,7 +462,7 @@ export default function App() {
             <>
               <div className="heading"><div>
                 <p className="eyebrow">REDE MUNICIPAL DE SAÚDE</p>
-                <h1>Vistorias de Maceió</h1>
+                <h1>Formulário de Vistoria Saúde</h1>
                 <p>Selecione uma unidade para iniciar ou retomar uma vistoria.</p>
               </div></div>
               <div className="stats">

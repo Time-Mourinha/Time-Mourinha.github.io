@@ -1,4 +1,4 @@
-# Vistorias da Saúde de Maceió
+# Secretaria Executiva · Formulário de Vistoria Saúde
 
 Aplicativo React, TypeScript e Vite, com 80 registros dos oito distritos sanitários, identificados na lista da SMS de 13/11/2026. O repositório inclui a marca fornecida, SQL para Supabase e os workflows do GitHub Actions que configuram o banco e publicam no GitHub Pages.
 
