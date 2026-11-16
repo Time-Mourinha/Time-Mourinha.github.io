@@ -60,11 +60,6 @@ def limpar_projeto_antigo() -> str | None:
 
     for f in ("ponte", "whatsapp", "enviar"):
         api("DELETE", f"/projects/{REF}/functions/{f}", ok404=True)
-    try:
-        api("DELETE", f"/projects/{REF}/secrets", json=["PONTE_CHAVE", "ENVIAR_CHAVE", "SITE_URL", "WHATSAPP_TOKEN",
-                                                          "WHATSAPP_PHONE_ID", "WHATSAPP_TEMPLATE", "WHATSAPP_VERIFY_TOKEN"])
-    except RuntimeError as e:
-        print("Aviso ao apagar segredos:", e)
     sql("do $$ begin if exists (select 1 from pg_namespace where nspname = 'cron') then "
         "perform cron.unschedule(jobid) from cron.job where jobname like 'tm-%'; end if; end $$;")
 
@@ -102,6 +97,16 @@ alter default privileges in schema public grant all on sequences to postgres, an
 """)
     print("Banco do Time Mourinha apagado.")
     return email
+
+
+def apagar_segredos_antigos():
+    """Segredos das funções do Time Mourinha (ponte, WhatsApp): apaga os que ainda existirem."""
+    existentes = {s["name"] for s in (api("GET", f"/projects/{REF}/secrets") or [])}
+    velhos = sorted(existentes & {"PONTE_CHAVE", "ENVIAR_CHAVE", "SITE_URL", "WHATSAPP_TOKEN", "WHATSAPP_PHONE_ID",
+                                  "WHATSAPP_TEMPLATE", "WHATSAPP_VERIFY_TOKEN"})
+    if velhos:
+        api("DELETE", f"/projects/{REF}/secrets", json=velhos)
+        print(f"Segredos antigos apagados: {len(velhos)}.")
 
 
 def aplicar(email_admin: str | None):
@@ -146,5 +151,6 @@ if __name__ == "__main__":
         exportar_chaves()
     else:
         email = limpar_projeto_antigo()
+        apagar_segredos_antigos()
         aplicar(email)
         ajustar_login()
