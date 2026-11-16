@@ -5,7 +5,7 @@
     "status": "ok",
     "registros": 81,
     "observacao": "Maceió — despesas por órgão: 40 linhas; Maceió — despesas (empenhos): 3 linhas; Maceió — diárias: 38 linhas",
-    "coletado_em": "2026-11-15T01:22:31-03:00"
+    "coletado_em": "2026-11-16T01:38:40-03:00"
   },
   {
     "nome": "CNES — unidades de saúde",
@@ -13,7 +13,7 @@
     "status": "ok",
     "registros": 125,
     "observacao": "125 unidades de saúde (municipal)",
-    "coletado_em": "2026-11-15T01:23:40-03:00"
+    "coletado_em": "2026-11-16T01:39:47-03:00"
   },
   {
     "nome": "INEP — Censo Escolar (rede municipal)",
@@ -21,15 +21,15 @@
     "status": "ok",
     "registros": 158,
     "observacao": "Censo Escolar 2024: 158 escolas da rede municipal",
-    "coletado_em": "2026-11-15T01:23:40-03:00"
+    "coletado_em": "2026-11-16T01:39:47-03:00"
   },
   {
     "nome": "Notícias oficiais",
     "url": "https://www.maceio.al.gov.br/feed",
     "status": "ok",
-    "registros": 40,
-    "observacao": "40 notícias",
-    "coletado_em": "2026-11-15T01:23:41-03:00"
+    "registros": 27,
+    "observacao": "27 notícias",
+    "coletado_em": "2026-11-16T01:39:47-03:00"
   },
   {
     "nome": "BrasilAPI — dados de CNPJ",
@@ -37,7 +37,7 @@
     "status": "ok",
     "registros": 310,
     "observacao": "0 consultas novas hoje; 310 CNPJs em cache",
-    "coletado_em": "2026-11-15T01:23:44-03:00"
+    "coletado_em": "2026-11-16T01:39:50-03:00"
   },
   {
     "nome": "CGU — empresas sancionadas (CEIS/CNEP)",
@@ -45,6 +45,6 @@
     "status": "sem_chave",
     "registros": 0,
     "observacao": "Cadastre o segredo CGU_API_KEY no GitHub para ativar.",
-    "coletado_em": "2026-11-15T01:23:44-03:00"
+    "coletado_em": "2026-11-16T01:39:50-03:00"
   }
 ]
