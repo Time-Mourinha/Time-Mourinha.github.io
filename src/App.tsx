@@ -6,7 +6,7 @@ import {
   type Ambiente, type Midia, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
-  DEMO, caminhoMidia, descreverFoto, excluirVistoria, type DescricaoFoto, carregarPerfil, carregarUnidades, carregarVistorias, enviarMidia, gravarDemo, lerDemo,
+  DEMO, caminhoMidia, descreverFoto, iaLigada, excluirVistoria, type DescricaoFoto, carregarPerfil, carregarUnidades, carregarVistorias, enviarMidia, gravarDemo, lerDemo,
   midiaDemo, salvarVistoria, sb, urlMidia,
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
@@ -187,7 +187,7 @@ export default function App() {
         if (DEMO) await midiaDemo(m.id, arq)
         else {
           m.path = caminhoMidia(atual, m, arq); await enviarMidia(m.path, arq)
-          if (arq.type.startsWith('image/')) { setAviso('Foto enviada. Descrevendo o que aparece nela…'); ia = await descreverFoto(m.path) }
+          if (arq.type.startsWith('image/')) { if (iaLigada()) setAviso('Foto enviada. Descrevendo o que aparece nela…'); ia = await descreverFoto(m.path) }
         }
         if (ia && !/^sem problema/i.test(ia.descricao)) { m.ai = ia.descricao; m.caption = ia.descricao; m.item = ia.item; descritas++ }
         const o = destino.ocorrencia

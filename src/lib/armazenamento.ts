@@ -120,9 +120,13 @@ export async function confirmarCodigoAdmin(codigo: string): Promise<boolean> {
 
 /** Pede à IA a descrição do problema visível na foto. Devolve null se a IA não estiver ligada ou falhar. */
 export type DescricaoFoto = { descricao: string; item?: string; gravidade?: string }
+let iaDesligada = false
+export const iaLigada = () => !iaDesligada
 export async function descreverFoto(caminho: string): Promise<DescricaoFoto | null> {
+  if (iaDesligada) return null // sem a chave da IA: nem tenta, para não atrasar o envio
   try {
     const { data, error } = await sb!.functions.invoke('descrever', { body: { path: caminho } })
+    if (data && data.ativo === false) { iaDesligada = true; return null }
     if (error || !data?.ativo || !data.descricao) return null
     return data as DescricaoFoto
   } catch { return null }
