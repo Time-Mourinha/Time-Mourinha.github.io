@@ -126,3 +126,18 @@ main{padding:clamp(1rem,3vw,2.2rem)}
 [data-tema=sol] header{border-bottom:4px solid #000}
 
 @media print{header,nav,.aparencia,.continuar,.hero{display:none!important}main{padding:0!important}:root{background:#fff}}
+
+/* Galeria de fotos da visita */
+.galeria{border-left:4px solid var(--blue)}
+.galeria .grupo-topo{flex-wrap:wrap}
+.galeria .btn-arquivo.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.galeria-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,180px),1fr));gap:.7rem}
+.galeria-item{border:1px solid var(--line);border-radius:12px;padding:.45rem;background:#fff;display:grid;gap:.35rem}
+.galeria-item img,.galeria-item video{width:100%;height:150px;object-fit:cover;border-radius:8px}
+.galeria-item figure{margin:0}
+.galeria-item figcaption{display:none}
+.galeria-item .row{flex-wrap:nowrap}
+.virar{flex:1;background:#fff4e5;border-color:#f6c98f;color:#8a4b00;font-size:.88rem}
+.barra-final .btn-arquivo{display:flex;align-items:center}
+.btn-arquivo{display:inline-flex;align-items:center;justify-content:center;gap:.3rem}
+.form-vistoria .media figcaption{display:none}

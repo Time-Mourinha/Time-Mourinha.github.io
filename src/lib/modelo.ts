@@ -1,7 +1,7 @@
 import unidadesJson from '../data/unidades.json'
 
 export type Unidade = { id: number; name: string; district: string; kind: string; address: string; cnes: string; status: string }
-export type Midia = { id: string; type: string; name: string; caption: string; path?: string; ai?: string }
+export type Midia = { id: string; type: string; name: string; caption: string; path?: string; ai?: string; room?: string; item?: string }
 export type Ocorrencia = {
   id: string; check?: string; item: string; point: string; issue: string; action: string; priority: string
   reason: string; owner: string; due: string; media: Midia[]
@@ -9,7 +9,7 @@ export type Ocorrencia = {
 export type Ambiente = { id: string; name: string; checks: Record<string, string>; findings: Ocorrencia[] }
 export type Vistoria = {
   id: string; unit_id: number; owner?: string; inspected_on: string; inspector: string
-  status: 'draft' | 'completed'; rooms: Ambiente[]; general_reason: string; general_by: string; updated_at?: string; created_at?: string
+  status: 'draft' | 'completed'; rooms: Ambiente[]; photos?: Midia[]; general_reason: string; general_by: string; updated_at?: string; created_at?: string
 }
 export type Perfil = { id: string; email: string; name?: string; approved: boolean; role: 'inspector' | 'admin'; needs_code: boolean; created_at?: string }
 

@@ -170,42 +170,44 @@ export default function App() {
   }
 
 
-  async function anexar(a: Ambiente, o: Ocorrencia, arquivos: File[]) {
+  /** Envia fotos/vídeos: para a galeria da visita (com o ambiente) ou para um problema. A IA descreve cada foto. */
+  async function anexar(destino: { roomId?: string; ocorrencia?: Ocorrencia }, arquivos: File[]) {
     if (!aberta || !arquivos.length) return
     const base = aberta
     await executar(async () => {
       if (base.status === 'draft' && pendente) { await gravar(base); setPendente(false) }
       let atual = base
       let descritas = 0
-      for (const original of arquivos) {
+      for (const [n, original] of arquivos.entries()) {
         if (!TIPOS_ACEITOS.includes(original.type) || original.size > LIMITE_BYTES) throw new Error('Use JPG, PNG, WebP, MP4, WebM ou MOV de até 50 MB.')
+        setAviso(arquivos.length > 1 ? `Enviando ${n + 1} de ${arquivos.length}…` : 'Enviando…')
         const arq = await reduzirImagem(original)
-        const m: Midia = { id: novoId(), type: arq.type, name: arq.name, caption: '' }
+        const m: Midia = { id: novoId(), type: arq.type, name: arq.name, caption: '', room: destino.roomId }
         let ia: DescricaoFoto | null = null
         if (DEMO) await midiaDemo(m.id, arq)
         else {
           m.path = caminhoMidia(atual, m, arq); await enviarMidia(m.path, arq)
           if (arq.type.startsWith('image/')) { setAviso('Foto enviada. Descrevendo o que aparece nela…'); ia = await descreverFoto(m.path) }
         }
-        if (ia && !/^sem problema/i.test(ia.descricao)) { m.ai = ia.descricao; m.caption = ia.descricao; descritas++ }
-        const amb = atual.rooms.find((r) => r.id === a.id)!
-        atual = { ...atual, rooms: atual.rooms.map((r) => (r.id === a.id
-          ? { ...amb, findings: amb.findings.map((f) => {
-              if (f.id !== o.id) return f
-              const g = { ...f, media: [...f.media, m] }
-              if (m.ai) {
-                // a descrição da foto entra no problema; item e motivo, se ainda estiverem vazios
-                if (!g.issue.includes(m.ai)) g.issue = g.issue ? `${g.issue} Na foto: ${m.ai}` : m.ai
-                if (!g.item && ia?.item) g.item = ia.item
-                if (!g.reason && ia?.item && IMPACTOS[ia.item]) g.reason = IMPACTOS[ia.item]
-                if (!g.action && ia?.item) g.action = `Corrigir: ${ia.item.toLowerCase()}.`
-              }
-              return g
-            }) } : r)) }
+        if (ia && !/^sem problema/i.test(ia.descricao)) { m.ai = ia.descricao; m.caption = ia.descricao; m.item = ia.item; descritas++ }
+        const o = destino.ocorrencia
+        if (!o) atual = { ...atual, photos: [...(atual.photos ?? []), m] }
+        else atual = { ...atual, rooms: atual.rooms.map((r) => ({ ...r, findings: r.findings.map((f) => {
+          if (f.id !== o.id) return f
+          const g = { ...f, media: [...f.media, m] }
+          if (m.ai) {
+            // a descrição da foto completa o problema, sem repetir
+            if (!g.issue.includes(m.ai)) g.issue = g.issue ? `${g.issue} Na foto: ${m.ai}` : m.ai
+            if (!g.item && ia?.item) g.item = ia.item
+            if (!g.reason && ia?.item && IMPACTOS[ia.item]) g.reason = IMPACTOS[ia.item]
+            if (!g.action && ia?.item) g.action = `Corrigir: ${ia.item.toLowerCase()}.`
+          }
+          return g
+        }) })) }
         setAberta(atual); setPendente(true)
         await gravar(atual); setPendente(false)
       }
-      setAviso(descritas ? `Anexos salvos. ${descritas === 1 ? 'A foto foi descrita' : `${descritas} fotos foram descritas`} automaticamente; confira o texto do problema.` : 'Anexos salvos.')
+      setAviso(arquivos.length === 1 ? (descritas ? 'Foto salva e descrita. Confira o texto.' : 'Foto salva.') : `${arquivos.length} arquivos salvos${descritas ? `, ${descritas} descritos automaticamente` : ''}.`)
     })
   }
 
@@ -213,8 +215,8 @@ export default function App() {
     if (!aberta) return
     await executar(async () => {
       if (!aberta.inspected_on || !aberta.inspector.trim() || !aberta.rooms.length) throw new Error('Preencha data, vistoriador e pelo menos um ambiente.')
-      if (aberta.rooms.some((r) => r.findings.some((f) => ![f.point, f.issue, f.action, f.reason].every((x) => x.trim()))))
-        throw new Error('Preencha local, problema, ação e justificativa de todas as ocorrências.')
+      const incompleto = aberta.rooms.find((r) => r.findings.some((f) => !f.issue.trim() || !f.action.trim()))
+      if (incompleto) throw new Error(`Em "${incompleto.name}", há problema sem descrição ou sem ação. Toque em ✏️ Detalhes para completar.`)
       if (aberta.general_reason && !aberta.general_by) throw new Error('Registre o responsável pela validação do alcance geral.')
       const v: Vistoria = { ...aberta, status: 'completed' }
       await gravar(v); setAberta(v); setPendente(false); setRelatorioId(v.id); ir('relatorios')
@@ -306,7 +308,7 @@ export default function App() {
 
           tela === 'vistoria' && aberta && unidadeAberta ? (
             <Formulario v={aberta} u={unidadeAberta} ocupado={ocupado} bloqueada={bloqueada} pendente={pendente} mudar={mudar}
-              anexar={(a, o, l) => void anexar(a, o, l)} concluir={() => void concluir()}
+              anexar={(destino, l) => void anexar(destino, l)} concluir={() => void concluir()}
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
           ) :
 

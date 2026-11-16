@@ -45,6 +45,7 @@ create table if not exists public.inspections (
   completed_at timestamptz
 );
 create index if not exists inspections_unit on public.inspections(unit_id, inspected_on desc);
+alter table public.inspections add column if not exists photos jsonb not null default '[]'::jsonb;  -- galeria de fotos da visita
 
 -- Configuração privada (sem regras de acesso: só o banco lê). Guarda o e-mail da primeira administração.
 create table if not exists public.private_config (key text primary key, value text not null);

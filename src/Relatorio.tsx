@@ -21,7 +21,12 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
   const numero = v.id.slice(0, 8).toUpperCase()
   const pct = r.respondidos ? Math.round((r.problemas / r.respondidos) * 100) : 0
   // todas as fotos num só bloco, pequenas e numeradas (o relatório fica curto)
-  const fotos = v.rooms.flatMap((amb) => amb.findings.flatMap((o) => o.media.map((m) => ({ m, amb, o }))))
+  // fotos da galeria da visita + fotos dos problemas, na ordem dos ambientes
+  const ordem = (roomId?: string) => { const i = v.rooms.findIndex((r) => r.id === roomId); return i < 0 ? -1 : i }
+  const fotos = [
+    ...(v.photos ?? []).map((m) => ({ m, lugar: v.rooms.find((r) => r.id === m.room)?.name ?? 'Visão geral', titulo: '', pos: ordem(m.room) })),
+    ...v.rooms.flatMap((amb, i) => amb.findings.flatMap((o) => o.media.map((m) => ({ m, lugar: amb.name, titulo: o.item || '', pos: i })))),
+  ].sort((a, b) => a.pos - b.pos)
 
   return (
     <article className={`relatorio estilo-${estilo}`}>
@@ -106,10 +111,10 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
         <section className="rel-bloco">
           <h2>{acoes.length ? 5 : 4}. Registro fotográfico</h2>
           <div className="rel-fotos">
-            {fotos.map(({ m, amb, o }, i) => (
+            {fotos.map(({ m, lugar, titulo }, i) => (
               <div className="rel-foto" key={m.id}>
                 <span className="f-num">Foto {i + 1}</span>
-                <VerMidia media={{ ...m, caption: [m.caption, o.item || o.issue, amb.name].filter(Boolean).join(' · ') }} />
+                <VerMidia media={{ ...m, caption: [lugar, titulo && !m.caption.includes(titulo) ? titulo : '', m.caption].filter(Boolean).join(' · ') }} />
               </div>
             ))}
           </div>
