@@ -16,6 +16,9 @@ export function lerDemo(): Vistoria[] {
   try { return JSON.parse(localStorage.getItem(CHAVE_DEMO) ?? '[]') as Vistoria[] } catch { return [] }
 }
 export function gravarDemo(v: Vistoria) {
+  const agora = new Date().toISOString()
+  v.updated_at = agora
+  v.created_at ??= agora
   localStorage.setItem(CHAVE_DEMO, JSON.stringify([v, ...lerDemo().filter((x) => x.id !== v.id)]))
 }
 
@@ -62,7 +65,7 @@ export async function carregarVistorias(): Promise<Vistoria[]> {
 }
 
 export async function salvarVistoria(v: Vistoria) {
-  const { owner: _dono, updated_at: _quando, ...resto } = v
+  const { owner: _dono, updated_at: _quando, created_at: _criada, ...resto } = v
   const { error } = await sb!.from('inspections').upsert(resto)
   falhou(error)
 }

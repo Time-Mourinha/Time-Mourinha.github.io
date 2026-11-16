@@ -215,19 +215,44 @@ create or replace function public.vapid_public_key() returns text language sql s
 $$;
 grant execute on function public.vapid_public_key() to authenticated;
 
--- Quando chega um pedido de acesso, o banco chama a função "avisar", que manda o aviso para a administração.
-create or replace function public.notify_new_request() returns trigger language plpgsql security definer set search_path = public as $$
+-- Avisos para a administração: o banco chama a função "avisar", que manda o aviso para o celular.
+create or replace function public.notify_admins(titulo text, texto text, destino text) returns void
+language plpgsql security definer set search_path = public as $$
 declare url text; chave text;
 begin
-  if new.approved then return new; end if;
   select value into url from private_config where key = 'aviso_url';
   select value into chave from private_config where key = 'aviso_chave';
-  if url is null or chave is null then return new; end if;
+  if url is null or chave is null then return; end if;
   perform net.http_post(url := url,
                         headers := jsonb_build_object('Content-Type', 'application/json', 'x-chave', chave),
-                        body := jsonb_build_object('email', new.email));
+                        body := jsonb_build_object('title', titulo, 'body', texto, 'url', destino));
+end $$;
+revoke all on function public.notify_admins(text, text, text) from public, anon, authenticated;
+
+-- Novo pedido de acesso
+create or replace function public.notify_new_request() returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if not new.approved then
+    perform public.notify_admins('Novo pedido de acesso', new.email || ' pediu acesso ao Formulário de Vistoria Saúde. Toque para aprovar.', './#acessos');
+  end if;
   return new;
 end $$;
+
+-- Quem está em visita: aviso quando uma vistoria começa e quando é concluída
+create or replace function public.notify_visit() returns trigger language plpgsql security definer set search_path = public as $$
+declare nome_unidade text;
+begin
+  select name into nome_unidade from units where id = new.unit_id;
+  if tg_op = 'INSERT' then
+    perform public.notify_admins('Vistoria iniciada', coalesce(nullif(new.inspector, ''), 'Alguém da equipe') || ' começou a vistoria em ' || nome_unidade || '.', './#unidades');
+  elsif new.status = 'completed' and old.status <> 'completed' then
+    perform public.notify_admins('Vistoria concluída', coalesce(nullif(new.inspector, ''), 'Alguém da equipe') || ' concluiu a vistoria em ' || nome_unidade || '. O relatório já está pronto.', './#painel');
+  end if;
+  return new;
+end $$;
+drop trigger if exists notify_visit on public.inspections;
+create trigger notify_visit after insert or update of status on public.inspections for each row execute function public.notify_visit();
+
 drop trigger if exists notify_new_request on public.profiles;
 create trigger notify_new_request after insert on public.profiles for each row execute function public.notify_new_request();
 

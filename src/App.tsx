@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Campo, Selo, VerMidia } from './ui'
 import marca from './assets/marca.png'
 import {
-  AMBIENTES_SUGERIDOS, CHECKLIST, LIMITE_BYTES, PRIORIDADES, RESPOSTAS, TIPOS_ACEITOS, UNIDADES, dataBR, hoje,
-  itensDoAmbiente, maiorPrioridade, novoId, resumoPrioridade, semAcento,
+  LIMITE_BYTES, PRIORIDADES, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, resumoPrioridade, semAcento,
   type Ambiente, type Midia, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
@@ -11,50 +11,13 @@ import {
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
 import { Entrada } from './Entrada'
+import { Formulario } from './Formulario'
 import { Instalar } from './Instalar'
+import { Painel } from './Painel'
+import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
+import { resumir } from './lib/analise'
 
-type Tela = 'unidades' | 'vistoria' | 'relatorios' | 'acessos'
-
-function Campo({ label, children }: { label: string; children: ReactNode }) {
-  return <label className="field">{label}{children}</label>
-}
-
-function Selo({ value }: { value: string }) {
-  const classe = value.toLowerCase().includes('imediata') ? 'urgent' : value === 'Prioritária' ? 'priority' : ''
-  return <span className={'badge ' + classe}>{value}</span>
-}
-
-function VerMidia({ media }: { media: Midia }) {
-  const [url, setUrl] = useState('')
-  const [falha, setFalha] = useState(false)
-  useEffect(() => {
-    let vivo = true
-    let objeto = ''
-    ;(async () => {
-      try {
-        if (media.path && !DEMO) {
-          const u = await urlMidia(media.path)
-          if (vivo) setUrl(u)
-        } else {
-          const blob = await midiaDemo(media.id)
-          if (blob && vivo) { objeto = URL.createObjectURL(blob); setUrl(objeto) } else if (vivo) setFalha(true)
-        }
-      } catch { if (vivo) setFalha(true) }
-    })()
-    return () => { vivo = false; if (objeto) URL.revokeObjectURL(objeto) }
-  }, [media.id, media.path])
-  return (
-    <figure>
-      {url ? (media.type.startsWith('image/')
-        ? <img src={url} alt={media.caption || media.name} />
-        : <video src={url} controls preload="metadata" />)
-        : <span>{falha ? 'Anexo indisponível' : 'Carregando anexo…'}</span>}
-      <figcaption>{media.caption || media.name}
-        {media.type.startsWith('video/') && <span className="print-only"> · vídeo disponível no aplicativo</span>}
-      </figcaption>
-    </figure>
-  )
-}
+type Tela = 'unidades' | 'painel' | 'vistoria' | 'relatorios' | 'acessos'
 
 export default function App() {
   const [perfil, setPerfil] = useState<Perfil | null>(null)
@@ -68,7 +31,6 @@ export default function App() {
   const [busca, setBusca] = useState('')
   const [distrito, setDistrito] = useState('')
   const [tipo, setTipo] = useState('')
-  const [novoAmbiente, setNovoAmbiente] = useState('')
   const [fPrioridade, setFPrioridade] = useState('')
   const [fUnidade, setFUnidade] = useState('')
   const [fAmbiente, setFAmbiente] = useState('')
@@ -79,6 +41,9 @@ export default function App() {
   const [ocupado, setOcupado] = useState(false)
   const [pendente, setPendente] = useState(false)
   const [pedidos, setPedidos] = useState(0)
+  const [estilo, setEstilo] = useState<EstiloRelatorio>(() => {
+    try { return (localStorage.getItem('estilo-relatorio') as EstiloRelatorio) || 'institucional' } catch { return 'institucional' }
+  })
   const versao = useRef(0)
   const fila = useRef<Promise<void>>(Promise.resolve())
 
@@ -143,7 +108,8 @@ export default function App() {
   async function gravar(v: Vistoria) {
     const p = fila.current.catch(() => {}).then(async () => {
       if (DEMO) gravarDemo(v); else await salvarVistoria(v)
-      lembrar(v)
+      const agora = new Date().toISOString()
+      lembrar({ ...v, updated_at: agora, created_at: v.created_at ?? agora })
     })
     fila.current = p
     await p
@@ -177,12 +143,10 @@ export default function App() {
         status: 'draft', rooms: [], general_reason: '', general_by: '',
       }
       if (!existente) await gravar(v)
-      setAberta(v); setPendente(false); setNovoAmbiente(''); ir('vistoria')
+      setAberta(v); setPendente(false); ir('vistoria')
     })
   }
 
-  function mudarAmbiente(a: Ambiente) { if (aberta) mudar({ ...aberta, rooms: aberta.rooms.map((r) => (r.id === a.id ? a : r)) }) }
-  function mudarOcorrencia(a: Ambiente, o: Ocorrencia) { mudarAmbiente({ ...a, findings: a.findings.map((f) => (f.id === o.id ? o : f)) }) }
 
   async function anexar(a: Ambiente, o: Ocorrencia, arquivos: File[]) {
     if (!aberta || !arquivos.length) return
@@ -260,7 +224,8 @@ export default function App() {
     .filter((x) => (!fPrioridade || x.f.priority === fPrioridade) && (!fAmbiente || semAcento(x.r.name).includes(semAcento(fAmbiente))))
     .sort((a, b) => PRIORIDADES.indexOf(a.f.priority) - PRIORIDADES.indexOf(b.f.priority))
   const distritos = [...new Set(unidades.map((u) => u.district))]
-  const totalItens = (nome: string) => [...Object.values(CHECKLIST).flat(), ...itensDoAmbiente(nome)].length
+  // rascunhos mexidos nas últimas 6 horas = gente em visita agora
+  const emVisita = vistorias.filter((v) => v.status === 'draft' && v.updated_at && Date.now() - Date.parse(v.updated_at) < 6 * 3600e3)
 
   function exportarCsv() {
     const cel = (t: string) => '"' + (/^[\s\u0000-\u001f]*[=+@-]/.test(t) ? "'" + t : t).replaceAll('"', '""') + '"'
@@ -278,6 +243,7 @@ export default function App() {
       <div className="layout">
         <nav aria-label="Navegação principal">
           <button className={tela === 'unidades' ? 'active' : ''} onClick={() => ir('unidades')}>Unidades</button>
+          <button className={tela === 'painel' ? 'active' : ''} onClick={() => ir('painel')}>Painel</button>
           {aberta && <button className={tela === 'vistoria' ? 'active' : ''} onClick={() => ir('vistoria')}>Vistoria aberta</button>}
           <button className={tela === 'relatorios' ? 'active' : ''} onClick={() => { setRelatorioId(''); ir('relatorios') }}>Relatórios</button>
           {admin && <button className={tela === 'acessos' ? 'active' : ''} onClick={() => ir('acessos')}>Acessos{pedidos > 0 && <span className="contador">{pedidos}</span>}</button>}
@@ -291,103 +257,12 @@ export default function App() {
           {tela === 'acessos' && admin ? <Acessos unidades={unidades} euId={perfil!.id} aoMudar={(n) => setPedidos(n)} /> :
 
           tela === 'vistoria' && aberta && unidadeAberta ? (
-            <>
-              <div className="heading">
-                <div>
-                  <p className="eyebrow">VISTORIA · DISTRITO {unidadeAberta.district}</p>
-                  <h1>{unidadeAberta.name}</h1>
-                  <p>{unidadeAberta.address}</p>
-                </div>
-                <Selo value={aberta.status === 'completed' ? 'Concluída' : pendente ? 'Alterações pendentes' : 'Rascunho salvo'} />
-              </div>
-              {bloqueada && <div className="banner">Vistoria concluída: só a administração pode alterar.</div>}
-              <fieldset disabled={ocupado || bloqueada} className="plain">
-                <div className="panel grid">
-                  <Campo label="Data"><input type="date" value={aberta.inspected_on} onChange={(e) => mudar({ ...aberta, inspected_on: e.target.value })} /></Campo>
-                  <Campo label="Vistoriador"><input value={aberta.inspector} onChange={(e) => mudar({ ...aberta, inspector: e.target.value })} /></Campo>
-                </div>
-                <div className="panel row">
-                  <Campo label="Ambiente"><input list="rooms" value={novoAmbiente} placeholder="Ex.: Consultório 02" onChange={(e) => setNovoAmbiente(e.target.value)} /></Campo>
-                  <datalist id="rooms">{[...AMBIENTES_SUGERIDOS, ...(unidadeAberta.kind === 'CAPS' ? ['Sala de convivência', 'Dormitório'] : [])].map((a) => <option key={a}>{a}</option>)}</datalist>
-                  <button className="primary" disabled={!novoAmbiente.trim()} onClick={() => {
-                    mudar({ ...aberta, rooms: [...aberta.rooms, { id: novoId(), name: novoAmbiente.trim(), checks: {}, findings: [] }] }); setNovoAmbiente('')
-                  }}>Adicionar ambiente</button>
-                </div>
-
-                {aberta.rooms.map((amb, i) => (
-                  <section className="panel room" key={amb.id}>
-                    <div className="heading"><h2>{i + 1}. {amb.name}</h2>{maiorPrioridade(amb.findings) && <Selo value={maiorPrioridade(amb.findings)} />}</div>
-                    {Object.entries({ ...CHECKLIST, ...(itensDoAmbiente(amb.name).length ? { 'Itens do ambiente': itensDoAmbiente(amb.name) } : {}) }).map(([grupo, itens]) => (
-                      <details className="checks" key={grupo}>
-                        <summary>{grupo} <small>{itens.filter((it) => amb.checks[grupo + ' · ' + it]).length}/{itens.length}</small></summary>
-                        <div className="grid">
-                          {itens.map((it) => {
-                            const chave = grupo + ' · ' + it
-                            return (
-                              <Campo label={it} key={chave}>
-                                <select value={amb.checks[chave] ?? ''} onChange={(e) => mudarAmbiente({ ...amb, checks: { ...amb.checks, [chave]: e.target.value } })}>
-                                  <option value="">Sem resposta</option>
-                                  {RESPOSTAS.map((r) => <option key={r}>{r}</option>)}
-                                </select>
-                              </Campo>
-                            )
-                          })}
-                        </div>
-                      </details>
-                    ))}
-                    <div className="row">
-                      <h3>Ocorrências</h3>
-                      <button onClick={() => mudarAmbiente({ ...amb, findings: [...amb.findings, { id: novoId(), item: '', point: '', issue: '', action: '', priority: 'Prioritária', reason: '', owner: '', due: '', media: [] }] })}>Adicionar ocorrência</button>
-                    </div>
-                    {amb.findings.map((o, n) => (
-                      <article className="finding" key={o.id}>
-                        <div className="heading"><strong>Ocorrência {n + 1}</strong><Selo value={o.priority} /></div>
-                        <div className="grid">
-                          <Campo label="Item"><input value={o.item} placeholder="Ex.: fechadura" onChange={(e) => mudarOcorrencia(amb, { ...o, item: e.target.value })} /></Campo>
-                          <Campo label="Local exato"><input value={o.point} onChange={(e) => mudarOcorrencia(amb, { ...o, point: e.target.value })} /></Campo>
-                          <Campo label="Problema observado"><textarea value={o.issue} onChange={(e) => mudarOcorrencia(amb, { ...o, issue: e.target.value })} /></Campo>
-                          <Campo label="Ação indicada"><textarea value={o.action} onChange={(e) => mudarOcorrencia(amb, { ...o, action: e.target.value })} /></Campo>
-                          <Campo label="Prioridade">
-                            <select value={o.priority} onChange={(e) => mudarOcorrencia(amb, { ...o, priority: e.target.value })}>{PRIORIDADES.map((p) => <option key={p}>{p}</option>)}</select>
-                          </Campo>
-                          <Campo label="Justificativa e observações"><textarea value={o.reason} onChange={(e) => mudarOcorrencia(amb, { ...o, reason: e.target.value })} /></Campo>
-                          <Campo label="Setor responsável"><input value={o.owner} onChange={(e) => mudarOcorrencia(amb, { ...o, owner: e.target.value })} /></Campo>
-                          <Campo label="Prazo"><input type="date" value={o.due} onChange={(e) => mudarOcorrencia(amb, { ...o, due: e.target.value })} /></Campo>
-                        </div>
-                        <Campo label="Anexar fotos ou vídeos · até 50 MB cada">
-                          <input type="file" multiple accept={TIPOS_ACEITOS.join(',')} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; void anexar(amb, o, l) }} />
-                        </Campo>
-                        <Campo label="Tirar foto com a câmera">
-                          <input type="file" accept="image/*" capture="environment" onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; void anexar(amb, o, l) }} />
-                        </Campo>
-                        <small>Evite incluir pacientes, prontuários ou telas.</small>
-                        <div className="media">
-                          {o.media.map((m) => (
-                            <div key={m.id}>
-                              <VerMidia media={m} />
-                              <Campo label="Legenda"><input value={m.caption} onChange={(e) => mudarOcorrencia(amb, { ...o, media: o.media.map((x) => (x.id === m.id ? { ...x, caption: e.target.value } : x)) })} /></Campo>
-                            </div>
-                          ))}
-                        </div>
-                      </article>
-                    ))}
-                  </section>
-                ))}
-
-                <details className="panel">
-                  <summary>Validar intervenção imediata na unidade inteira</summary>
-                  <div className="grid">
-                    <Campo label="Justificativa do alcance geral"><textarea value={aberta.general_reason} onChange={(e) => mudar({ ...aberta, general_reason: e.target.value })} /></Campo>
-                    <Campo label="Responsável pela validação"><input value={aberta.general_by} onChange={(e) => mudar({ ...aberta, general_by: e.target.value })} /></Campo>
-                  </div>
-                </details>
-                <div className="row">
-                  <button disabled={!pendente} onClick={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })}>Salvar agora</button>
-                  <button className="primary" onClick={() => void concluir()}>Concluir e abrir relatório</button>
-                </div>
-              </fieldset>
-            </>
+            <Formulario v={aberta} u={unidadeAberta} ocupado={ocupado} bloqueada={bloqueada} pendente={pendente} mudar={mudar}
+              anexar={(a, o, l) => void anexar(a, o, l)} concluir={() => void concluir()}
+              salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
           ) :
+
+          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} /> :
 
           tela === 'relatorios' ? (
             <>
@@ -395,40 +270,17 @@ export default function App() {
                 <div><p className="eyebrow">ACOMPANHAMENTO</p><h1>Relatórios</h1></div>
                 <div className="row">
                   {relatorio && <button onClick={() => setRelatorioId('')}>Voltar ao consolidado</button>}
+                  {relatorio && (
+                    <select aria-label="Estilo do relatório" value={estilo} onChange={(e) => { setEstilo(e.target.value as EstiloRelatorio); try { localStorage.setItem('estilo-relatorio', e.target.value) } catch { /* sem armazenamento */ } }}>
+                      {ESTILOS_RELATORIO.map((x) => <option key={x.id} value={x.id}>Estilo: {x.nome}</option>)}
+                    </select>
+                  )}
                   {!relatorio && <button onClick={exportarCsv} disabled={!acoes.length}>Exportar CSV</button>}
                   <button className="primary" onClick={() => window.print()}>Imprimir / PDF</button>
                 </div>
               </div>
               {relatorio ? (
-                <article className="panel report">
-                  <img className="report-logo" src={marca} alt="Prefeitura de Maceió" />
-                  <h2>{unidades.find((u) => u.id === relatorio.unit_id)?.name}</h2>
-                  <p>{unidades.find((u) => u.id === relatorio.unit_id)?.address}</p>
-                  <p>{dataBR(relatorio.inspected_on)} · {relatorio.inspector}</p>
-                  {resumoPrioridade(relatorio) && <Selo value={resumoPrioridade(relatorio)} />}
-                  {relatorio.general_reason && <p>{relatorio.general_reason} · Validação: {relatorio.general_by}</p>}
-                  {relatorio.rooms.map((amb) => {
-                    const respondidos = Object.values(amb.checks).filter(Boolean).length
-                    return (
-                      <section key={amb.id}>
-                        <h3>{amb.name}</h3>
-                        <p>{respondidos} itens respondidos · {Object.values(amb.checks).filter((x) => x === 'Não testado').length} marcados como não testados · {totalItens(amb.name) - respondidos} sem resposta</p>
-                        <ul>{Object.entries(amb.checks).filter(([, v]) => v).map(([k, v]) => <li key={k}>{k} — {v}</li>)}</ul>
-                        {[...amb.findings].sort((a, b) => PRIORIDADES.indexOf(a.priority) - PRIORIDADES.indexOf(b.priority)).map((o) => (
-                          <section className="finding" key={o.id}>
-                            <Selo value={o.priority} />
-                            <p><strong>{[o.item, o.point].filter(Boolean).join(' · ')}</strong></p>
-                            <p>{o.issue}</p>
-                            <p><strong>Ação:</strong> {o.action}</p>
-                            <p>{o.reason}</p>
-                            <p>{[o.owner, o.due && dataBR(o.due)].filter(Boolean).join(' · ')}</p>
-                            <div className="media">{o.media.map((m) => <VerMidia media={m} key={m.id} />)}</div>
-                          </section>
-                        ))}
-                      </section>
-                    )
-                  })}
-                </article>
+                <Relatorio vistoria={relatorio} unidade={unidades.find((u) => u.id === relatorio.unit_id)} estilo={estilo} />
               ) : (
                 <>
                   <div className="panel filters no-print">
@@ -473,6 +325,12 @@ export default function App() {
                 <h1>Formulário de Vistoria Saúde</h1>
                 <p>Selecione uma unidade para iniciar ou retomar uma vistoria.</p>
               </div></div>
+              {emVisita.length > 0 && (
+                <div className="panel em-visita-lista">
+                  <h2>🟢 Em visita agora <small>{emVisita.length}</small></h2>
+                  {emVisita.map((x) => <p key={x.id}><strong>{x.inspector || 'Vistoriador'}</strong> · {unidades.find((u) => u.id === x.unit_id)?.name} · desde {new Date(x.created_at ?? x.updated_at ?? '').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Maceio' })}</p>)}
+                </div>
+              )}
               <div className="stats">
                 <div><strong>{unidades.length}</strong><span>Unidades disponíveis</span></div>
                 <div><strong>{vistorias.filter((v) => v.status === 'draft').length}</strong><span>Rascunhos</span></div>
@@ -496,7 +354,8 @@ export default function App() {
                       <h3>{u.name}</h3>
                       <p>{u.address}</p>
                       <p>CNES {u.cnes || 'pendente'}{u.status && ' · ' + u.status}</p>
-                      {ultima && <p>Última vistoria: {dataBR(ultima.inspected_on)}{resumoPrioridade(ultima) && <> · <Selo value={resumoPrioridade(ultima)} /></>}</p>}
+                      {ultima && <p>Última vistoria: {dataBR(ultima.inspected_on)} · <span className={'nivel ' + resumir(ultima).nivel.classe}>Situação {resumir(ultima).nivel.nome.toLowerCase()}</span></p>}
+                      {emVisita.find((x) => x.unit_id === u.id) && <p className="em-visita">🟢 Em visita agora: {emVisita.find((x) => x.unit_id === u.id)!.inspector}</p>}
                       <div className="row">
                         <button className="primary" disabled={ocupado} onClick={() => abrir(u, rascunho)}>{rascunho ? 'Retomar rascunho' : 'Nova vistoria'}</button>
                         {ultima && <button onClick={() => { setRelatorioId(ultima.id); ir('relatorios') }}>Último relatório</button>}

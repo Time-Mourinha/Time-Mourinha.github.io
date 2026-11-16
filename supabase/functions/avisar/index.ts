@@ -19,11 +19,12 @@ Deno.serve(async (req) => {
   if (!ids.length) return Response.json({ enviados: 0 })
   const { data: subs } = await sb.from('push_subscriptions').select('*').in('user_id', ids)
 
-  const { count } = await sb.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false).eq('needs_code', false)
+  // o banco já manda título, texto e destino; sem eles, cai no aviso de pedido de acesso
   const aviso = JSON.stringify({
-    title: 'Novo pedido de acesso',
-    body: `${corpo.email ?? 'Alguém'} pediu acesso ao Formulário de Vistoria Saúde.${(count ?? 0) > 1 ? ` São ${count} pedidos esperando.` : ''} Toque para aprovar.`,
-    url: './#acessos',
+    title: corpo.title ?? 'Novo pedido de acesso',
+    body: corpo.body ?? `${corpo.email ?? 'Alguém'} pediu acesso ao Formulário de Vistoria Saúde. Toque para aprovar.`,
+    url: corpo.url ?? './#acessos',
+    tag: String(Date.now()),
   })
   let enviados = 0
   for (const s of subs ?? []) {
