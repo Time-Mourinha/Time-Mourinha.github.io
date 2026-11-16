@@ -193,3 +193,47 @@ create policy vist_delete on storage.objects for delete to authenticated using (
 update public.profiles p set approved = true, role = 'admin', needs_code = false
   from public.private_config c
  where c.key = 'admin_email' and lower(p.email) = lower(c.value) and (not p.approved or p.needs_code);
+
+-- ------------------------------------------------------------------ avisos no celular (novos pedidos de acesso)
+create extension if not exists pg_net;
+
+create table if not exists public.push_subscriptions (
+  endpoint text primary key,
+  user_id uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  p256dh text not null,
+  auth text not null,
+  created_at timestamptz not null default now()
+);
+alter table public.push_subscriptions enable row level security;
+drop policy if exists push_own on public.push_subscriptions;
+create policy push_own on public.push_subscriptions for all to authenticated
+  using (user_id = auth.uid()) with check (user_id = auth.uid() and public.is_admin());
+
+-- Chave pública dos avisos (não é segredo; o navegador precisa dela para assinar)
+create or replace function public.vapid_public_key() returns text language sql stable security definer set search_path = public as $$
+  select value from private_config where key = 'vapid_public';
+$$;
+grant execute on function public.vapid_public_key() to authenticated;
+
+-- Quando chega um pedido de acesso, o banco chama a função "avisar", que manda o aviso para a administração.
+create or replace function public.notify_new_request() returns trigger language plpgsql security definer set search_path = public as $$
+declare url text; chave text;
+begin
+  if new.approved then return new; end if;
+  select value into url from private_config where key = 'aviso_url';
+  select value into chave from private_config where key = 'aviso_chave';
+  if url is null or chave is null then return new; end if;
+  perform net.http_post(url := url,
+                        headers := jsonb_build_object('Content-Type', 'application/json', 'x-chave', chave),
+                        body := jsonb_build_object('email', new.email));
+  return new;
+end $$;
+drop trigger if exists notify_new_request on public.profiles;
+create trigger notify_new_request after insert on public.profiles for each row execute function public.notify_new_request();
+
+-- Tempo real: a tela Acessos mostra pedidos novos na hora
+do $$ begin
+  if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'profiles') then
+    alter publication supabase_realtime add table public.profiles;
+  end if;
+end $$;

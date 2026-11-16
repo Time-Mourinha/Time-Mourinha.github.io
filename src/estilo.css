@@ -88,3 +88,13 @@ main{max-width:none;padding:0}
 .auth form{display:grid;gap:.4rem}
 .auth .row button{background:transparent}
 .room>.heading{margin-bottom:.4rem}
+
+/* Instalar como aplicativo e avisos */
+header .instalar{margin-left:auto;background:var(--orange);border-color:var(--orange);color:#fff;white-space:nowrap}
+header .instalar+.quiet{margin-left:0}
+.instalar-aviso{position:fixed;inset:0;z-index:50;background:#10365699;display:grid;place-items:end center;padding:1rem}
+.instalar-aviso>div{background:#fff;border-radius:16px;border-top:5px solid var(--orange);padding:1.2rem;max-width:440px;width:100%}
+.instalar-aviso button{width:100%;margin-top:.6rem}
+.contador{display:inline-block;margin-left:.45rem;min-width:1.4rem;padding:0 .4rem;border-radius:999px;background:var(--orange);color:#fff;font-size:.8rem;text-align:center}
+.aviso-celular h3{margin-top:0}
+@media (width<=650px){header .instalar{padding:.45rem .6rem;font-size:.82rem}}

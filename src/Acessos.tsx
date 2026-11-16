@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { carregarAcessos, salvarAcesso, type Atribuicao } from './lib/armazenamento'
+import { carregarAcessos, salvarAcesso, sb, type Atribuicao } from './lib/armazenamento'
+import { ativarAvisos, avisosAtivos, avisosSuportados, ehIos, instalado } from './lib/pwa'
 import type { Perfil, Unidade } from './lib/modelo'
 
 /** Administração: aprova pedidos de acesso (quem é aprovado vistoria qualquer unidade). */
-export function Acessos({ unidades, euId }: { unidades: Unidade[]; euId: string }) {
+export function Acessos({ unidades, euId, aoMudar }: { unidades: Unidade[]; euId: string; aoMudar: (pendentes: number) => void }) {
   const [perfis, setPerfis] = useState<Perfil[]>([])
   const [atrib, setAtrib] = useState<Atribuicao[]>([])
   const [aberto, setAberto] = useState('')
@@ -11,9 +12,17 @@ export function Acessos({ unidades, euId }: { unidades: Unidade[]; euId: string 
   const [aviso, setAviso] = useState('')
 
   async function carregar() {
-    try { const r = await carregarAcessos(); setPerfis(r.perfis); setAtrib(r.atribuicoes) } catch (e) { setErro((e as Error).message) }
+    try {
+      const r = await carregarAcessos(); setPerfis(r.perfis); setAtrib(r.atribuicoes)
+      aoMudar(r.perfis.filter((p) => !p.approved && !p.needs_code).length)
+    } catch (e) { setErro((e as Error).message) }
   }
-  useEffect(() => { void carregar() }, [])
+  useEffect(() => {
+    void carregar()
+    // pedidos novos aparecem na hora, sem recarregar
+    const canal = sb!.channel('pedidos').on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => void carregar()).subscribe()
+    return () => { void sb!.removeChannel(canal) }
+  }, [])
 
   const pendentes = perfis.filter((p) => !p.approved && !p.needs_code)
   return (
@@ -22,6 +31,7 @@ export function Acessos({ unidades, euId }: { unidades: Unidade[]; euId: string 
         <p>Aprove quem pode usar o aplicativo. Quem for aprovado pode vistoriar qualquer unidade.</p></div></div>
       {erro && <div role="alert" className="error">{erro}</div>}
       {aviso && <div role="status" className="notice">{aviso}</div>}
+      <Avisos />
       <div className="stats">
         <div><strong>{pendentes.length}</strong><span>Aguardando aprovação</span></div>
         <div><strong>{perfis.filter((p) => p.approved).length}</strong><span>Com acesso</span></div>
@@ -72,5 +82,30 @@ function EditorAcesso(props: {
         </fieldset>
       ))}
     </article>
+  )
+}
+
+/** Avisos no celular quando chega um pedido de acesso. */
+function Avisos() {
+  const [ativos, setAtivos] = useState(false)
+  const [msg, setMsg] = useState('')
+  const [ocupado, setOcupado] = useState(false)
+  useEffect(() => { void avisosAtivos().then(setAtivos) }, [])
+  const precisaInstalar = ehIos && !instalado()
+  return (
+    <div className="panel aviso-celular">
+      <h3>🔔 Avisos de novos pedidos</h3>
+      {ativos ? <p>Este aparelho recebe um aviso sempre que alguém pedir acesso.</p>
+        : precisaInstalar ? <p>No iPhone, primeiro instale o app pelo botão <b>📲 Instalar app</b> no topo e abra pelo ícone. Depois volte aqui e ative os avisos.</p>
+          : avisosSuportados() ? <p>Ative para receber um aviso no celular sempre que alguém pedir acesso.</p>
+            : <p>Este navegador não recebe avisos. Use o Chrome no Android ou o app instalado no iPhone.</p>}
+      {msg && <p className="error">{msg}</p>}
+      {!ativos && !precisaInstalar && avisosSuportados() && (
+        <button className="primary" disabled={ocupado} onClick={async () => {
+          setOcupado(true); setMsg('')
+          try { await ativarAvisos(); setAtivos(true) } catch (e) { setMsg((e as Error).message) } finally { setOcupado(false) }
+        }}>Ativar avisos neste aparelho</button>
+      )}
+    </div>
   )
 }

@@ -21,5 +21,9 @@ jobs:
         with: { python-version: "3.12" }
       - name: Aplicar esquema, unidades e login
         run: |
-          pip install -q requests
+          pip install -q requests cryptography
           python scripts/supabase_setup.py
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+      - name: Publicar a função de avisos
+        run: supabase functions deploy avisar --project-ref apqkewsdzwawtiajbmyl --no-verify-jwt --use-api --yes

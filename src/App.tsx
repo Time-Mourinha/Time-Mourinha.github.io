@@ -11,6 +11,7 @@ import {
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
 import { Entrada } from './Entrada'
+import { Instalar } from './Instalar'
 
 type Tela = 'unidades' | 'vistoria' | 'relatorios' | 'acessos'
 
@@ -77,6 +78,7 @@ export default function App() {
   const [aviso, setAviso] = useState('')
   const [ocupado, setOcupado] = useState(false)
   const [pendente, setPendente] = useState(false)
+  const [pedidos, setPedidos] = useState(0)
   const versao = useRef(0)
   const fila = useRef<Promise<void>>(Promise.resolve())
 
@@ -120,6 +122,10 @@ export default function App() {
       if (p?.approved) {
         const [u, v] = await Promise.all([carregarUnidades(), carregarVistorias()])
         setUnidades(u); setVistorias(v)
+        if (p.role === 'admin') {
+          const { count } = await sb!.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false).eq('needs_code', false)
+          setPedidos(count ?? 0)
+        }
       }
     } catch (e) { setErro(e instanceof Error ? e.message : 'Falha ao carregar.') } finally { setCarregando(false) }
   }
@@ -225,6 +231,7 @@ export default function App() {
     <header>
       <img src={marca} alt="Prefeitura de Maceió — Cidade de Todos Nós" />
       <span>Secretaria Executiva</span>
+      <Instalar />
       {!DEMO && sessao && <button className="quiet" disabled={ocupado} onClick={() => void sair()}>Sair</button>}
     </header>
   )
@@ -273,14 +280,15 @@ export default function App() {
           <button className={tela === 'unidades' ? 'active' : ''} onClick={() => ir('unidades')}>Unidades</button>
           {aberta && <button className={tela === 'vistoria' ? 'active' : ''} onClick={() => ir('vistoria')}>Vistoria aberta</button>}
           <button className={tela === 'relatorios' ? 'active' : ''} onClick={() => { setRelatorioId(''); ir('relatorios') }}>Relatórios</button>
-          {admin && <button className={tela === 'acessos' ? 'active' : ''} onClick={() => ir('acessos')}>Acessos</button>}
+          {admin && <button className={tela === 'acessos' ? 'active' : ''} onClick={() => ir('acessos')}>Acessos{pedidos > 0 && <span className="contador">{pedidos}</span>}</button>}
         </nav>
         <main>
           {DEMO && <div className="banner no-print">Modo de demonstração · Use dados fictícios. As vistorias e mídias ficam neste navegador.</div>}
           {erro && <div role="alert" className="error">{erro}</div>}
           {aviso && <div role="status" className="notice">{aviso}</div>}
+          {admin && pedidos > 0 && tela !== 'acessos' && <div className="banner no-print">{pedidos === 1 ? 'Há 1 pedido de acesso' : `Há ${pedidos} pedidos de acesso`} esperando a sua aprovação. <a href="#acessos" onClick={() => ir('acessos')}>Ver pedidos</a></div>}
 
-          {tela === 'acessos' && admin ? <Acessos unidades={unidades} euId={perfil!.id} /> :
+          {tela === 'acessos' && admin ? <Acessos unidades={unidades} euId={perfil!.id} aoMudar={(n) => setPedidos(n)} /> :
 
           tela === 'vistoria' && aberta && unidadeAberta ? (
             <>

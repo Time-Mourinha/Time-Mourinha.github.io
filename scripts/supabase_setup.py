@@ -120,6 +120,29 @@ def aplicar(email_admin: str | None):
     print(f"Banco das Vistorias pronto: {n['unidades']} unidades, {n['contas']} contas, administração definida: {'sim' if n['admin_definida'] else 'não'}.")
 
 
+def preparar_avisos():
+    """Gera (uma vez) as chaves dos avisos no celular e a senha que o banco usa para chamar a função 'avisar'."""
+    import base64
+    import secrets as sec
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import ec
+
+    def b64(b: bytes) -> str:
+        return base64.urlsafe_b64encode(b).decode().rstrip("=")
+
+    tem = {r["key"] for r in sql("select key from public.private_config")}
+    valores = {"aviso_url": f"{URL}/functions/v1/avisar", "site_url": SITE}
+    if "vapid_private" not in tem:
+        k = ec.generate_private_key(ec.SECP256R1())
+        valores["vapid_private"] = b64(k.private_numbers().private_value.to_bytes(32, "big"))
+        valores["vapid_public"] = b64(k.public_key().public_bytes(serialization.Encoding.X962, serialization.PublicFormat.UncompressedPoint))
+    if "aviso_chave" not in tem:
+        valores["aviso_chave"] = sec.token_urlsafe(32)
+    linhas = ", ".join("('" + k + "', '" + v.replace("'", "''") + "')" for k, v in valores.items())
+    sql(f"insert into public.private_config (key, value) values {linhas} on conflict (key) do update set value = excluded.value")
+    print("Avisos no celular: chaves prontas.")
+
+
 def ajustar_login():
     api("PATCH", f"/projects/{REF}/config/auth", json={
         "site_url": SITE,
@@ -153,4 +176,5 @@ if __name__ == "__main__":
         email = limpar_projeto_antigo()
         apagar_segredos_antigos()
         aplicar(email)
+        preparar_avisos()
         ajustar_login()
