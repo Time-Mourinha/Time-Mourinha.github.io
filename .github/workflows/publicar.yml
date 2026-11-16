@@ -1,4 +1,5 @@
 name: Publicar interface
+# Gera o site (Vite) e publica no GitHub Pages.
 
 on:
   workflow_dispatch:
