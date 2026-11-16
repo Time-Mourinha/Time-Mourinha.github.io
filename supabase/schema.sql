@@ -66,15 +66,17 @@ create or replace function public.can_access_unit(u int) returns boolean languag
       or (public.is_approved() and exists (select 1 from unit_assignments where user_id = auth.uid() and unit_id = u));
 $$;
 
--- Perfil criado no cadastro. O e-mail guardado em private_config vira administração depois do código.
+-- Perfil criado no cadastro. O e-mail guardado em private_config já entra como administração aprovada.
 create or replace function public.handle_new_user() returns trigger language plpgsql security definer set search_path = public as $$
 declare admin_email text;
 begin
   select value into admin_email from private_config where key = 'admin_email';
-  insert into profiles (id, email, role, needs_code)
+  -- o e-mail da administração entra direto, já aprovado; os demais esperam a aprovação dela
+  insert into profiles (id, email, role, approved, needs_code)
   values (new.id, coalesce(new.email,''),
           case when admin_email is not null and lower(new.email) = lower(admin_email) then 'admin' else 'inspector' end,
-          admin_email is not null and lower(new.email) = lower(admin_email))
+          admin_email is not null and lower(new.email) = lower(admin_email),
+          false)
   on conflict (id) do nothing;
   return new;
 end $$;
@@ -186,3 +188,8 @@ drop policy if exists vist_insert on storage.objects;
 create policy vist_insert on storage.objects for insert to authenticated with check (bucket_id = 'vistorias' and public.can_access_path(name));
 drop policy if exists vist_delete on storage.objects;
 create policy vist_delete on storage.objects for delete to authenticated using (bucket_id = 'vistorias' and public.is_admin());
+
+-- Conta da administração que ainda esteja esperando código: libera direto.
+update public.profiles p set approved = true, role = 'admin', needs_code = false
+  from public.private_config c
+ where c.key = 'admin_email' and lower(p.email) = lower(c.value) and (not p.approved or p.needs_code);

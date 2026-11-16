@@ -14,7 +14,7 @@ O workflow **Configurar banco** faz a configuração sozinho, usando o segredo `
 
 1. Executa `supabase/schema.sql` e depois `supabase/seed.sql`. O esquema pode ser repetido sem perder dados.
 2. Habilita o login por e-mail e senha e configura a URL oficial e as URLs de redirecionamento de produção e de desenvolvimento.
-3. Define a primeira administração pelo e-mail guardado em uma tabela privada do banco. Esse e-mail nunca vai para o repositório. Ao entrar pela primeira vez, essa conta pede um código de segurança enviado ao e-mail e só então fica liberada.
+3. Define a administração pelo e-mail guardado em uma tabela privada do banco (esse e-mail nunca vai para o repositório). Quem se cadastra com esse e-mail já entra aprovado como administração e aprova os demais.
 
 Para definir a administração manualmente, use o SQL Editor: `update public.profiles set approved=true, role='admin', needs_code=false where email='SEU_EMAIL';`. Confirme que uma única linha foi atualizada.
 
