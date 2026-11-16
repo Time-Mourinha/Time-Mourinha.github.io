@@ -470,7 +470,6 @@ export default function App() {
                 <div><strong>{vistorias.filter((v) => v.status === 'draft').length}</strong><span>Rascunhos</span></div>
                 <div><strong>{concluidas.length}</strong><span>Vistorias concluídas</span></div>
               </div>
-              {!DEMO && !admin && !unidades.length && <div className="banner">Nenhuma unidade foi atribuída à sua conta ainda. Fale com a administração.</div>}
               <div className="panel filters">
                 <Campo label="Buscar unidade"><input type="search" placeholder="Nome, CNES ou endereço" value={busca} onChange={(e) => setBusca(e.target.value)} /></Campo>
                 <Campo label="Distrito"><select value={distrito} onChange={(e) => setDistrito(e.target.value)}><option value="">Todos</option>{distritos.map((d) => <option key={d}>{d}</option>)}</select></Campo>

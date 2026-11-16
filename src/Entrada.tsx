@@ -67,7 +67,7 @@ export function Entrada({ sessao, perfil, aoMudar }: Props) {
       <section className="panel auth">
         <p className="eyebrow">ACESSO</p>
         <h1>Aguardando aprovação</h1>
-        <p>Seu pedido de acesso ({perfil.email}) foi registrado. A administração precisa aprovar e indicar as unidades que você pode vistoriar.</p>
+        <p>Seu pedido de acesso ({perfil.email}) foi registrado. Assim que a administração aprovar, você pode vistoriar qualquer unidade.</p>
         <div className="row"><button onClick={aoMudar}>Verificar de novo</button></div>
       </section>
     )

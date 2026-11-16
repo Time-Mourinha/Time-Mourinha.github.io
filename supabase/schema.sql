@@ -62,8 +62,8 @@ create or replace function public.is_approved() returns boolean language sql sta
   select exists (select 1 from profiles where id = auth.uid() and approved);
 $$;
 create or replace function public.can_access_unit(u int) returns boolean language sql stable security definer set search_path = public as $$
-  select public.is_admin()
-      or (public.is_approved() and exists (select 1 from unit_assignments where user_id = auth.uid() and unit_id = u));
+  -- quem foi aprovado pode vistoriar qualquer unidade
+  select public.is_approved() and exists (select 1 from units where id = u);
 $$;
 
 -- Perfil criado no cadastro. O e-mail guardado em private_config já entra como administração aprovada.

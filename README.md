@@ -20,7 +20,7 @@ Para definir a administração manualmente, use o SQL Editor: `update public.pro
 
 **Confirmação de e-mail.** O e-mail gratuito do Supabase só entrega mensagens para quem faz parte da equipe do projeto. Por isso o cadastro entra direto, e quem libera o uso é a administração. Para exigir a confirmação por e-mail de todos, configure um SMTP próprio no Supabase (Authentication → Emails) e mude `mailer_autoconfirm` para `false` em `scripts/supabase_setup.py`.
 
-A conta administradora aprova usuários no menu **Acessos** e atribui as unidades que cada um pode consultar. Os anexos ficam no bucket privado `vistorias`, com acesso limitado às atribuições. O relatório é salvo em PDF pela impressão do navegador. O vídeo é acessado pela vistoria no aplicativo. Vistorias concluídas só podem ser alteradas pela administração.
+A conta administradora aprova usuários no menu **Acessos**. Quem é aprovado pode vistoriar qualquer unidade. Os anexos ficam no bucket privado `vistorias`, visível só para contas aprovadas. O relatório é salvo em PDF pela impressão do navegador. O vídeo é acessado pela vistoria no aplicativo. Vistorias concluídas só podem ser alteradas pela administração.
 
 Para rodar localmente contra o Supabase, copie `.env.example` para `.env.local` e informe a URL e a chave pública do projeto. Nunca coloque uma chave service role no frontend.
 
@@ -28,4 +28,4 @@ Para rodar localmente contra o Supabase, copie `.env.example` para `.env.local` 
 
 O workflow **Publicar interface** gera o site e o publica no GitHub Pages (Settings → Pages → GitHub Actions). Ele roda a cada mudança no código e também pode ser disparado à mão. A URL e a chave pública vêm das variáveis de Actions `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`. Se elas não existirem, o workflow busca os dois valores pelo `SUPABASE_ACCESS_TOKEN`. As inspeções e os anexos ficam no Supabase. O frontend do Pages pode ser acessado publicamente.
 
-Antes de usar dados reais, confira com contas de teste a aprovação, o isolamento entre duas unidades, o upload privado e a impressão. Defina com a SMS os responsáveis pelos acessos e a guarda dos relatórios.
+Antes de usar dados reais, confira com contas de teste a aprovação, o bloqueio de quem não foi aprovado, o upload privado e a impressão. Defina com a SMS os responsáveis pelos acessos e a guarda dos relatórios.
