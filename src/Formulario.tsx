@@ -56,6 +56,12 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
   const atual = v.rooms.find((r) => r.id === abertoAmb)
   const sugeridos = [...AMBIENTES_SUGERIDOS, ...(u.kind === 'CAPS' ? ['Sala de convivência', 'Dormitório'] : [])]
 
+  // trocar de ambiente sempre leva ao topo do ambiente, para o vistoriador ver onde está
+  function irPara(id: string) {
+    setAbertoAmb(id)
+    setTimeout(() => document.querySelector(id ? '.ambiente.aberto' : '.ambientes-bar')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
+  }
+
   function trocarAmbiente(a: Ambiente) { mudar({ ...v, rooms: v.rooms.map((r) => (r.id === a.id ? a : r)) }) }
 
   function adicionarAmbiente(nome: string) {
@@ -149,12 +155,12 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
               const tot = Object.values(checklistDoAmbiente(r.name)).flat().length
               const fe = Object.values(r.checks).filter(Boolean).length
               return (
-                <button key={r.id} className={'chip amb-chip' + (abertoAmb === r.id ? ' ativo' : '') + (fe >= tot ? ' completo' : '')} onClick={() => setAbertoAmb(r.id)}>
-                  {r.name}<small>{fe}/{tot}{r.findings.length ? ` · ${r.findings.length}⚠️` : ''}</small>
+                <button key={r.id} className={'chip amb-chip' + (abertoAmb === r.id ? ' ativo' : '') + (fe >= tot ? ' completo' : '')} onClick={() => irPara(r.id)} aria-current={abertoAmb === r.id || undefined}>
+                  <span>{abertoAmb === r.id ? '📍 ' : fe >= tot ? '✅ ' : ''}{r.name}</span><small>{abertoAmb === r.id ? 'você está aqui' : `${fe}/${tot}${r.findings.length ? ` · ${r.findings.length}⚠️` : ''}`}</small>
                 </button>
               )
             })}
-            <button className={'chip amb-novo' + (!atual ? ' ativo' : '')} onClick={() => setAbertoAmb('')}>＋ Ambiente</button>
+            <button className={'chip amb-novo' + (!atual ? ' ativo' : '')} onClick={() => irPara('')}>＋ Ambiente</button>
           </div>
         </div>
 
@@ -180,13 +186,21 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
           const feitos = Object.values(amb.checks).filter(Boolean).length
           const i = v.rooms.findIndex((r) => r.id === amb.id)
           const proximo = v.rooms[i + 1]
+          const anterior = v.rooms[i - 1]
           return (
             <section className="panel ambiente aberto" key={amb.id}>
-              <div className="amb-cabeca">
-                <span><strong>{amb.name}</strong><small>{feitos}/{total} itens · {amb.findings.length} problema(s)</small></span>
-                <span className="amb-dir">{maiorPrioridade(amb.findings) && <Selo value={maiorPrioridade(amb.findings)} />}</span>
+              {/* Fica preso no topo enquanto rola: o vistoriador sempre vê em que ambiente está */}
+              <div className="onde-estou" role="status" aria-live="polite">
+                <button className="seta" disabled={!anterior} onClick={() => anterior && irPara(anterior.id)} aria-label={anterior ? `Voltar para ${anterior.name}` : 'Primeiro ambiente'}>◀</button>
+                <div className="onde-texto">
+                  <small>📍 Você está em · ambiente {i + 1} de {v.rooms.length}</small>
+                  <strong>{amb.name}</strong>
+                  <small>{feitos}/{total} itens{amb.findings.length ? ` · ${amb.findings.length} ${amb.findings.length === 1 ? 'problema' : 'problemas'}` : ''}{feitos >= total ? ' · ✅ completo' : ''}</small>
+                </div>
+                <button className="seta" onClick={() => irPara(proximo ? proximo.id : '')} aria-label={proximo ? `Ir para ${proximo.name}` : 'Outro ambiente'}>{proximo ? '▶' : '＋'}</button>
+                <i className="barra"><b style={{ width: `${(feitos / Math.max(1, total)) * 100}%` }} /></i>
               </div>
-              <i className="barra"><b style={{ width: `${(feitos / Math.max(1, total)) * 100}%` }} /></i>
+              {maiorPrioridade(amb.findings) && <div className="amb-dir">Pior situação aqui: <Selo value={maiorPrioridade(amb.findings)} /></div>}
               <details className="amb-opcoes">
                 <summary>Renomear ou remover este ambiente</summary>
                 <div className="row renomear">
@@ -199,7 +213,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                     return (
                       <div className="grupo" key={grupo}>
                         <div className="grupo-topo">
-                          <h3>{grupo} <small>{resp}/{itens.length}</small></h3>
+                          <h3><span className="grupo-amb">{amb.name} ›</span> {grupo} <small>{resp}/{itens.length}</small></h3>
                           {resp < itens.length && <button className="tudo-ok" onClick={() => tudoOk(amb, grupo, itens)}>✓ Restante OK</button>}
                         </div>
                         {itens.map((it) => {
@@ -270,8 +284,8 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
               <small className="dica">Evite fotografar pacientes, prontuários ou telas.</small>
               <div className="amb-fim">
                 {proximo
-                  ? <button className="primary" onClick={() => { setAbertoAmb(proximo.id); window.scrollTo(0, 0) }}>Próximo: {proximo.name} →</button>
-                  : <button className="primary" onClick={() => { setAbertoAmb(''); window.scrollTo(0, 0) }}>✓ Terminei · ir para outro ambiente</button>}
+                  ? <button className="primary" onClick={() => irPara(proximo.id)}>✓ Terminei {amb.name} · ir para {proximo.name}</button>
+                  : <button className="primary" onClick={() => irPara('')}>✓ Terminei {amb.name} · ir para outro ambiente</button>}
               </div>
             </section>
           )
@@ -312,6 +326,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
         </section>
 
         <div className="barra-final no-print">
+          <button className="barra-onde" onClick={() => irPara(abertoAmb)}>{atual ? <>📍 Você está em <b>{atual.name}</b></> : <>📍 Escolha o ambiente acima</>}</button>
           <label className="btn-arquivo">📷 Foto<input type="file" multiple accept={TIPOS_ACEITOS.join(',')} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar({ roomId: abertoAmb || undefined }, l) }} /></label>
           <button disabled={!pendente} onClick={salvar}>Salvar</button>
           <button className="primary" onClick={concluir}>✓ Terminar<span className="so-pc"> vistoria</span></button>

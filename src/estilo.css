@@ -294,3 +294,22 @@ header .instalar+.quiet{margin-left:0}
 .modal-botoes{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.3rem}
 .modal-botoes button{padding:.85rem .6rem}
 @media (min-width:701px){.modal-fundo{place-items:center}}
+
+/* onde estou: ambiente atual sempre visível */
+.onde-estou{position:sticky;top:58px;z-index:6;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.5rem;margin:0 0 .6rem;padding:.6rem .6rem .75rem;background:var(--navy);color:#fff;border-radius:14px 14px 0 0;box-shadow:0 4px 12px #10365630}
+.onde-estou .onde-texto{display:grid;gap:.05rem;min-width:0}
+.onde-estou strong{font-size:1.35rem;line-height:1.15;overflow-wrap:anywhere}
+.onde-estou small{font-size:.78rem;opacity:.9}
+.onde-estou .seta{background:#ffffff1f;border:1px solid #ffffff55;color:#fff;min-width:44px;min-height:44px;font-size:1.1rem;padding:0}
+.onde-estou .seta:disabled{opacity:.3}
+.onde-estou .barra{grid-column:1/-1;background:#ffffff33}
+.onde-estou .barra b{background:#8fe0b0}
+.amb-dir{display:flex;gap:.4rem;align-items:center;margin:0 0 .6rem;font-size:.9rem}
+.grupo-amb{display:block;font-size:.75rem;font-weight:700;color:var(--blue);letter-spacing:.01em}
+.barra-final{flex-wrap:wrap}
+.barra-final .barra-onde{flex:1 1 100%;text-align:left;background:#e4eff7;border-color:#c7dcea;font-weight:500;font-size:.85rem;padding:.4rem .7rem;min-height:0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (min-width:701px){.onde-estou{top:76px}}
+.ambiente.aberto{overflow:visible}
+.ambiente.aberto>.amb-dir{padding:0 1rem}
+.onde-estou small{color:#fff!important;opacity:.85}
+.amb-chip.ativo small{color:#fff;opacity:.9}
