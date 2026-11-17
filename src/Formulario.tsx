@@ -20,14 +20,17 @@ const COR: Record<string, string> = { Bom: '🟢', Regular: '🟡', 'Péssimo': 
 export function faltasDoAmbiente(v: Vistoria, amb: Ambiente): string[] {
   const f: string[] = []
   if (!amb.situacao) f.push('s:' + amb.id)
-  // Regular ou Péssimo: pelo menos uma foto (a descrição vai em cada foto; o texto do ambiente é opcional)
-  if (precisaFoto(amb.situacao) && !fotosDoAmbiente(v, amb.id).length) f.push('f:' + amb.id)
-  for (const m of fotosDoAmbiente(v, amb.id)) if (!m.caption.trim()) f.push('l:' + m.id)
+  // Regular ou Péssimo: basta UMA foto com descrição. O resto (mais fotos, descrições, comentário) é opcional.
+  if (precisaFoto(amb.situacao)) {
+    const fotos = fotosDoAmbiente(v, amb.id)
+    if (!fotos.length) f.push('f:' + amb.id)
+    else if (!fotos.some((m) => m.caption.trim())) f.push('l:' + fotos[0].id)
+  }
   return f
 }
-/** Observação é opcional: só a descrição de cada foto anexada a ela é obrigatória. */
-export function faltasDaObservacao(v: Vistoria, o: Observacao): string[] {
-  return fotosDaObservacao(v, o.id).filter((m) => !m.caption.trim()).map((m) => 'l:' + m.id)
+/** Observação é toda opcional (texto e fotos). */
+export function faltasDaObservacao(_v: Vistoria, _o: Observacao): string[] {
+  return []
 }
 
 /** Formulário de vistoria feito para o celular: cada ambiente é Bom, Regular ou Péssimo, com fotos descritas. */
@@ -87,16 +90,18 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
     <label className={'btn-arquivo ' + classe}>{texto}<input type="file" multiple accept={TIPOS_ACEITOS.join(',')}
       onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar(destino, l) }} /></label>
   )
-  const listaFotos = (lista: Midia[], dica: string) => lista.length > 0 && (
+  /** obrigaUma: ambiente regular/péssimo, em que a 1ª foto precisa de descrição se nenhuma tiver. */
+  const listaFotos = (lista: Midia[], dica: string, obrigaUma = false) => lista.length > 0 && (
     <div className="fotos-desc">
       {lista.map((m, n) => (
         <div className={'foto-desc' + (falta('l:' + m.id) ? ' falta' : '')} key={m.id}>
           <VerMidia media={m} />
           <div className="foto-desc-campos">
-            <label>Foto {n + 1}: o que ela mostra? <b className="obrig">obrigatório</b>
+            <label>Foto {n + 1}: o que ela mostra?{' '}
+              {obrigaUma && n === 0 && !lista.some((x) => x.caption.trim()) ? <b className="obrig">obrigatório</b> : <small className="opc">(opcional)</small>}
               <textarea value={m.caption} placeholder={dica} onChange={(e) => trocarFoto({ ...m, caption: e.target.value })} />
             </label>
-            {falta('l:' + m.id) && <em className="falta-msg">Descreva esta foto para concluir</em>}
+            {falta('l:' + m.id) && <em className="falta-msg">Descreva pelo menos esta foto para concluir</em>}
             <button className="quiet" onClick={() => tirarFoto(m)}>🗑️ Tirar foto</button>
           </div>
         </div>
@@ -228,7 +233,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                       onClick={() => trocarAmbiente({ ...amb, situacao: amb.situacao === b.s ? undefined : b.s })}>{b.t}</button>
                   ))}
                 </div>
-                {ruim && <p className="aviso-obrig">Situação {amb.situacao?.toLowerCase()}: <b>anexe pelo menos uma foto</b> e <b>escreva em cada foto o que ela mostra</b>.</p>}
+                {ruim && <p className="aviso-obrig">Situação {amb.situacao?.toLowerCase()}: <b>anexe uma foto e escreva o que ela mostra</b>. O resto é opcional.</p>}
               </div>
 
               {amb.situacao && (
@@ -244,8 +249,8 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                   {botaoFoto({ roomId: amb.id }, '📷 Adicionar foto', ruim && !fotosAmb.length ? 'primary' : '')}
                 </div>
                 {falta('f:' + amb.id) && <em className="falta-msg">Anexe pelo menos uma foto para concluir</em>}
-                <p className="dica">Pode anexar quantas fotos quiser. Cada foto precisa de uma descrição. Evite fotografar pacientes, prontuários ou telas.</p>
-                {listaFotos(fotosAmb, 'Ex.: mofo no canto do teto, perto da janela')}
+                <p className="dica">{ruim ? 'Obrigatório: 1 foto com descrição. ' : 'Fotos opcionais. '}Pode anexar quantas quiser. Evite fotografar pacientes, prontuários ou telas.</p>
+                {listaFotos(fotosAmb, 'Ex.: mofo no canto do teto, perto da janela', ruim)}
               </div>
 
               <div className="obs-amb observacoes">
@@ -272,7 +277,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
             <h2 className="passo">💬 Observações gerais da visita <small>{observacoes.filter((o) => !o.room).length}</small></h2>
             <button className="primary" onClick={() => novaObs()}>＋ Observação geral</button>
           </div>
-          <p className="dica">Opcional. Registre outras demandas e situações da unidade, relatadas por funcionários, agentes ou gestores. Crie quantas quiser e remova quando não precisar mais. Cada foto anexada precisa de descrição.</p>
+          <p className="dica">Opcional. Registre outras demandas e situações da unidade, relatadas por funcionários, agentes ou gestores. Crie quantas quiser e remova quando não precisar mais.</p>
           {listaObs(observacoes.filter((o) => !o.room), 'Observação geral')}
         </section>
 

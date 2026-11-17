@@ -332,7 +332,7 @@ export default function App() {
         ...lista.filter((k) => nomes[k]).map((k) => nomes[k]),
         ...(conta('s:') ? [plural(conta('s:'), 'a situação de 1 ambiente', 'a situação de # ambientes')] : []),
                 ...(conta('f:') ? [plural(conta('f:'), 'foto em 1 ambiente regular/péssimo', 'foto em # ambientes regulares/péssimos')] : []),
-        ...(conta('l:') ? [plural(conta('l:'), 'a descrição de 1 foto', 'a descrição de # fotos')] : []),
+        ...(conta('l:') ? [plural(conta('l:'), 'descrever 1 foto em 1 ambiente regular/péssimo', 'descrever 1 foto em # ambientes regulares/péssimos')] : []),
       ]
       setErro(`Para concluir, falta: ${partes.join(', ')}. Está marcado em vermelho.`)
       return

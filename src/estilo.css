@@ -395,3 +395,4 @@ a.btn{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--b
 a.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
 .aviso-fotos.ok{border-color:#9fd3b6;background:#effaf4}
 a.data-antiga{text-decoration:none}
+.foto-desc-campos .opc{font-weight:500;color:#6a7f90}
