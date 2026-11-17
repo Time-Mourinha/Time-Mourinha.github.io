@@ -391,3 +391,7 @@ header .instalar+.quiet{margin-left:0}
 }
 .btn-arquivo.primary{background:var(--navy);border-color:var(--navy);color:#fff}
 .obs-amb{margin-top:1rem;padding-top:.8rem;border-top:1px dashed var(--border)}.obs-amb h3{margin:0}.obs-amb .obs{background:#fbfdfe}
+a.btn{display:inline-flex;align-items:center;gap:.35rem;border:1px solid var(--border);color:var(--navy);background:#fff;border-radius:9px;padding:.64rem .88rem;font-weight:650;text-decoration:none}
+a.btn.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.aviso-fotos.ok{border-color:#9fd3b6;background:#effaf4}
+a.data-antiga{text-decoration:none}

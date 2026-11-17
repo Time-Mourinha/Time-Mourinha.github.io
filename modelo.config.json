@@ -15,5 +15,7 @@
   "site_url": "https://vistoria-saude.github.io",
   "supabase_ref": "apqkewsdzwawtiajbmyl",
   "chave_local": "vistoria-maceio-demo",
-  "pacote": "vistoria-maceio"
+  "pacote": "vistoria-maceio",
+  "drive_url": "",
+  "drive_pasta": "Fiscalização da Saúde - Relatórios"
 }

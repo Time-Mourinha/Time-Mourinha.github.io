@@ -11,7 +11,8 @@ export function Selo({ value }: { value: string }) {
   return <span className={'badge ' + classe}>{value}</span>
 }
 
-export function VerMidia({ media }: { media: Midia }) {
+/** Foto: primeiro deste aparelho; se não estiver aqui, do Google Drive (remoto). */
+export function VerMidia({ media, remoto }: { media: Midia; remoto?: string }) {
   const [url, setUrl] = useState('')
   const [falha, setFalha] = useState(false)
   useEffect(() => {
@@ -20,15 +21,15 @@ export function VerMidia({ media }: { media: Midia }) {
     ;(async () => {
       try {
         const blob = await midiaDemo(media.id)
-        if (blob && vivo) { objeto = URL.createObjectURL(blob); setUrl(objeto) } else if (vivo) setFalha(true)
-      } catch { if (vivo) setFalha(true) }
+        if (blob && vivo) { objeto = URL.createObjectURL(blob); setUrl(objeto) } else if (vivo) { if (remoto) setUrl(remoto); else setFalha(true) }
+      } catch { if (vivo) { if (remoto) setUrl(remoto); else setFalha(true) } }
     })()
     return () => { vivo = false; if (objeto) URL.revokeObjectURL(objeto) }
-  }, [media.id])
+  }, [media.id, remoto])
   return (
     <figure>
       {url ? <img src={url} alt={media.caption || media.name} />
-        : <span className="sem-foto">{falha ? '📷 Foto não guardada neste aparelho (está no PDF gerado na conclusão)' : 'Carregando foto…'}</span>}
+        : <span className="sem-foto">{falha ? '📷 Foto não está neste aparelho (veja o PDF no Google Drive)' : 'Carregando foto…'}</span>}
       <figcaption>{media.caption || media.name}</figcaption>
     </figure>
   )

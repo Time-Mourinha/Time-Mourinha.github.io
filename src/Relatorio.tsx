@@ -2,6 +2,7 @@ import marca from './assets/marca.png'
 import { REGRA_CLASSIFICACAO, impactosDoTexto, resumir } from './lib/analise'
 import { dataBR, fotosDaObservacao, fotosDoAmbiente, obsComConteudo, precisaFoto, semAcento, type Midia, type Unidade, type Vistoria } from './lib/modelo'
 import { VerMidia } from './ui'
+import { urlFotoDrive } from './lib/drive'
 import { CFG } from './config'
 
 export const ESTILOS_RELATORIO = [
@@ -14,7 +15,8 @@ export type EstiloRelatorio = (typeof ESTILOS_RELATORIO)[number]['id']
 const hojeBR = () => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Maceio', dateStyle: 'long' }).format(new Date())
 
 /** Relatório de visita técnica: pronto para imprimir em PDF ou apresentar. */
-export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Vistoria; unidade?: Unidade; estilo: EstiloRelatorio }) {
+export function Relatorio({ vistoria: v, unidade: u, estilo, remotas }: { vistoria: Vistoria; unidade?: Unidade; estilo: EstiloRelatorio; remotas?: Record<string, string> }) {
+  const remoto = (id: string) => (remotas?.[id] ? urlFotoDrive(remotas[id]) : undefined)
   const r = resumir(v)
   const numero = v.id.slice(0, 8).toUpperCase()
   const ordemSit: Record<string, number> = { 'Péssimo': 0, Regular: 1, Bom: 2 }
@@ -103,7 +105,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
               <h3>{amb.name} <small>{amb.situacao}</small></h3>
               <div className="rel-fotos">
                 {fotos.map(({ m, num }) => (
-                  <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} /></div>
+                  <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} remoto={remoto(m.id)} /></div>
                 ))}
               </div>
             </div>
@@ -120,7 +122,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
               <p><strong>{i + 1}. {o.room ? (v.rooms.find((r) => r.id === o.room)?.name ?? 'Ambiente') : 'Geral'}</strong>{o.quem ? ` · relatado por ${o.quem}` : ''}{o.texto.trim() ? ': ' + o.texto : ''}</p>
               {fotos.length > 0 && (
                 <div className="rel-fotos">
-                  {fotos.map(({ m, num }) => <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} /></div>)}
+                  {fotos.map(({ m, num }) => <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} remoto={remoto(m.id)} /></div>)}
                 </div>
               )}
             </div>

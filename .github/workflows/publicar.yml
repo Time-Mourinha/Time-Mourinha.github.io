@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["src/**", "public/**", "index.html", "package.json", "package-lock.json", "vite.config.ts", "tsconfig.json", "modelo.config.json", ".github/workflows/publicar.yml"]
+    paths: ["src/**", "public/**", "index.html", "package.json", "package-lock.json", "vite.config.ts", "tsconfig.json", "modelo.config.json", "google/**", ".github/workflows/publicar.yml"]
   workflow_run:
     workflows: ["Configurar banco"]
     types: [completed]
@@ -45,7 +45,16 @@ jobs:
           else
             echo "::warning::Sem Supabase: o site sai em modo de demonstração."
           fi
-      - run: npm ci
+      - name: Script do Google Drive pronto para copiar (só chaves públicas)
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+          c = json.load(open("modelo.config.json"))
+          t = pathlib.Path("google/drive.gs").read_text(encoding="utf-8")
+          t = t.replace("{{SUPABASE_URL}}", os.environ.get("VITE_SUPABASE_URL", "")).replace("{{SUPABASE_CHAVE}}", os.environ.get("VITE_SUPABASE_PUBLISHABLE_KEY", "")).replace("{{PASTA}}", c.get("drive_pasta", "Relatórios"))
+          pathlib.Path("public/google-drive-script.txt").write_text(t, encoding="utf-8")
+          PY
+      - run: npm install --no-audit --no-fund
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

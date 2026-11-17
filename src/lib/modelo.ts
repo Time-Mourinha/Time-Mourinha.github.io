@@ -24,7 +24,7 @@ export type Vistoria = {
   summary?: ResumoCompacto
 }
 /** Resumo de poucos bytes que fica para sempre; o relatório completo antigo é apagado para o banco não encher. */
-export type ResumoCompacto = { nivel: string; pontos: number; problemas: number; imediatas: number; principais: string[] }
+export type ResumoCompacto = { nivel: string; pontos: number; problemas: number; imediatas: number; principais: string[]; pdf?: string; pasta?: string }
 /** Visita antiga já compactada: só data, quem fez e o resumo. */
 export type VisitaAntiga = { id: string; unit_id: number; inspected_on: string; inspector: string; summary: Partial<ResumoCompacto> }
 export type Perfil = { id: string; email: string; name?: string; approved: boolean; role: 'inspector' | 'admin'; needs_code: boolean; created_at?: string }

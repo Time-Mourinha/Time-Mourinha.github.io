@@ -89,7 +89,10 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
                 <li key={u.id}>
                   <div><b>{u.name}</b><small>Distrito {u.district} · {u.kind} · {visitas.length} {visitas.length === 1 ? 'visita' : 'visitas'}</small></div>
                   <div className="datas">{visitas.map((v) => v.antiga ? (
-                    <span key={v.id} className="data-antiga" title={`Resumo guardado: ${v.antiga.summary.problemas ?? 0} problema(s)${v.antiga.summary.principais?.length ? ' · ' + v.antiga.summary.principais.join(', ') : ''}`}>
+                    v.antiga.summary.pdf ? (
+                      <a key={v.id} className="data-antiga" href={v.antiga.summary.pdf} target="_blank" rel="noopener noreferrer" title="Abrir o PDF no Google Drive">
+                        📄 {dataBR(v.inspected_on)}{v.antiga.summary.nivel ? <small>{v.antiga.summary.nivel}</small> : null}<small>PDF</small></a>
+                    ) : <span key={v.id} className="data-antiga" title={`Resumo guardado: ${v.antiga.summary.problemas ?? 0} problema(s)${v.antiga.summary.principais?.length ? ' · ' + v.antiga.summary.principais.join(', ') : ''}`}>
                       🗂️ {dataBR(v.inspected_on)}{v.antiga.summary.nivel ? <small>{v.antiga.summary.nivel}</small> : null}{v.inspector ? <small>{v.inspector.split(' ')[0]}</small> : null}</span>
                   ) : (
                     <button key={v.id} onClick={() => abrirRelatorio(v.id)} title={`Relatório de ${dataBR(v.inspected_on)}`}>📄 {dataBR(v.inspected_on)}{v.inspector ? <small>{v.inspector.split(' ')[0]}</small> : null}</button>

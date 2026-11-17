@@ -17,6 +17,8 @@ import { Instalar } from './Instalar'
 import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
 import { compactar, problemasDaRede, ranking, resumir } from './lib/analise'
+import { DRIVE_LIGADO, apagarDoDrive, carregarArquivosRelatorio, enviarAoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
+import { gerarPdf, type ResultadoPdf } from './lib/pdf'
 import { reduzirImagem } from './lib/imagem'
 import { CFG } from './config'
 
@@ -34,17 +36,30 @@ function Atalho({ ic, t, n, e, onClick, destaque, alerta }: { ic: string; t: str
 }
 
 /** No relatório: as fotos ficam só neste aparelho até o PDF ser salvo; depois o fiscal apaga. */
-function AvisoFotos({ v }: { v: Vistoria }) {
+/** Onde está o PDF deste relatório: no Google Drive (com as fotos) ou ainda só neste aparelho. */
+function PainelPdf({ v, arquivos, enviar, baixar, ocupado }: {
+  v: Vistoria; arquivos: ArquivosRelatorio | null; enviar: () => void; baixar: () => void; ocupado: boolean
+}) {
   const [tem, setTem] = useState(false)
-  useEffect(() => { void temFotosLocais(v).then(setTem) }, [v.id])
-  if (!tem) return null
+  useEffect(() => { void temFotosLocais(v).then(setTem) }, [v.id, arquivos])
+  if (arquivos) return (
+    <div className="panel aviso-fotos ok no-print">
+      <p><b>✅ Guardado no Google Drive:</b> o PDF e as fotos deste relatório. Qualquer pessoa aprovada vê aqui no app.</p>
+      <div className="row">
+        <a className="btn primary" href={arquivos.pdf_url} target="_blank" rel="noopener noreferrer">📄 Abrir PDF</a>
+        <a className="btn" href={arquivos.pasta_url} target="_blank" rel="noopener noreferrer">📁 Pasta no Drive</a>
+      </div>
+    </div>
+  )
   return (
     <div className="panel aviso-fotos no-print">
-      <p><b>📷 As fotos não ficam guardadas no app.</b> Elas estão só neste aparelho para montar o PDF. Salve o PDF e depois apague as fotos.
-        Se não apagar, elas saem sozinhas em 24 horas.</p>
+      {DRIVE_LIGADO && !DEMO
+        ? <p><b>☁️ Este relatório ainda não foi para o Google Drive.</b>{tem ? ' As fotos estão só neste aparelho: envie agora para não perder.' : ''}</p>
+        : <p><b>📷 As fotos não ficam guardadas no app.</b> Elas estão só neste aparelho para montar o PDF. Baixe o PDF e guarde.{tem ? ' As fotos saem deste aparelho sozinhas em 24 horas.' : ''}</p>}
       <div className="row">
-        <button className="primary" onClick={() => window.print()}>📄 Salvar PDF</button>
-        <button onClick={async () => { if (confirm('Já salvou o PDF? As fotos desta vistoria serão apagadas deste aparelho.')) { await apagarFotosLocais(v); setTem(false); location.reload() } }}>✓ Já salvei o PDF · apagar fotos</button>
+        {DRIVE_LIGADO && !DEMO && <button className="primary" disabled={ocupado} onClick={enviar}>☁️ Enviar ao Drive</button>}
+        <button className={DRIVE_LIGADO && !DEMO ? '' : 'primary'} disabled={ocupado} onClick={baixar}>📄 Baixar PDF</button>
+        {tem && !(DRIVE_LIGADO && !DEMO) && <button onClick={async () => { if (confirm('Já guardou o PDF? As fotos desta vistoria serão apagadas deste aparelho.')) { await apagarFotosLocais(v); setTem(false); location.reload() } }}>✓ Já guardei · apagar fotos</button>}
       </div>
     </div>
   )
@@ -106,7 +121,6 @@ export default function App() {
   })
   const versao = useRef(0)
   const fila = useRef<Promise<void>>(Promise.resolve())
-  const imprimirDepois = useRef(false)
   const [faltas, setFaltas] = useState<string[]>([])
 
   const admin = !DEMO && perfil?.role === 'admin' && perfil.approved
@@ -185,17 +199,43 @@ export default function App() {
     await p
   }
 
-  // depois de concluir: relatório na tela, espera as fotos carregarem e abre "Imprimir / Salvar como PDF"
-  useEffect(() => {
-    if (!imprimirDepois.current || tela !== 'relatorios' || !relatorioId) return
-    imprimirDepois.current = false
-    const t = window.setTimeout(async () => {
-      const imgs = [...document.querySelectorAll<HTMLImageElement>('.relatorio img')]
-      await Promise.race([Promise.all(imgs.map((i) => (i.complete ? null : new Promise((ok) => { i.onload = i.onerror = ok })))), new Promise((ok) => setTimeout(ok, 4000))])
-      window.print()
-    }, 700)
-    return () => clearTimeout(t)
-  }, [tela, relatorioId])
+  // links do Google Drive do relatório aberto (PDF e fotos)
+  const [arquivos, setArquivos] = useState<ArquivosRelatorio | null>(null)
+  useEffect(() => { setArquivos(null); if (relatorioId) void carregarArquivosRelatorio(relatorioId).then(setArquivos) }, [relatorioId])
+
+  /** Entrega o PDF: abre o "compartilhar" do celular (Drive, WhatsApp, e-mail) ou baixa o arquivo. */
+  async function entregarPdf(p: ResultadoPdf) {
+    const blob = new Blob([p.bytes as BlobPart], { type: 'application/pdf' })
+    const arq = new File([blob], p.nome, { type: 'application/pdf' })
+    try {
+      if (navigator.canShare?.({ files: [arq] })) { await navigator.share({ files: [arq], title: p.nome }); return }
+    } catch { /* cancelado ou sem permissão: baixa */ }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = p.nome; a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 60_000)
+  }
+  function baixarPdf(v: Vistoria) {
+    void executar(async () => {
+      setAviso('Montando o PDF…')
+      const p = await gerarPdf(v, unidades.find((u) => u.id === v.unit_id))
+      setAviso('PDF pronto.')
+      await entregarPdf(p)
+    })
+  }
+  /** Monta o PDF e manda PDF + fotos para o Google Drive; no app fica só o link. Depois tira as fotos do aparelho. */
+  async function enviarRelatorio(v: Vistoria) {
+    await executar(async () => {
+      const u = unidades.find((x) => x.id === v.unit_id)
+      setAviso('Montando o PDF…')
+      const p = await gerarPdf(v, u)
+      if (!DRIVE_LIGADO || DEMO) { setAviso('PDF pronto.'); await entregarPdf(p); return }
+      if (p.fotosSemArquivo) throw new Error(`${p.fotosSemArquivo} foto(s) não estão neste aparelho. Envie ao Drive pelo celular que tirou as fotos.`)
+      const a = await enviarAoDrive(v, u, p, setAviso)
+      await salvarArquivosRelatorio(a)
+      setArquivos(a)
+      await apagarFotosLocais(v)
+      setAviso('✅ Relatório guardado no Google Drive (PDF e fotos). As fotos saíram deste aparelho.')
+    })
+  }
 
   // mensagens somem sozinhas
   useEffect(() => { if (!aviso) return; const t = setTimeout(() => setAviso(''), 6000); return () => clearTimeout(t) }, [aviso])
@@ -265,6 +305,7 @@ export default function App() {
       : `Excluir o rascunho da vistoria em ${u?.name ?? 'unidade'}${v.owner && v.owner !== perfil?.id && v.inspector ? ` (de ${v.inspector})` : ''}? Não dá para desfazer.`)) return
     void executar(async () => {
       await excluirVistoria(v)
+      if (rel) void apagarDoDrive(v.id)
       setVistorias((l) => l.filter((x) => x.id !== v.id))
       if (aberta?.id === v.id) { setAberta(null); setPendente(false); ir(rel ? 'relatorios' : 'inicio') }
       if (relatorioId === v.id) setRelatorioId('')
@@ -304,13 +345,14 @@ export default function App() {
     if (!aberta) return
     setConfirmarGerar(false)
     const inspector = aberta.inspector.trim() || perfil?.name || perfil?.email || ''
+    let concluida: Vistoria | null = null
     await executar(async () => {
       const pronta: Vistoria = { ...aberta, inspector, status: 'completed' }
       const v: Vistoria = { ...pronta, summary: compactar(pronta) }
       await gravar(v); setAberta(v); setPendente(false); setRelatorioId(v.id); ir('relatorios')
-      setAviso('Vistoria concluída. Abrindo o PDF do relatório…')
-      imprimirDepois.current = true
+      concluida = v
     })
+    if (concluida) await enviarRelatorio(concluida)
   }
 
   async function sair() {
@@ -448,12 +490,15 @@ export default function App() {
                     </select>
                   )}
                   {!relatorio && <button onClick={exportarCsv} disabled={!acoes.length}>Exportar CSV</button>}
-                  <button className="primary" onClick={() => window.print()}>Imprimir / PDF</button>
+                  {relatorio && (arquivos
+                    ? <a className="btn primary" href={arquivos.pdf_url} target="_blank" rel="noopener noreferrer">📄 PDF</a>
+                    : <button className="primary" disabled={ocupado} onClick={() => baixarPdf(relatorio)}>📄 PDF</button>)}
+                  <button onClick={() => window.print()}>🖨️ Imprimir</button>
                 </div>
               </div>
-              {relatorio && <AvisoFotos v={relatorio} />}
+              {relatorio && <PainelPdf v={relatorio} arquivos={arquivos} ocupado={ocupado} enviar={() => void enviarRelatorio(relatorio)} baixar={() => baixarPdf(relatorio)} />}
               {relatorio ? (
-                <Relatorio vistoria={relatorio} unidade={unidades.find((u) => u.id === relatorio.unit_id)} estilo={estilo} />
+                <Relatorio vistoria={relatorio} unidade={unidades.find((u) => u.id === relatorio.unit_id)} estilo={estilo} remotas={arquivos?.fotos} />
               ) : (
                 <>
                   <div className="panel filters no-print">

@@ -60,6 +60,17 @@ create table if not exists public.visit_history (
 );
 create index if not exists visit_history_unit on public.visit_history(unit_id, inspected_on desc);
 
+-- Links do Google Drive (PDF e fotos de cada relatório). As fotos NÃO ficam no Supabase: só o link (texto).
+create table if not exists public.report_files (
+  inspection_id uuid primary key references public.inspections(id) on delete cascade,
+  pasta_url text not null default '',
+  pdf_url text not null default '',
+  pdf_id text not null default '',
+  fotos jsonb not null default '{}'::jsonb,   -- { id da foto no app: id do arquivo no Drive }
+  created_by uuid default auth.uid(),
+  created_at timestamptz not null default now()
+);
+
 -- Usuário removido: os relatórios dele ficam (sem dono); só o vínculo some.
 alter table public.inspections alter column owner drop not null;
 alter table public.inspections drop constraint if exists inspections_owner_fkey;
@@ -179,10 +190,11 @@ begin
       and coalesce(i.completed_at, i.updated_at) < now() - make_interval(days => dias)
   ), guardadas as (
     insert into visit_history (id, unit_id, inspected_on, inspector, summary, completed_at)
-    select id, unit_id, inspected_on, inspector,
-      coalesce(summary, jsonb_build_object('problemas', (select coalesce(sum(jsonb_array_length(coalesce(r->'findings', '[]'::jsonb))), 0) from jsonb_array_elements(rooms) r))),
+    select velhas.id, unit_id, inspected_on, inspector,
+      coalesce(summary, jsonb_build_object('problemas', (select coalesce(sum(jsonb_array_length(coalesce(r->'findings', '[]'::jsonb))), 0) from jsonb_array_elements(rooms) r)))
+        || case when rf.pdf_url <> '' then jsonb_build_object('pdf', rf.pdf_url, 'pasta', rf.pasta_url) else '{}'::jsonb end,
       completed_at
-    from velhas
+    from velhas left join report_files rf on rf.inspection_id = velhas.id
     on conflict (id) do nothing
     returning id
   )
@@ -233,6 +245,17 @@ drop policy if exists assign_read on public.unit_assignments;
 create policy assign_read on public.unit_assignments for select to authenticated using (user_id = auth.uid() or public.is_admin());
 drop policy if exists assign_admin on public.unit_assignments;
 create policy assign_admin on public.unit_assignments for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+alter table public.report_files enable row level security;
+drop policy if exists rf_read on public.report_files;
+create policy rf_read on public.report_files for select to authenticated using (public.is_approved());
+drop policy if exists rf_insert on public.report_files;
+create policy rf_insert on public.report_files for insert to authenticated with check (public.is_approved());
+drop policy if exists rf_update on public.report_files;
+create policy rf_update on public.report_files for update to authenticated using (public.is_approved()) with check (public.is_approved());
+drop policy if exists rf_delete on public.report_files;
+create policy rf_delete on public.report_files for delete to authenticated using (public.is_admin());
+grant select, insert, update, delete on public.report_files to authenticated;
 
 alter table public.visit_history enable row level security;
 drop policy if exists hist_read on public.visit_history;
