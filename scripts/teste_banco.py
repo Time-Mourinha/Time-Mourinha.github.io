@@ -8,7 +8,7 @@ import uuid
 import json
 import requests
 
-from supabase_setup import URL, chaves, sql
+from supabase_setup import CFG, URL, chaves, sql
 
 c = chaves()
 srv = {"apikey": c["servico"], "Authorization": f"Bearer {c['servico']}", "Content-Type": "application/json"}
@@ -64,7 +64,7 @@ try:
     print("Remover a própria conta (deve recusar):", r8.status_code)
 
     # --- Google Drive: o script aceita quem está aprovado e consegue usar o Drive?
-    cfg = json.loads(open("modelo.config.json", encoding="utf-8").read())
+    cfg = CFG
     if cfg.get("drive_url"):
         try:
             rd = requests.post(cfg["drive_url"], data=json.dumps({"acao": "teste", "token": tok2}), headers={"Content-Type": "text/plain"}, timeout=90)
