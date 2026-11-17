@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Campo, Selo, VerMidia } from './ui'
 import marca from './assets/marca.png'
 import {
-  LIMITE_BYTES, SITUACOES, linkMapa, obsComConteudo, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, semAcento,
+  LIMITE_BYTES, SITUACOES, descricaoDoAmbiente, linkMapa, obsComConteudo, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, semAcento,
   type Ambiente, type Midia, type VisitaAntiga, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
@@ -331,8 +331,7 @@ export default function App() {
       const partes = [
         ...lista.filter((k) => nomes[k]).map((k) => nomes[k]),
         ...(conta('s:') ? [plural(conta('s:'), 'a situação de 1 ambiente', 'a situação de # ambientes')] : []),
-        ...(conta('d:') ? [plural(conta('d:'), 'descrever o problema de 1 ambiente', 'descrever o problema de # ambientes')] : []),
-        ...(conta('f:') ? [plural(conta('f:'), 'foto em 1 ambiente regular/péssimo', 'foto em # ambientes regulares/péssimos')] : []),
+                ...(conta('f:') ? [plural(conta('f:'), 'foto em 1 ambiente regular/péssimo', 'foto em # ambientes regulares/péssimos')] : []),
         ...(conta('l:') ? [plural(conta('l:'), 'a descrição de 1 foto', 'a descrição de # fotos')] : []),
       ]
       setErro(`Para concluir, falta: ${partes.join(', ')}. Está marcado em vermelho.`)
@@ -420,7 +419,7 @@ export default function App() {
   function exportarCsv() {
     const cel = (t: string) => '"' + (/^[\s\u0000-\u001f]*[=+@-]/.test(t) ? "'" + t : t).replaceAll('"', '""') + '"'
     const linhas = [['Unidade', 'Distrito', 'Data', 'Classificação da unidade', 'Ambiente', 'Situação', 'Problema descrito'],
-      ...acoes.map(({ u, v, r }) => [u.name, u.district, v.inspected_on, resumir(v).nivel.nome, r.name, r.situacao ?? '', r.descricao ?? ''])]
+      ...acoes.map(({ u, v, r }) => [u.name, u.district, v.inspected_on, resumir(v).nivel.nome, r.name, r.situacao ?? '', descricaoDoAmbiente(v, r)])]
     const url = URL.createObjectURL(new Blob(['﻿', linhas.map((l) => l.map(cel).join(';')).join('\r\n')], { type: 'text/csv;charset=utf-8' }))
     const a = document.createElement('a'); a.href = url; a.download = 'ambientes-com-problema.csv'; a.click()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
@@ -530,7 +529,7 @@ export default function App() {
                       <article className="result" key={v.id + r.id}>
                         <div className="row"><span className={'nivel ' + (r.situacao === 'Péssimo' ? 'critica' : 'alta')}>{r.situacao === 'Péssimo' ? '🔴' : '🟡'} {r.situacao}</span><strong>{r.name}</strong></div>
                         <p>{u.name} · {dataBR(v.inspected_on)}</p>
-                        {r.descricao && <p>{r.descricao}</p>}
+                        {descricaoDoAmbiente(v, r) && <p>{descricaoDoAmbiente(v, r)}</p>}
                       </article>
                     ))}
                   </div>

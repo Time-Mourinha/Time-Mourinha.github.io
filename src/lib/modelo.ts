@@ -104,6 +104,9 @@ export function maiorPrioridade(ocorrencias: Ocorrencia[]): string {
 export const fotosDoAmbiente = (v: Vistoria, roomId: string) => (v.photos ?? []).filter((m) => m.room === roomId && !m.obs)
 export const fotosDaObservacao = (v: Vistoria, obsId: string) => (v.photos ?? []).filter((m) => m.obs === obsId)
 export const precisaFoto = (s?: string) => s === 'Regular' || s === 'Péssimo'
+/** O que foi observado no ambiente: o comentário, ou as descrições das fotos quando não há comentário. */
+export const descricaoDoAmbiente = (v: Vistoria, amb: Ambiente) =>
+  amb.descricao?.trim() || fotosDoAmbiente(v, amb.id).map((m) => m.caption.trim()).filter(Boolean).join('; ')
 
 export const TIPOS_ACEITOS = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
 export const LIMITE_BYTES = 50 * 1024 * 1024

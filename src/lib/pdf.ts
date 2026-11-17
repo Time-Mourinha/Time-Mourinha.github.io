@@ -3,7 +3,7 @@ import marcaUrl from '../assets/marca.png'
 import { CFG } from '../config'
 import { REGRA_CLASSIFICACAO, impactosDoTexto, resumir } from './analise'
 import { midiaDemo } from './armazenamento'
-import { dataBR, fotosDaObservacao, fotosDoAmbiente, obsComConteudo, precisaFoto, type Midia, type Unidade, type Vistoria } from './modelo'
+import { dataBR, descricaoDoAmbiente, fotosDaObservacao, fotosDoAmbiente, obsComConteudo, precisaFoto, type Midia, type Unidade, type Vistoria } from './modelo'
 
 /* Relatório em PDF de verdade (A4), montado no próprio celular: não depende da janela de impressão. */
 
@@ -167,7 +167,7 @@ export async function gerarPdf(v: Vistoria, u: Unidade | undefined): Promise<Res
   y -= 18
   for (const a of ambientes) {
     const imp = precisaFoto(a.situacao) ? impactosDoTexto([a.descricao, ...fotosDoAmbiente(v, a.id).map((m) => m.caption)].join(' '), 1)[0] : ''
-    const desc = quebrar(a.descricao || (a.situacao === 'Bom' ? 'Sem problemas.' : '-'), f, 9, c3 - 12)
+    const desc = quebrar(descricaoDoAmbiente(v, a) || (a.situacao === 'Bom' ? 'Sem problemas.' : '-'), f, 9, c3 - 12)
     const impL = imp ? quebrar('O que causa: ' + imp, f, 7.5, c3 - 12) : []
     const nomeL = quebrar(a.name, fb, 9, c1 - 12)
     const h = Math.max(nomeL.length * 12, desc.length * 12 + impL.length * 10) + 10

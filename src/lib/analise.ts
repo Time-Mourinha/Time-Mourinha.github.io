@@ -1,4 +1,4 @@
-import { fotosDoAmbiente, obsComConteudo, semAcento, type ResumoCompacto, type Situacao, type Unidade, type Vistoria } from './modelo'
+import { descricaoDoAmbiente, fotosDoAmbiente, obsComConteudo, semAcento, type ResumoCompacto, type Situacao, type Unidade, type Vistoria } from './modelo'
 
 
 /** O que cada problema causa no funcionamento da unidade (linguagem simples, para o relatório). */
@@ -123,7 +123,7 @@ export function resumir(v: Vistoria): Resumo {
     else semAvaliacao++
     if (s === 'Regular' || s === 'Péssimo') {
       const fotos = fotosDoAmbiente(v, amb.id)
-      comProblema.push({ ambiente: amb.name, situacao: s, descricao: amb.descricao?.trim() ?? '', roomId: amb.id, fotos: fotos.length,
+      comProblema.push({ ambiente: amb.name, situacao: s, descricao: descricaoDoAmbiente(v, amb), roomId: amb.id, fotos: fotos.length,
         impacto: impactosDoTexto([amb.descricao, ...fotos.map((f) => f.caption)].join(' '), 2) })
     }
   }

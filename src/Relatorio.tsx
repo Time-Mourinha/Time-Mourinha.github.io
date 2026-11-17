@@ -1,6 +1,6 @@
 import marca from './assets/marca.png'
 import { REGRA_CLASSIFICACAO, impactosDoTexto, resumir } from './lib/analise'
-import { dataBR, fotosDaObservacao, fotosDoAmbiente, obsComConteudo, precisaFoto, semAcento, type Midia, type Unidade, type Vistoria } from './lib/modelo'
+import { dataBR, descricaoDoAmbiente, fotosDaObservacao, fotosDoAmbiente, obsComConteudo, precisaFoto, semAcento, type Midia, type Unidade, type Vistoria } from './lib/modelo'
 import { VerMidia } from './ui'
 import { urlFotoDrive } from './lib/drive'
 import { CFG } from './config'
@@ -89,7 +89,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo, remotas }: { vistor
                 <tr key={amb.id} className={'sit-' + (amb.situacao ? semAcento(amb.situacao) : 'nada')}>
                   <td><strong>{amb.name}</strong></td>
                   <td className="sit-cel">{amb.situacao ? `${amb.situacao === 'Bom' ? '🟢' : amb.situacao === 'Regular' ? '🟡' : '🔴'} ${amb.situacao}` : '—'}</td>
-                  <td>{amb.descricao || (amb.situacao === 'Bom' ? 'Sem problemas.' : '—')}{imp && <><br /><small className="p-causa">O que causa: {imp}</small></>}</td>
+                  <td>{descricaoDoAmbiente(v, amb) || (amb.situacao === 'Bom' ? 'Sem problemas.' : '—')}{imp && <><br /><small className="p-causa">O que causa: {imp}</small></>}</td>
                 </tr>
               )
             })}

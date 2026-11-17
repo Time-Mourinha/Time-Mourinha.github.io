@@ -20,10 +20,8 @@ const COR: Record<string, string> = { Bom: '🟢', Regular: '🟡', 'Péssimo': 
 export function faltasDoAmbiente(v: Vistoria, amb: Ambiente): string[] {
   const f: string[] = []
   if (!amb.situacao) f.push('s:' + amb.id)
-  if (precisaFoto(amb.situacao)) {
-    if (!amb.descricao?.trim()) f.push('d:' + amb.id)
-    if (!fotosDoAmbiente(v, amb.id).length) f.push('f:' + amb.id)
-  }
+  // Regular ou Péssimo: pelo menos uma foto (a descrição vai em cada foto; o texto do ambiente é opcional)
+  if (precisaFoto(amb.situacao) && !fotosDoAmbiente(v, amb.id).length) f.push('f:' + amb.id)
   for (const m of fotosDoAmbiente(v, amb.id)) if (!m.caption.trim()) f.push('l:' + m.id)
   return f
 }
@@ -230,11 +228,11 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                       onClick={() => trocarAmbiente({ ...amb, situacao: amb.situacao === b.s ? undefined : b.s })}>{b.t}</button>
                   ))}
                 </div>
-                {ruim && <p className="aviso-obrig">Situação {amb.situacao?.toLowerCase()}: <b>descreva o que tem de ruim</b> e <b>anexe pelo menos uma foto</b>.</p>}
+                {ruim && <p className="aviso-obrig">Situação {amb.situacao?.toLowerCase()}: <b>anexe pelo menos uma foto</b> e <b>escreva em cada foto o que ela mostra</b>.</p>}
               </div>
 
               {amb.situacao && (
-                <Campo label={ruim ? 'O que tem de ruim neste ambiente? (obrigatório)' : 'Observação sobre o ambiente (opcional)'} falta={falta('d:' + amb.id)}>
+                <Campo label="Comentário sobre o ambiente (opcional)">
                   <textarea value={amb.descricao ?? ''} placeholder={ruim ? 'Ex.: infiltração no teto, mofo na parede, ar-condicionado sem funcionar' : 'Ex.: ambiente limpo e organizado'}
                     onChange={(e) => trocarAmbiente({ ...amb, descricao: e.target.value })} />
                 </Campo>
