@@ -1,7 +1,8 @@
 name: Manter banco ativo
 # O plano gratuito do Supabase pausa o projeto depois de 7 dias sem uso.
-# A cada 3 dias este robô consulta o banco para ele nunca pausar. Se mesmo assim
-# estiver pausado, pede para religar. Não guarda nada e não tem custo.
+# A cada 3 dias este robô consulta o banco para ele nunca pausar (e religa se pausar)
+# e faz a faxina: apaga rascunhos abandonados há 30 dias e registros técnicos antigos.
+# Não guarda nada e não tem custo.
 
 on:
   schedule:
@@ -44,6 +45,36 @@ jobs:
             | python3 -c "import sys,json; ks=json.load(sys.stdin); print(next((k['api_key'] for k in ks if k.get('type')=='publishable' and k.get('api_key')), next((k['api_key'] for k in ks if k.get('name')=='anon'), '')))")
           echo "::add-mask::$chave"
           curl -sS -o /dev/null -w "API pública respondeu: %{http_code}\n" -H "apikey: $chave" "https://$REF.supabase.co/rest/v1/units?select=id&limit=1"
+
+      - name: Faxina (o banco nunca enche)
+        run: |
+          # Apaga só o que é lixo. Relatórios concluídos ficam (são o painel e o ranking).
+          cat > /tmp/faxina.sql <<'SQL'
+          with
+            r as (delete from public.inspections where status = 'draft' and updated_at < now() - interval '30 days' returning 1),
+            l as (delete from auth.audit_log_entries where created_at < now() - interval '30 days' returning 1),
+            n as (delete from net._http_response where created < now() - interval '1 day' returning 1),
+            t as (delete from public.admin_code_attempts where at < now() - interval '30 days' returning 1)
+          select (select count(*) from r) as rascunhos, (select count(*) from l) as registros_login,
+                 (select count(*) from n) as respostas_avisos, (select count(*) from t) as tentativas_codigo;
+          SQL
+          python3 - <<'PY'
+          import json, os, urllib.request
+          def q(sql):
+              req = urllib.request.Request(f"https://api.supabase.com/v1/projects/{os.environ['REF']}/database/query",
+                  data=json.dumps({"query": sql}).encode(), method="POST",
+                  headers={"Authorization": "Bearer " + os.environ["SUPABASE_ACCESS_TOKEN"], "Content-Type": "application/json"})
+              return json.load(urllib.request.urlopen(req))
+          r = q(open("/tmp/faxina.sql").read())[0]
+          print(f"Apagado: {r['rascunhos']} rascunho(s) parado(s) há mais de 30 dias, {r['registros_login']} registro(s) antigo(s) de login, "
+                f"{r['respostas_avisos']} resposta(s) de avisos, {r['tentativas_codigo']} tentativa(s) de código.")
+          t = q("select pg_database_size(current_database()) as total, pg_total_relation_size('public.inspections') as vistorias, "
+                "(select count(*) from public.inspections where status='completed') as relatorios")[0]
+          mb = t["total"] / 1048576
+          print(f"Espaço usado: {mb:.1f} MB de 500 MB ({mb/5:.1f}%). Vistorias: {t['vistorias']/1024:.0f} KB em {t['relatorios']} relatório(s).")
+          if mb > 400:
+              print("::warning::O banco passou de 400 MB. Hora de arquivar relatórios antigos em PDF.")
+          PY
 
       - name: Manter este agendamento ligado
         env:
