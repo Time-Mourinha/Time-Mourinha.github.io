@@ -129,7 +129,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
         </div>
         <div className="topo-acoes">
           <Selo value={v.status === 'completed' ? 'Concluída' : pendente ? 'Salvando…' : 'Rascunho salvo'} />
-          {excluir && <button className="excluir" disabled={ocupado} onClick={excluir}>🗑️ Excluir rascunho</button>}
+          {excluir && <button className="excluir" disabled={ocupado} onClick={excluir}>🗑️ {v.status === 'completed' ? 'Excluir relatório' : 'Excluir rascunho'}</button>}
         </div>
       </div>
       {bloqueada && <div className="banner">Vistoria concluída: só a administração pode alterar.</div>}
@@ -314,7 +314,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
         <div className="barra-final no-print">
           <label className="btn-arquivo">📷 Foto<input type="file" multiple accept={TIPOS_ACEITOS.join(',')} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar({ roomId: abertoAmb || undefined }, l) }} /></label>
           <button disabled={!pendente} onClick={salvar}>Salvar</button>
-          <button className="primary" onClick={concluir}>✓ Concluir<span className="so-pc"> e gerar relatório</span></button>
+          <button className="primary" onClick={concluir}>✓ Terminar<span className="so-pc"> vistoria</span></button>
         </div>
       </fieldset>
     </div>

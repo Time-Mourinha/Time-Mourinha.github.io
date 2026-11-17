@@ -285,3 +285,12 @@ header .instalar+.quiet{margin-left:0}
 .lista-sem li button{font:inherit;color:inherit;text-align:left;width:100%;display:grid;gap:.1rem;background:transparent;border:0;padding:0;cursor:pointer}
 .lista-sem li button span{font-size:.85rem;font-weight:700;color:var(--navy)}
 @media (max-width:700px){.kpis-painel{grid-template-columns:1fr 1fr;gap:.5rem}.kpis-painel>*{padding:.7rem}.kpis-painel strong{font-size:1.5rem}.kpis-painel>:first-child{grid-column:1/-1}}
+
+.modal-fundo{position:fixed;inset:0;background:#0b1f3366;display:grid;place-items:end center;z-index:60;padding:1rem}
+.modal{background:#fff;border-radius:16px;padding:1.2rem;width:min(100%,30rem);display:grid;gap:.6rem;box-shadow:0 10px 40px #0003}
+.modal h2{margin:0}.modal p{margin:0}
+.modal-resumo{list-style:none;padding:0;margin:0;display:flex;gap:.5rem;flex-wrap:wrap}
+.modal-resumo li{background:#e4eff7;border-radius:10px;padding:.45rem .7rem}
+.modal-botoes{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.3rem}
+.modal-botoes button{padding:.85rem .6rem}
+@media (min-width:701px){.modal-fundo{place-items:center}}

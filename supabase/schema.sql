@@ -176,7 +176,7 @@ create policy insp_update on public.inspections for update to authenticated
   with check (public.can_access_unit(unit_id));
 drop policy if exists insp_delete on public.inspections;
 create policy insp_delete on public.inspections for delete to authenticated
-  using (public.is_admin() or (status = 'draft' and owner = auth.uid()));  -- rascunho: quem começou pode excluir
+  using (public.is_admin() or owner = auth.uid());  -- quem fez pode excluir o rascunho ou o relatório; a administração, qualquer um
 
 -- ------------------------------------------------------------------ fotos
 -- O app NÃO guarda fotos: elas ficam só no aparelho do vistoriador até o PDF do relatório.

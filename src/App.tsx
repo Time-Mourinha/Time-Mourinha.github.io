@@ -78,6 +78,7 @@ export default function App() {
   const [secaoPainel, setSecaoPainel] = useState<SecaoPainel>('ranking')
   const [aberta, setAberta] = useState<Vistoria | null>(null)
   const [relatorioId, setRelatorioId] = useState('')
+  const [confirmarGerar, setConfirmarGerar] = useState(false)
   const [busca, setBusca] = useState('')
   const [distrito, setDistrito] = useState('')
   const [tipo, setTipo] = useState('')
@@ -103,6 +104,8 @@ export default function App() {
   const admin = !DEMO && perfil?.role === 'admin' && perfil.approved
   const unidadeAberta = unidades.find((u) => u.id === aberta?.unit_id)
   const bloqueada = aberta?.status === 'completed' && !DEMO && !admin
+  // rascunho: quem começou ou a administração; relatório concluído: quem fez ou a administração
+  const podeExcluir = (v: Vistoria) => DEMO || admin || v.owner === perfil?.id || !v.owner
 
   function ir(t: Tela) {
     location.hash = t; setTela(t); setErro(''); setAviso('')
@@ -253,12 +256,16 @@ export default function App() {
 
   function excluir(v: Vistoria) {
     const u = unidades.find((x) => x.id === v.unit_id)
-    if (!confirm(`Excluir o rascunho da vistoria em ${u?.name ?? 'unidade'}? As fotos dele também saem. Não dá para desfazer.`)) return
+    const rel = v.status === 'completed'
+    if (!confirm(rel
+      ? `Excluir o relatório da vistoria em ${u?.name ?? 'unidade'} de ${dataBR(v.inspected_on)}? Ele sai do painel, do ranking e da lista de relatórios. Não dá para desfazer.`
+      : `Excluir o rascunho da vistoria em ${u?.name ?? 'unidade'}? As fotos dele também saem. Não dá para desfazer.`)) return
     void executar(async () => {
       await excluirVistoria(v)
       setVistorias((l) => l.filter((x) => x.id !== v.id))
-      if (aberta?.id === v.id) { setAberta(null); setPendente(false); ir('inicio') }
-      setAviso('Rascunho excluído.')
+      if (aberta?.id === v.id) { setAberta(null); setPendente(false); ir(rel ? 'relatorios' : 'inicio') }
+      if (relatorioId === v.id) setRelatorioId('')
+      setAviso(rel ? 'Relatório excluído.' : 'Rascunho excluído.')
     })
   }
 
@@ -280,6 +287,13 @@ export default function App() {
       setErro(`Para concluir, falta: ${partes.join(', ')}. Está marcado em vermelho.`)
       return
     }
+    setConfirmarGerar(true)
+  }
+
+  async function gerarRelatorio() {
+    if (!aberta) return
+    setConfirmarGerar(false)
+    const inspector = aberta.inspector.trim() || perfil?.name || perfil?.email || ''
     await executar(async () => {
       // ação em branco não trava: entra a ação padrão (dá para editar depois)
       const rooms = aberta.rooms.map((r) => ({ ...r, findings: r.findings.map((f) => (f.action.trim() ? f : { ...f, action: 'Verificar e corrigir.' })) }))
@@ -371,6 +385,24 @@ export default function App() {
         </nav>
         <main>
           {DEMO && <div className="banner no-print">Modo de demonstração · Use dados fictícios. As vistorias ficam neste navegador.</div>}
+          {confirmarGerar && aberta && (
+            <div className="modal-fundo no-print" role="dialog" aria-modal="true" aria-labelledby="gerar-tit" onClick={() => setConfirmarGerar(false)}>
+              <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <h2 id="gerar-tit">Terminou a vistoria?</h2>
+                <p>{unidades.find((u) => u.id === aberta.unit_id)?.name} · {dataBR(aberta.inspected_on)}</p>
+                <ul className="modal-resumo">
+                  <li><b>{aberta.rooms.length}</b> {aberta.rooms.length === 1 ? 'ambiente' : 'ambientes'}</li>
+                  {((n) => <li><b>{n}</b> {n === 1 ? 'problema' : 'problemas'}</li>)(aberta.rooms.reduce((s, r) => s + r.findings.length, 0))}
+                  {((n) => <li><b>{n}</b> {n === 1 ? 'foto' : 'fotos'}</li>)((aberta.photos ?? []).length + aberta.rooms.reduce((s, r) => s + r.findings.reduce((t, f) => t + f.media.length, 0), 0))}
+                </ul>
+                <p className="dica">Ao gerar, a vistoria é concluída e o PDF do relatório abre para salvar.</p>
+                <div className="modal-botoes">
+                  <button onClick={() => setConfirmarGerar(false)}>✏️ Continuar editando</button>
+                  <button className="primary" onClick={() => void gerarRelatorio()}>📄 Gerar relatório</button>
+                </div>
+              </div>
+            </div>
+          )}
           {erro && <div role="alert" className="error toast" onClick={() => setErro('')}>⚠️ {erro}<small>Toque para fechar</small></div>}
           {aviso && <div role="status" className="notice toast" onClick={() => setAviso('')}>{aviso}</div>}
           {admin && pedidos > 0 && tela !== 'acessos' && <div className="banner no-print">{pedidos === 1 ? 'Há 1 pedido de acesso' : `Há ${pedidos} pedidos de acesso`} esperando a sua aprovação. <a href="#acessos" onClick={() => ir('acessos')}>Ver pedidos</a></div>}
@@ -380,7 +412,7 @@ export default function App() {
           tela === 'vistoria' && aberta && unidadeAberta ? (
             <Formulario v={aberta} u={unidadeAberta} ocupado={ocupado} bloqueada={bloqueada} pendente={pendente} mudar={mudar} faltas={faltas}
               anexar={(destino, l) => void anexar(destino, l)} concluir={() => void concluir()}
-              excluir={aberta.status === 'draft' && (DEMO || admin || aberta.owner === perfil?.id || !aberta.owner) ? () => excluir(aberta) : undefined}
+              excluir={podeExcluir(aberta) ? () => excluir(aberta) : undefined}
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
           ) :
 
@@ -392,6 +424,7 @@ export default function App() {
                 <div><p className="eyebrow">ACOMPANHAMENTO</p><h1>Relatórios</h1></div>
                 <div className="row">
                   {relatorio && <button onClick={() => setRelatorioId('')}>Voltar ao consolidado</button>}
+                  {relatorio && podeExcluir(relatorio) && <button className="excluir" onClick={() => excluir(relatorio)}>🗑️ Excluir relatório</button>}
                   {relatorio && (
                     <select aria-label="Estilo do relatório" value={estilo} onChange={(e) => { setEstilo(e.target.value as EstiloRelatorio); try { localStorage.setItem('estilo-relatorio', e.target.value) } catch { /* sem armazenamento */ } }}>
                       {ESTILOS_RELATORIO.map((x) => <option key={x.id} value={x.id}>Estilo: {x.nome}</option>)}
@@ -423,7 +456,8 @@ export default function App() {
                         <span>{dataBR(v.inspected_on)}</span>
                         {resumoPrioridade(v) && <Selo value={resumoPrioridade(v)} />}
                         <button className="no-print" onClick={() => setRelatorioId(v.id)}>Abrir relatório</button>
-                        <button className="no-print" onClick={() => abrir(unidades.find((u) => u.id === v.unit_id)!, v)}>{DEMO || admin ? 'Revisar' : 'Ver vistoria'}</button>
+                        <button className="no-print" onClick={() => abrir(unidades.find((u) => u.id === v.unit_id)!, v)}>{DEMO || admin ? '✏️ Revisar' : 'Ver vistoria'}</button>
+                        {podeExcluir(v) && <button className="no-print excluir" onClick={() => excluir(v)}>🗑️ Excluir</button>}
                       </div>
                     ))}
                   </div>
