@@ -18,8 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      REF: apqkewsdzwawtiajbmyl
     steps:
+      - uses: actions/checkout@v4
+      - name: Qual banco
+        run: echo "REF=$(python3 -c "import json;print(json.load(open('modelo.config.json'))['supabase_ref'])")" >> "$GITHUB_ENV"
       - name: Religar se estiver pausado
         run: |
           estado=$(curl -sS -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$REF" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))")

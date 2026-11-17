@@ -18,6 +18,7 @@ import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
 import { compactar, problemasDaRede, ranking, resumir } from './lib/analise'
 import { reduzirImagem } from './lib/imagem'
+import { CFG } from './config'
 
 type Tela = 'inicio' | 'unidades' | 'painel' | 'vistoria' | 'relatorios' | 'acessos'
 
@@ -75,6 +76,12 @@ export default function App() {
   const [unidades, setUnidades] = useState<Unidade[]>(DEMO ? UNIDADES : [])
   const [vistorias, setVistorias] = useState<Vistoria[]>(DEMO ? lerDemo() : [])
   const [historico, setHistorico] = useState<VisitaAntiga[]>([])
+  // '' = ainda não baixado · data = baixado desde essa data · 'tudo' = baixado inteiro
+  const [historicoAte, setHistoricoAte] = useState('')
+  function baixarHistorico(tudo: boolean) {
+    const desde = tudo ? undefined : new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10)
+    void carregarHistorico(desde).then((h) => { setHistorico(h); setHistoricoAte(tudo ? 'tudo' : desde!) })
+  }
   const [tela, setTela] = useState<Tela>((location.hash.slice(1) as Tela) || 'inicio')
   const [secaoPainel, setSecaoPainel] = useState<SecaoPainel>('ranking')
   const [aberta, setAberta] = useState<Vistoria | null>(null)
@@ -147,8 +154,8 @@ export default function App() {
       const p = await carregarPerfil()
       setPerfil(p)
       if (p?.approved) {
-        const [u, v, h] = await Promise.all([carregarUnidades(), carregarVistorias(), carregarHistorico()])
-        setUnidades(u); setVistorias(v); setHistorico(h)
+        const [u, v] = await Promise.all([carregarUnidades(), carregarVistorias()])
+        setUnidades(u); setVistorias(v); setHistoricoAte('')
         void limparFotosAntigas(v)
         if (p.role === 'admin') {
           const { count } = await sb!.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false).eq('needs_code', false)
@@ -318,8 +325,8 @@ export default function App() {
   /* ---------------------------------------------------------------- entrada, cadastro e aprovação */
   const cabecalho = (
     <header>
-      <img src={marca} alt="Prefeitura de Maceió — Cidade de Todos Nós" />
-      <span className="titulo-app"><b>Secretaria Executiva</b><small>Gabinete do Prefeito · Fiscalização da Saúde</small></span>
+      <img src={marca} alt={CFG.orgao_logo_alt} />
+      <span className="titulo-app"><b>{CFG.secretaria}</b><small>{CFG.vinculo} · {CFG.titulo}</small></span>
       <Instalar />
       <Aparencia />
       {!DEMO && sessao && perfil && <span className="quem" title={perfil.email}>{(perfil.name || perfil.email).split(/[ @]/)[0]}</span>}
@@ -422,7 +429,8 @@ export default function App() {
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
           ) :
 
-          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} historico={historico} secao={secaoPainel} mudarSecao={setSecaoPainel} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} iniciar={(u) => abrir(u)} /> :
+          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} historico={historico}
+            historicoDesde={historicoAte} pedirHistorico={baixarHistorico} secao={secaoPainel} mudarSecao={setSecaoPainel} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} iniciar={(u) => abrir(u)} /> :
 
           tela === 'relatorios' ? (
             <>
@@ -484,9 +492,9 @@ export default function App() {
           ) : (
             <>
               <div className="hero">
-                <p className="eyebrow">SECRETARIA EXECUTIVA · GABINETE DO PREFEITO</p>
+                <p className="eyebrow">{CFG.secretaria.toUpperCase()} · {CFG.vinculo.toUpperCase()}</p>
                 <h1>{perfil?.name ? `Olá, ${perfil.name.split(' ')[0]}!` : 'Vistorias das unidades'}</h1>
-                <p>Fiscalização das unidades da rede municipal de saúde. Escolha a unidade e toque em <b>Nova vistoria</b>; tudo é salvo sozinho enquanto você preenche.</p>
+                <p>Fiscalização das unidades da {CFG.rede}. Escolha a unidade e toque em <b>Nova vistoria</b>; tudo é salvo sozinho enquanto você preenche.</p>
               </div>
               {!DEMO && perfil && !perfil.name && <PedirNome aoSalvar={(n) => setPerfil({ ...perfil, name: n })} />}
               {meusRascunhos.length > 0 && (

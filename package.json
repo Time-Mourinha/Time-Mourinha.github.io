@@ -1,7 +1,7 @@
 {
   "name": "vistoria-maceio",
   "version": "1.0.0",
-  "description": "Secretaria Executiva · Formulário de Vistoria Saúde: checklist de vistoria das unidades de saúde, com fotos, vídeos e relatório em PDF.",
+  "description": "Secretaria Executiva · Fiscalização da Saúde: checklist de vistoria das unidades, com fotos e relatório em PDF.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

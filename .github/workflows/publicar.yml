@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["src/**", "public/**", "index.html", "package.json", "package-lock.json", "vite.config.ts", "tsconfig.json", ".github/workflows/publicar.yml"]
+    paths: ["src/**", "public/**", "index.html", "package.json", "package-lock.json", "vite.config.ts", "tsconfig.json", "modelo.config.json", ".github/workflows/publicar.yml"]
   workflow_run:
     workflows: ["Configurar banco"]
     types: [completed]
@@ -29,6 +29,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
+      - name: Aplicar o modelo (nomes, cores, unidades)
+        run: python3 scripts/aplicar_config.py
       - name: Endereço e chave pública do Supabase
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}

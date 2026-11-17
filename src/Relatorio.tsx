@@ -2,6 +2,7 @@ import marca from './assets/marca.png'
 import { principaisProblemas, resumir } from './lib/analise'
 import { PRIORIDADES, dataBR, type Unidade, type Vistoria } from './lib/modelo'
 import { Selo, VerMidia } from './ui'
+import { CFG } from './config'
 
 export const ESTILOS_RELATORIO = [
   { id: 'institucional', nome: 'Institucional', desc: 'Faixa azul, formal, para ofício e apresentação' },
@@ -31,11 +32,11 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
   return (
     <article className={`relatorio estilo-${estilo}`}>
       <div className="rel-capa">
-        <img src={marca} alt="Prefeitura de Maceió — Cidade de Todos Nós" />
+        <img src={marca} alt={CFG.orgao_logo_alt} />
         <div>
-          <p className="rel-orgao">Gabinete do Prefeito · Secretaria Executiva</p>
+          <p className="rel-orgao">{CFG.vinculo} · {CFG.secretaria}</p>
           <h1>Relatório de Visita Técnica</h1>
-          <p className="rel-sub">Fiscalização da Saúde · vistoria de unidade de saúde · nº {numero} · emitido em {hojeBR()}</p>
+          <p className="rel-sub">{CFG.titulo} · vistoria de {CFG.unidade_tipo} · nº {numero} · emitido em {hojeBR()}</p>
         </div>
       </div>
 
@@ -46,7 +47,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
           <tr><th>Tipo</th><td>{u?.kind}</td><th>Distrito sanitário</th><td>{u?.district}</td></tr>
           <tr><th>Endereço</th><td colSpan={3}>{u?.address}</td></tr>
           <tr><th>CNES</th><td>{u?.cnes || 'pendente'}</td><th>Data da vistoria</th><td>{dataBR(v.inspected_on)}</td></tr>
-          <tr><th>Vistoriador(a)</th><td colSpan={3}>{v.inspector} · Secretaria Executiva</td></tr>
+          <tr><th>Vistoriador(a)</th><td colSpan={3}>{v.inspector} · {CFG.secretaria}</td></tr>
         </tbody></table>
       </section>
 
@@ -143,11 +144,11 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
       </section>
 
       <section className="rel-bloco rel-assinaturas">
-        <div><span />{v.inspector || 'Vistoriador(a)'}<small>Vistoriador(a) da Secretaria Executiva</small></div>
+        <div><span />{v.inspector || 'Vistoriador(a)'}<small>Vistoriador(a) da {CFG.secretaria}</small></div>
         <div><span />Responsável pela unidade<small>Nome e matrícula</small></div>
         {v.general_by && <div><span />{v.general_by}<small>Validação da intervenção</small></div>}
       </section>
-      <footer className="rel-rodape">Prefeitura de Maceió · Gabinete do Prefeito · Secretaria Executiva · Fiscalização da Saúde · Relatório nº {numero} · {u?.name}</footer>
+      <footer className="rel-rodape">{CFG.orgao} · {CFG.vinculo} · {CFG.secretaria} · {CFG.titulo} · Relatório nº {numero} · {u?.name}</footer>
     </article>
   )
 }

@@ -1,0 +1,19 @@
+{
+  "_leia": "Arquivo único do MODELO. Para criar outro site (Educação, Assistência...), troque os valores abaixo e rode: python scripts/aplicar_config.py. Veja REPLICAR.md.",
+  "orgao": "Prefeitura de Maceió",
+  "orgao_logo_alt": "Prefeitura de Maceió — Cidade de Todos Nós",
+  "cidade": "Maceió",
+  "uf": "AL",
+  "secretaria": "Secretaria Executiva",
+  "vinculo": "Gabinete do Prefeito",
+  "area": "Saúde",
+  "titulo": "Fiscalização da Saúde",
+  "nome_curto": "Fiscalização Saúde",
+  "rede": "rede municipal de saúde",
+  "unidade_tipo": "unidade de saúde",
+  "cor": "#103656",
+  "site_url": "https://vistoria-saude.github.io",
+  "supabase_ref": "apqkewsdzwawtiajbmyl",
+  "chave_local": "vistoria-maceio-demo",
+  "pacote": "vistoria-maceio"
+}

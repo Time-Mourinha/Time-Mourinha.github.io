@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { confirmarCodigoAdmin, pedirCodigoAdmin, sb } from './lib/armazenamento'
 import type { Perfil } from './lib/modelo'
+import { CFG } from './config'
 
 type Props = { sessao: boolean; perfil: Perfil | null; aoMudar: () => void }
 
@@ -77,9 +78,9 @@ export function Entrada({ sessao, perfil, aoMudar }: Props) {
 
   return (
     <section className="panel auth">
-      <p className="eyebrow">SECRETARIA EXECUTIVA · GABINETE DO PREFEITO</p>
+      <p className="eyebrow">{CFG.secretaria.toUpperCase()} · {CFG.vinculo.toUpperCase()}</p>
       <h1>{modo === 'login' ? 'Entrar' : modo === 'cadastro' ? 'Solicitar acesso' : 'Recuperar senha'}</h1>
-      <p>Fiscalização da Saúde: vistoria das unidades da rede municipal de Maceió.</p>
+      <p>{CFG.titulo}: vistoria das unidades da {CFG.rede} de {CFG.cidade}.</p>
       {erro && <div role="alert" className="error">{erro}</div>}
       {aviso && <div role="status" className="notice">{aviso}</div>}
       <form onSubmit={enviar}>

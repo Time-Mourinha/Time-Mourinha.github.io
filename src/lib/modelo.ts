@@ -1,4 +1,5 @@
 import unidadesJson from '../data/unidades.json'
+import { CFG } from '../config'
 
 export type Unidade = { id: number; name: string; district: string; kind: string; address: string; cnes: string; status: string }
 export type Midia = { id: string; type: string; name: string; caption: string; path?: string; ai?: string; room?: string; item?: string }
@@ -24,7 +25,7 @@ export const UNIDADES = unidadesJson as Unidade[]
 /** Link do Google Maps (abre o app no celular): nome da unidade + endereço, sem o CEP nem observações entre parênteses. */
 export function linkMapa(u: Unidade) {
   const end = u.address.replace(/\([^)]*\)/g, '').replace(/,?\s*CEP:?\s*[\d.-]+/i, '').replace(/\s+/g, ' ').replace(/ ,/g, ',').trim()
-  const q = /maceió/i.test(end) ? end : end + ', Maceió – AL'
+  const q = end.toLowerCase().includes(CFG.cidade.toLowerCase()) ? end : `${end}, ${CFG.cidade} – ${CFG.uf}`
   return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(u.name + ', ' + q)
 }
 

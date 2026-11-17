@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { problemasDaRede, ranking } from './lib/analise'
 import { PRIORIDADES, dataBR, type Unidade, type VisitaAntiga, type Vistoria } from './lib/modelo'
 import { Campo, Selo } from './ui'
@@ -6,8 +6,8 @@ import { Campo, Selo } from './ui'
 export type SecaoPainel = 'visitadas' | 'ranking' | 'problemas' | 'imediatas' | 'distritos' | 'sem'
 
 /** Painel da rede: piores unidades, problemas mais frequentes e situação por distrito. */
-export function Painel({ unidades, vistorias, historico = [], abrirRelatorio, secao, mudarSecao, iniciar }: {
-  unidades: Unidade[]; vistorias: Vistoria[]; historico?: VisitaAntiga[]; abrirRelatorio: (id: string) => void; secao: SecaoPainel; mudarSecao: (s: SecaoPainel) => void
+export function Painel({ unidades, vistorias, historico = [], historicoDesde = '', pedirHistorico, abrirRelatorio, secao, mudarSecao, iniciar }: {
+  unidades: Unidade[]; vistorias: Vistoria[]; historico?: VisitaAntiga[]; historicoDesde?: string; pedirHistorico?: (tudo: boolean) => void; abrirRelatorio: (id: string) => void; secao: SecaoPainel; mudarSecao: (s: SecaoPainel) => void
   iniciar: (u: Unidade) => void
 }) {
   const [distrito, setDistrito] = useState('')
@@ -38,6 +38,8 @@ export function Painel({ unidades, vistorias, historico = [], abrirRelatorio, se
     ].sort((a, b) => b.inspected_on.localeCompare(a.inspected_on)),
   })).filter((x) => x.visitas.length).sort((a, b) => b.visitas[0].inspected_on.localeCompare(a.visitas[0].inspected_on))
   const totalVisitas = visitadas.reduce((s, x) => s + x.visitas.length, 0)
+  // visitas antigas (resumos) só são baixadas ao abrir "Visitadas"
+  useEffect(() => { if (secao === 'visitadas' && !historicoDesde && pedirHistorico) pedirHistorico(false) }, [secao, historicoDesde])
   const SECOES: [SecaoPainel, string, string, number][] = [
     ['visitadas', '✅', 'Visitadas', visitadas.length], ['ranking', '🏆', 'Ranking', linhas.length], ['problemas', '⚠️', 'Problemas', problemas.length],
     ['imediatas', '🚨', 'Ações imediatas', listaImediatas.length], ['distritos', '🗺️', 'Por distrito', distritos.length],
@@ -94,6 +96,9 @@ export function Painel({ unidades, vistorias, historico = [], abrirRelatorio, se
                   ))}<button className="nova" onClick={() => iniciar(u)}>＋ Nova visita</button></div>
                 </li>
               ))}</ul>
+            )}
+            {pedirHistorico && historicoDesde && historicoDesde !== 'tudo' && (
+              <button className="ver-faltam" onClick={() => pedirHistorico(true)}>🗂️ Mostrando visitas antigas desde {dataBR(historicoDesde)} · ver também as mais antigas</button>
             )}
             {semVistoria.length > 0 && <button className="ver-faltam" onClick={() => mudarSecao('sem')}>📭 Faltam {semVistoria.length} {semVistoria.length === 1 ? 'unidade' : 'unidades'}: ver quais</button>}
           </section>

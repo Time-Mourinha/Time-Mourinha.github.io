@@ -6,9 +6,11 @@ Aplicativo React, TypeScript e Vite, com 80 registros dos oito distritos sanitá
 
 Endereço publicado: https://vistoria-saude.github.io
 
+**Este repositório é um modelo.** Para criar o site de outra área (Educação etc.) com tudo igual (layout, comandos, robôs e economias), siga o [REPLICAR.md](REPLICAR.md). A identidade fica toda em `modelo.config.json`.
+
 ## Teste local
 
-Execute `npm ci` e `npm run dev`. Sem variáveis de ambiente, o aplicativo abre um modo de demonstração com rascunhos no armazenamento local e anexos no IndexedDB. Use somente dados fictícios. A demonstração usa o catálogo real de endereços.
+Execute `npm ci` e `npm run dev`. Sem variáveis de ambiente, o aplicativo abre um modo de demonstração com rascunhos no armazenamento local (as fotos ficam só no aparelho). Use somente dados fictícios. A demonstração usa o catálogo real de endereços.
 
 ## Operação com usuários e armazenamento privado
 
@@ -28,6 +30,6 @@ Para rodar localmente contra o Supabase, copie `.env.example` para `.env.local` 
 
 ## GitHub Pages
 
-O workflow **Publicar interface** gera o site e o publica no GitHub Pages (Settings → Pages → GitHub Actions). Ele roda a cada mudança no código e também pode ser disparado à mão. A URL e a chave pública vêm das variáveis de Actions `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`. Se elas não existirem, o workflow busca os dois valores pelo `SUPABASE_ACCESS_TOKEN`. As inspeções e os anexos ficam no Supabase. O frontend do Pages pode ser acessado publicamente.
+O workflow **Publicar interface** gera o site e o publica no GitHub Pages (Settings → Pages → GitHub Actions). Ele roda a cada mudança no código e também pode ser disparado à mão. A URL e a chave pública vêm das variáveis de Actions `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`. Se elas não existirem, o workflow busca os dois valores pelo `SUPABASE_ACCESS_TOKEN`. As vistorias (só texto) ficam no Supabase; fotos não. O frontend do Pages pode ser acessado publicamente.
 
-Antes de usar dados reais, confira com contas de teste a aprovação, o bloqueio de quem não foi aprovado, o upload privado e a impressão. Defina com a SMS os responsáveis pelos acessos e a guarda dos relatórios.
+Antes de usar dados reais, confira com contas de teste a aprovação, o bloqueio de quem não foi aprovado e a impressão. Defina com a SMS os responsáveis pelos acessos e a guarda dos relatórios.

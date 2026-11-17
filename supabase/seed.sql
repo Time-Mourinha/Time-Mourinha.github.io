@@ -1,4 +1,4 @@
--- 80 unidades dos oito distritos sanitários (lista da SMS de 13/11/2026; endereços padronizados).
+-- 80 unidades (gerado de src/data/unidades.json por scripts/aplicar_config.py; não edite à mão).
 insert into public.units (id, name, district, kind, address, cnes, status) values
 (1, 'PAM SALGADINHO/CEO PAM SALGADINHO', 'I', 'PAM / CEO', 'Avenida do Ferroviário (antiga Rua Mizael Domingues), 241 – Centro, Maceió – AL, CEP 57020-600', '9158251|2009803', ''),
 (2, 'UNIDADE DE SAÚDE DA FAMÍLIA REGINALDO', 'I', 'USF', 'Rua Doutor Carlos Miranda, 96 – Poço, Maceió – AL, CEP 57025-790', '2009706', ''),
@@ -82,3 +82,6 @@ insert into public.units (id, name, district, kind, address, cnes, status) value
 (80, 'UDA- UNIDADE DOCENTE ASSISTENCIAL JOSÉ LAGES FILHO – UNIT', 'VIII', 'UDA', 'Grota do Arroz, por trás da UNIT – Cruz das Almas, Maceió – AL', '9027092', '')
 on conflict (id) do update set name = excluded.name, district = excluded.district, kind = excluded.kind,
   address = excluded.address, cnes = excluded.cnes, status = excluded.status;
+delete from public.units where id not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80)
+  and not exists (select 1 from public.inspections i where i.unit_id = units.id)
+  and not exists (select 1 from public.visit_history h where h.unit_id = units.id);

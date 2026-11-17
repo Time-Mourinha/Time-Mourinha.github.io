@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { Midia, Perfil, Unidade, VisitaAntiga, Vistoria } from './modelo'
+import { CFG } from '../config'
 
 const URL_SUPABASE = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const CHAVE_PUBLICA = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
@@ -9,7 +10,7 @@ export const sb: SupabaseClient | null = URL_SUPABASE && CHAVE_PUBLICA ? createC
 export const DEMO = !sb
 
 /* ------------------------------------------------------------------ demonstração (navegador) */
-const CHAVE_DEMO = 'vistoria-maceio-demo'
+const CHAVE_DEMO = CFG.chave_local
 
 export function lerDemo(): Vistoria[] {
   try { return JSON.parse(localStorage.getItem(CHAVE_DEMO) ?? '[]') as Vistoria[] } catch { return [] }
@@ -76,9 +77,12 @@ export async function carregarVistorias(): Promise<Vistoria[]> {
 }
 
 /** Visitas antigas já compactadas (só o resumo). */
-export async function carregarHistorico(): Promise<VisitaAntiga[]> {
+/** Só é baixado quando alguém abre "Visitadas", e por padrão só os últimos 12 meses (economiza o tráfego do plano grátis). */
+export async function carregarHistorico(desde?: string): Promise<VisitaAntiga[]> {
   if (!sb) return []
-  const { data, error } = await sb.from('visit_history').select('id,unit_id,inspected_on,inspector,summary').order('inspected_on', { ascending: false })
+  let q = sb.from('visit_history').select('id,unit_id,inspected_on,inspector,summary').order('inspected_on', { ascending: false })
+  if (desde) q = q.gte('inspected_on', desde)
+  const { data, error } = await q
   if (error) return []   // histórico nunca impede o app de abrir
   return (data ?? []) as VisitaAntiga[]
 }

@@ -8,6 +8,7 @@ Nenhum e-mail, telefone ou chave secreta é gravado no repositório nem impresso
 """
 from __future__ import annotations
 
+import json
 import os
 import pathlib
 import sys
@@ -18,9 +19,10 @@ import requests
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 API = "https://api.supabase.com/v1"
 TOKEN = os.environ.get("SUPABASE_ACCESS_TOKEN", "")
-REF = os.environ.get("SUPABASE_REF") or "apqkewsdzwawtiajbmyl"
+CFG = json.loads((RAIZ / "modelo.config.json").read_text(encoding="utf-8"))   # identidade do site (modelo)
+REF = os.environ.get("SUPABASE_REF") or CFG["supabase_ref"]
 URL = f"https://{REF}.supabase.co"
-SITE = os.environ.get("SITE_URL", "https://vistoria-saude.github.io")
+SITE = os.environ.get("SITE_URL") or CFG["site_url"]
 
 
 def api(metodo: str, caminho: str, ok404: bool = False, **kw):
@@ -190,7 +192,8 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["chaves"]:
         exportar_chaves()
     else:
-        email = limpar_projeto_antigo()
+        # e-mail da administração: do projeto antigo (se houver) ou do segredo ADMIN_EMAIL (site novo)
+        email = limpar_projeto_antigo() or os.environ.get("ADMIN_EMAIL", "").strip().lower() or None
         apagar_segredos_antigos()
         apagar_fotos_guardadas()
         aplicar(email)
