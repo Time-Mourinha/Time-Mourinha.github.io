@@ -1,6 +1,6 @@
 import marca from './assets/marca.png'
 import { REGRA_CLASSIFICACAO, impactosDoTexto, resumir } from './lib/analise'
-import { dataBR, fotosDaObservacao, fotosDoAmbiente, precisaFoto, semAcento, type Midia, type Unidade, type Vistoria } from './lib/modelo'
+import { dataBR, fotosDaObservacao, fotosDoAmbiente, obsComConteudo, precisaFoto, semAcento, type Midia, type Unidade, type Vistoria } from './lib/modelo'
 import { VerMidia } from './ui'
 import { CFG } from './config'
 
@@ -20,7 +20,9 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
   const ordemSit: Record<string, number> = { 'Péssimo': 0, Regular: 1, Bom: 2 }
   // ambientes com problema primeiro (péssimo, regular), depois os bons, na ordem da visita
   const ambientes = [...v.rooms].sort((a, b) => (ordemSit[a.situacao ?? ''] ?? 3) - (ordemSit[b.situacao ?? ''] ?? 3))
-  const obs = v.observacoes ?? []
+  // observações vazias (rascunho não preenchido) não entram; primeiro as dos ambientes, na ordem do relatório, depois as gerais
+  const posAmb = (room?: string) => (room ? ambientes.findIndex((a) => a.id === room) : 999)
+  const obs = (v.observacoes ?? []).filter((o) => obsComConteudo(v, o)).sort((a, b) => posAmb(a.room) - posAmb(b.room))
   // fotos numeradas na ordem em que aparecem no relatório
   let n = 0
   const numerar = (lista: Midia[]) => lista.map((m) => ({ m, num: ++n }))
@@ -112,10 +114,10 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
       {obs.length > 0 && (
         <section className="rel-bloco">
           <h2>{sec.obs}. Observações da visita</h2>
-          <p className="rel-texto">Demandas e situações relatadas durante a visita.</p>
+          <p className="rel-texto">Demandas e situações registradas durante a visita.</p>
           {fotosObs.map(({ o, fotos }, i) => (
             <div className="rel-obs" key={o.id}>
-              <p><strong>{i + 1}. {o.quem ? `Relatado por ${o.quem}` : 'Observação'}:</strong> {o.texto}</p>
+              <p><strong>{i + 1}. {o.room ? (v.rooms.find((r) => r.id === o.room)?.name ?? 'Ambiente') : 'Geral'}</strong>{o.quem ? ` · relatado por ${o.quem}` : ''}{o.texto.trim() ? ': ' + o.texto : ''}</p>
               {fotos.length > 0 && (
                 <div className="rel-fotos">
                   {fotos.map(({ m, num }) => <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} /></div>)}

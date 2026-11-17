@@ -1,4 +1,4 @@
-import { fotosDoAmbiente, semAcento, type ResumoCompacto, type Situacao, type Unidade, type Vistoria } from './modelo'
+import { fotosDoAmbiente, obsComConteudo, semAcento, type ResumoCompacto, type Situacao, type Unidade, type Vistoria } from './modelo'
 
 
 /** O que cada problema causa no funcionamento da unidade (linguagem simples, para o relatório). */
@@ -133,7 +133,7 @@ export function resumir(v: Vistoria): Resumo {
   const pontos = avaliados ? Math.round(((regulares + 2 * pessimos) / (2 * avaliados)) * 100) : 0
   return {
     ambientes: v.rooms.length, avaliados, bons, regulares, pessimos, semAvaliacao, fotos: (v.photos ?? []).length,
-    observacoes: (v.observacoes ?? []).length, problemas: regulares + pessimos, pontos, nivel: nivelDe(bons, regulares, pessimos), comProblema,
+    observacoes: (v.observacoes ?? []).filter((o) => obsComConteudo(v, o)).length, problemas: regulares + pessimos, pontos, nivel: nivelDe(bons, regulares, pessimos), comProblema,
   }
 }
 

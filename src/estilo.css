@@ -390,3 +390,4 @@ header .instalar+.quiet{margin-left:0}
   .rel-assinaturas{margin-top:12mm}
 }
 .btn-arquivo.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+.obs-amb{margin-top:1rem;padding-top:.8rem;border-top:1px dashed var(--border)}.obs-amb h3{margin:0}.obs-amb .obs{background:#fbfdfe}

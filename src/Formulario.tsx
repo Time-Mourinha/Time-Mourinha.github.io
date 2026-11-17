@@ -27,12 +27,9 @@ export function faltasDoAmbiente(v: Vistoria, amb: Ambiente): string[] {
   for (const m of fotosDoAmbiente(v, amb.id)) if (!m.caption.trim()) f.push('l:' + m.id)
   return f
 }
-/** O que falta numa observação: o texto e a descrição de cada foto. */
+/** Observação é opcional: só a descrição de cada foto anexada a ela é obrigatória. */
 export function faltasDaObservacao(v: Vistoria, o: Observacao): string[] {
-  const f: string[] = []
-  if (!o.texto.trim()) f.push('o:' + o.id)
-  for (const m of fotosDaObservacao(v, o.id)) if (!m.caption.trim()) f.push('l:' + m.id)
-  return f
+  return fotosDaObservacao(v, o.id).filter((m) => !m.caption.trim()).map((m) => 'l:' + m.id)
 }
 
 /** Formulário de vistoria feito para o celular: cada ambiente é Bom, Regular ou Péssimo, com fotos descritas. */
@@ -43,12 +40,13 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
   const pendentes = new Set([...v.rooms.flatMap((r) => faltasDoAmbiente(v, r)), ...(v.observacoes ?? []).flatMap((o) => faltasDaObservacao(v, o))])
   const falta = (k: string) => faltas.includes(k) && (
     k === 'data' ? !v.inspected_on : k === 'vistoriador' ? !v.inspector.trim() : k === 'conteudo' ? !v.rooms.length : pendentes.has(k))
-  const ambFalta = (amb: Ambiente) => faltas.length > 0 && faltasDoAmbiente(v, amb).some((k) => faltas.includes(k))
+  const faltasComObs = (amb: Ambiente) => [...faltasDoAmbiente(v, amb), ...(v.observacoes ?? []).filter((o) => o.room === amb.id).flatMap((o) => faltasDaObservacao(v, o))]
+  const ambFalta = (amb: Ambiente) => faltas.length > 0 && faltasComObs(amb).some((k) => faltas.includes(k))
 
   // ao tentar concluir com falta: abre o primeiro ambiente com pendência e rola até o campo em vermelho
   useEffect(() => {
     if (!faltas.length) return
-    const amb = v.rooms.find((r) => faltasDoAmbiente(v, r).some((k) => faltas.includes(k)))
+    const amb = v.rooms.find((r) => faltasComObs(r).some((k) => faltas.includes(k)))
     if (amb) setAbertoAmb(amb.id)
     setTimeout(() => document.querySelector('.form-vistoria .falta')?.scrollIntoView({ block: 'center' }), 350)
   }, [faltas])
@@ -81,8 +79,8 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
   function trocarFoto(m: Midia) { mudar({ ...v, photos: fotos.map((x) => (x.id === m.id ? m : x)) }) }
   function tirarFoto(m: Midia) { if (confirm('Tirar esta foto?')) mudar({ ...v, photos: fotos.filter((x) => x.id !== m.id) }) }
   function trocarObs(o: Observacao) { mudar({ ...v, observacoes: observacoes.map((x) => (x.id === o.id ? o : x)) }) }
-  function novaObs() {
-    const o: Observacao = { id: novoId(), quem: '', texto: '' }
+  function novaObs(room?: string) {
+    const o: Observacao = { id: novoId(), quem: '', texto: '', room }
     mudar({ ...v, observacoes: [...observacoes, o] })
     setTimeout(() => document.getElementById('obs-' + o.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80)
   }
@@ -107,6 +105,32 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
       ))}
     </div>
   )
+
+  /** Lista de observações (de um ambiente ou gerais): opcionais, quantas quiser, cada uma removível. */
+  const listaObs = (lista: Observacao[], titulo: string) => lista.map((o, n) => {
+    const fotosObs = fotosDaObservacao(v, o.id)
+    return (
+      <article className="obs" key={o.id} id={'obs-' + o.id}>
+        <div className="grupo-topo">
+          <h3>{titulo} {n + 1}</h3>
+          <button className="quiet" onClick={() => {
+            if ((o.texto.trim() || fotosObs.length) && !confirm('Remover esta observação e as fotos dela?')) return
+            mudar({ ...v, observacoes: observacoes.filter((x) => x.id !== o.id), photos: fotos.filter((m) => m.obs !== o.id) })
+          }}>🗑️ Remover</button>
+        </div>
+        <p className="rotulo">Quem relatou <small>(opcional)</small></p>
+        <div className="chips quebra">
+          {QUEM.map((q) => <button key={q} className={'chip' + (o.quem === q ? ' ativo' : '')} onClick={() => trocarObs({ ...o, quem: o.quem === q ? '' : q })}>{q}</button>)}
+        </div>
+        <Campo label="Nome ou função (opcional)"><input value={QUEM.includes(o.quem) ? '' : o.quem} placeholder="Ex.: Maria, enfermeira" onChange={(e) => trocarObs({ ...o, quem: e.target.value })} /></Campo>
+        <Campo label="Observação">
+          <textarea value={o.texto} placeholder="Ex.: falta de insumos há duas semanas; a geladeira de vacinas desliga à noite" onChange={(e) => trocarObs({ ...o, texto: e.target.value })} />
+        </Campo>
+        <div className="row">{botaoFoto({ obsId: o.id, roomId: o.room }, '📎 Anexar foto')}</div>
+        {listaFotos(fotosObs, 'Ex.: caixa de insumos vazia')}
+      </article>
+    )
+  })
 
   return (
     <div className="form-vistoria" data-pendente={pendente ? 'sim' : 'nao'}>
@@ -190,7 +214,9 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                   <Campo label="Nome do ambiente"><input value={amb.name} onChange={(e) => trocarAmbiente({ ...amb, name: e.target.value })} /></Campo>
                   <button className="quiet" onClick={() => {
                     if (!confirm(`Tirar "${amb.name}" desta vistoria? As fotos dele também saem.`)) return
-                    mudar({ ...v, rooms: v.rooms.filter((r) => r.id !== amb.id), photos: fotos.filter((m) => m.room !== amb.id || m.obs) }); setAbertoAmb('')
+                    const obsDele = new Set(observacoes.filter((o) => o.room === amb.id).map((o) => o.id))
+                    mudar({ ...v, rooms: v.rooms.filter((r) => r.id !== amb.id), observacoes: observacoes.filter((o) => !obsDele.has(o.id)),
+                      photos: fotos.filter((m) => (m.obs ? !obsDele.has(m.obs) : m.room !== amb.id)) }); setAbertoAmb('')
                   }}>Remover ambiente</button>
                 </div>
               </details>
@@ -224,6 +250,15 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                 {listaFotos(fotosAmb, 'Ex.: mofo no canto do teto, perto da janela')}
               </div>
 
+              <div className="obs-amb observacoes">
+                <div className="grupo-topo">
+                  <h3>💬 Observações de {amb.name} <small>{observacoes.filter((o) => o.room === amb.id).length}</small></h3>
+                  <button onClick={() => novaObs(amb.id)}>＋ Observação</button>
+                </div>
+                <p className="dica">Opcional. Ex.: o que um funcionário relatou sobre este ambiente.</p>
+                {listaObs(observacoes.filter((o) => o.room === amb.id), 'Observação')}
+              </div>
+
               <div className="amb-fim">
                 {proximo
                   ? <button className="primary" onClick={() => irPara(proximo.id)}>✓ Terminei {amb.name} · ir para {proximo.name}</button>
@@ -236,34 +271,11 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
         {/* Observações: o que funcionários, agentes ou gestores relataram na visita */}
         <section className="panel observacoes">
           <div className="grupo-topo">
-            <h2 className="passo">💬 Observações <small>{observacoes.length}</small></h2>
-            <button className="primary" onClick={novaObs}>＋ Observação</button>
+            <h2 className="passo">💬 Observações gerais da visita <small>{observacoes.filter((o) => !o.room).length}</small></h2>
+            <button className="primary" onClick={() => novaObs()}>＋ Observação geral</button>
           </div>
-          <p className="dica">Use para registrar outras demandas e situações relatadas por funcionários, agentes ou gestores da unidade. Cada observação pode ter fotos (com descrição).</p>
-          {observacoes.map((o, n) => {
-            const fotosObs = fotosDaObservacao(v, o.id)
-            return (
-              <article className={'obs' + (falta('o:' + o.id) ? ' falta' : '')} key={o.id} id={'obs-' + o.id}>
-                <div className="grupo-topo">
-                  <h3>Observação {n + 1}</h3>
-                  <button className="quiet" onClick={() => {
-                    if (!confirm('Tirar esta observação e as fotos dela?')) return
-                    mudar({ ...v, observacoes: observacoes.filter((x) => x.id !== o.id), photos: fotos.filter((m) => m.obs !== o.id) })
-                  }}>🗑️</button>
-                </div>
-                <p className="rotulo">Quem relatou</p>
-                <div className="chips quebra">
-                  {QUEM.map((q) => <button key={q} className={'chip' + (o.quem === q ? ' ativo' : '')} onClick={() => trocarObs({ ...o, quem: o.quem === q ? '' : q })}>{q}</button>)}
-                </div>
-                <Campo label="Nome ou função (opcional)"><input value={QUEM.includes(o.quem) ? '' : o.quem} placeholder="Ex.: Maria, enfermeira" onChange={(e) => trocarObs({ ...o, quem: e.target.value })} /></Campo>
-                <Campo label="O que foi relatado (obrigatório)" falta={falta('o:' + o.id)}>
-                  <textarea value={o.texto} placeholder="Ex.: falta de insumos há duas semanas; a geladeira de vacinas desliga à noite" onChange={(e) => trocarObs({ ...o, texto: e.target.value })} />
-                </Campo>
-                <div className="row">{botaoFoto({ obsId: o.id }, '📎 Anexar foto')}</div>
-                {listaFotos(fotosObs, 'Ex.: caixa de insumos vazia')}
-              </article>
-            )
-          })}
+          <p className="dica">Opcional. Registre outras demandas e situações da unidade, relatadas por funcionários, agentes ou gestores. Crie quantas quiser e remova quando não precisar mais. Cada foto anexada precisa de descrição.</p>
+          {listaObs(observacoes.filter((o) => !o.room), 'Observação geral')}
         </section>
 
         <div className="barra-final no-print">

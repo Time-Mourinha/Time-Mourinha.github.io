@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Campo, Selo, VerMidia } from './ui'
 import marca from './assets/marca.png'
 import {
-  LIMITE_BYTES, SITUACOES, linkMapa, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, semAcento,
+  LIMITE_BYTES, SITUACOES, linkMapa, obsComConteudo, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, semAcento,
   type Ambiente, type Midia, type VisitaAntiga, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
@@ -293,7 +293,6 @@ export default function App() {
         ...(conta('d:') ? [plural(conta('d:'), 'descrever o problema de 1 ambiente', 'descrever o problema de # ambientes')] : []),
         ...(conta('f:') ? [plural(conta('f:'), 'foto em 1 ambiente regular/péssimo', 'foto em # ambientes regulares/péssimos')] : []),
         ...(conta('l:') ? [plural(conta('l:'), 'a descrição de 1 foto', 'a descrição de # fotos')] : []),
-        ...(conta('o:') ? [plural(conta('o:'), 'o texto de 1 observação', 'o texto de # observações')] : []),
       ]
       setErro(`Para concluir, falta: ${partes.join(', ')}. Está marcado em vermelho.`)
       return
@@ -409,7 +408,7 @@ export default function App() {
                   <li><b>{aberta.rooms.length}</b> {aberta.rooms.length === 1 ? 'ambiente' : 'ambientes'}</li>
                   {SITUACOES.map((b) => <li key={b.s}><b>{aberta.rooms.filter((r) => r.situacao === b.s).length}</b> {b.t}</li>)}
                   {((n) => <li><b>{n}</b> {n === 1 ? 'foto' : 'fotos'}</li>)((aberta.photos ?? []).length)}
-                  {((n) => n > 0 && <li><b>{n}</b> {n === 1 ? 'observação' : 'observações'}</li>)((aberta.observacoes ?? []).length)}
+                  {((n) => n > 0 && <li><b>{n}</b> {n === 1 ? 'observação' : 'observações'}</li>)((aberta.observacoes ?? []).filter((o) => obsComConteudo(aberta, o)).length)}
                 </ul>
                 {((r) => <p className={'classif-modal nivel ' + r.nivel.classe}>Classificação da unidade: <b>{r.nivel.nome}</b></p>)(resumir(aberta))}
                 <p className="dica">Ao gerar, a vistoria é concluída e o PDF do relatório abre para salvar.</p>
