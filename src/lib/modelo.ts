@@ -16,6 +16,13 @@ export type Perfil = { id: string; email: string; name?: string; approved: boole
 /** Catálogo das 80 unidades dos oito distritos sanitários (lista da SMS de 13/11/2026). */
 export const UNIDADES = unidadesJson as Unidade[]
 
+/** Link do Google Maps (abre o app no celular): nome da unidade + endereço, sem o CEP nem observações entre parênteses. */
+export function linkMapa(u: Unidade) {
+  const end = u.address.replace(/\([^)]*\)/g, '').replace(/,?\s*CEP:?\s*[\d.-]+/i, '').replace(/\s+/g, ' ').replace(/ ,/g, ',').trim()
+  const q = /maceió/i.test(end) ? end : end + ', Maceió – AL'
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(u.name + ', ' + q)
+}
+
 export const PRIORIDADES = ['Imediata', 'Prioritária', 'Programável']
 export const RESPOSTAS = ['OK', 'Reparo', 'Substituição', 'Faltante', 'Não testado', 'Não se aplica']
 

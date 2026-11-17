@@ -1,722 +1,722 @@
 [
- {
-  "id": 1,
-  "name": "PAM SALGADINHO/CEO PAM SALGADINHO",
-  "district": "I",
-  "kind": "PAM / CEO",
-  "address": "Avenida do Ferroviário (Antiga Rua Mizael Domingues), 241, Centro, Maceió (AL), CEP 57.020-600.",
-  "cnes": "9158251|2009803",
-  "status": ""
- },
- {
-  "id": 2,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA REGINALDO",
-  "district": "I",
-  "kind": "USF",
-  "address": "Rua Doutor Carlos Miranda, 96, Poço, Maceió (AL), CEP 57025-790.",
-  "cnes": "2009706",
-  "status": ""
- },
- {
-  "id": 3,
-  "name": "CAPS II DR. ROSTAN SILVESTRE",
-  "district": "I",
-  "kind": "CAPS",
-  "address": "Rua José Maia Gomes, S/N, Jatiúca, Maceió (AL), CEP 57036-240.",
-  "cnes": "5194830",
-  "status": ""
- },
- {
-  "id": 4,
-  "name": "UNIDADE BÁSICA DE SAÚDE OSVALDO BRANDÃO VILELA",
-  "district": "I",
-  "kind": "UBS",
-  "address": "Rua Lafaiete Pacheco, S/N, Ponta da Terra, Maceió (AL), CEP 57030-646.",
-  "cnes": "2009722",
-  "status": ""
- },
- {
-  "id": 5,
-  "name": "UNIDADE DE REFERÊNCIA EM SAÚDE DR. DIÓGENES JUCÁ BERNARDES / II CENTRO",
-  "district": "I",
-  "kind": "URS",
-  "address": "Praça da Maravilha, S/N, Poço, Maceió (AL), CEP 57025-860.",
-  "cnes": "2719576",
-  "status": ""
- },
- {
-  "id": 6,
-  "name": "UNIDADE BÁSICA DE SAÚDE PAM DIQUE ESTRADA",
-  "district": "II",
-  "kind": "UBS",
-  "address": "Rua das Flores, S/N, Conj. Joaquim Leão, Ponta Grossa, Maceió (AL), CEP 57014-600.",
-  "cnes": "2009811",
-  "status": ""
- },
- {
-  "id": 7,
-  "name": "UNIDADE REFERÊNCIA DE SAÚDE ROLAND SIMON",
-  "district": "II",
-  "kind": "URS",
-  "address": "Rua Cabo Reis, S/N, Vergel do Lago, Maceió (AL), CEP: 57015-520.",
-  "cnes": "2009757",
-  "status": ""
- },
- {
-  "id": 8,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA JARDIM SÃO FRANCISCO",
-  "district": "II",
-  "kind": "USF",
-  "address": "Rua São Francisco, S/N, Brejal, Maceió (AL).",
-  "cnes": "2009889",
-  "status": ""
- },
- {
-  "id": 9,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA PROF. DURVAL CORTEZ",
-  "district": "II",
-  "kind": "USF",
-  "address": "Rua João Ulisses Marques, S/N, Prado, Maceió (AL).",
-  "cnes": "2009870",
-  "status": ""
- },
- {
-  "id": 10,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA – CAIC VIRGEM DOS POBRES",
-  "district": "II",
-  "kind": "USF",
-  "address": "Av. Senador Rui Palmeira, S/N, Dique Estrada, Maceió (AL).",
-  "cnes": "2009854",
-  "status": ""
- },
- {
-  "id": 11,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA TARCÍSIO PALMEIRA",
-  "district": "II",
-  "kind": "USF",
-  "address": "Rua Alípio Barbosa da Silva, S/N, Pontal da Barra, Maceió (AL), CEP 57010-810.",
-  "cnes": "2009838",
-  "status": ""
- },
- {
-  "id": 12,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA HÉLVIO AUTO",
-  "district": "II",
-  "kind": "USF",
-  "address": "Complexo Lourenço Vasconcelos Avenida Assis Chateaubriand, S/N, Trapiche da Barra – Maceió (AL).",
-  "cnes": "3741141",
-  "status": ""
- },
- {
-  "id": 13,
-  "name": "MÓDULO ODONTOLÓGICO RUI PALMEIRA",
-  "district": "II",
-  "kind": "Módulo odontológico",
-  "address": "Avenida Monte Castelo, S/N, Vergel do Lago, Maceió (AL), CEP 57015-130.",
-  "cnes": "2009781",
-  "status": "Sem funcionamento conforme fonte"
- },
- {
-  "id": 14,
-  "name": "UNIDADE DOCENTE ASSISTENCIAL EVA FARIAS (UNCISAL)",
-  "district": "II",
-  "kind": "UDA",
-  "address": "Rua Dr. Jorge de Lima, S/N, Trapiche da Barra CEP 57010-300",
-  "cnes": "",
-  "status": ""
- },
- {
-  "id": 15,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA SÃO VICENTE DE PAULA",
-  "district": "III",
-  "kind": "USF",
-  "address": "Rua José Maria Corrêa das Neves, 146, Farol - Maceió (AL).",
-  "cnes": "9307338",
-  "status": ""
- },
- {
-  "id": 16,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA SÃO JOSÉ – CANAÃ",
-  "district": "III",
-  "kind": "USF",
-  "address": "Rua Maragogi, S/N, Canaã, Maceió (AL), CEP 57.080-110.",
-  "cnes": "2005638",
-  "status": ""
- },
- {
-  "id": 17,
-  "name": "UNIDADE BÁSICA DE SAÚDE MARIA TEREZA HOLANDA COSTA",
-  "district": "III",
-  "kind": "UBS",
-  "address": "Rua Padre Cícero, 224, Ouro Preto, Maceió (AL).",
-  "cnes": "9306471",
-  "status": ""
- },
- {
-  "id": 18,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA OURO PRETO",
-  "district": "III",
-  "kind": "USF",
-  "address": "Travessa Camaragibe, S/N Ouro Preto, Maceió (AL).",
-  "cnes": "2005778",
-  "status": ""
- },
- {
-  "id": 19,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA PAULO OLIVEIRA COSTA – UDA (CESMAC)",
-  "district": "III",
-  "kind": "UDA",
-  "address": "Rua Radialista Odete Pacheco, S/N, Farol, Maceió (AL).",
-  "cnes": "3413659",
-  "status": ""
- },
- {
-  "id": 20,
-  "name": "UNIDADE DE REFERÊNCIA EM SAÚDE PITANGUINHA",
-  "district": "III",
-  "kind": "URS",
-  "address": "Rua Antonio Nogueira, S/N, Pitanguinha, Maceió (AL).",
-  "cnes": "2005808|2005603",
-  "status": ""
- },
- {
-  "id": 21,
-  "name": "CAPS AD INFANTO JUVENIL DR. EVERALDO MOREIRA",
-  "district": "III",
-  "kind": "CAPS",
-  "address": "Rua Barão José Miguel, 373, Farol, Maceió (AL), CEP 57.055-160.",
-  "cnes": "5123143",
-  "status": ""
- },
- {
-  "id": 22,
-  "name": "UNIDADE DE REFERÊNCIA EM SAÚDE DR. ANTÔNIO DE PÁDUA CAVALCANTE",
-  "district": "IV",
-  "kind": "URS",
-  "address": "Rua Alameda Carmelita Omena de Farias, 189, Jardim Petrópolis, Maceió (AL).",
-  "cnes": "9940499",
-  "status": ""
- },
- {
-  "id": 23,
-  "name": "UNIDADE BÁSICA DE SAÚDE BEBEDOURO",
-  "district": "IV",
-  "kind": "UBS",
-  "address": "Rua Dr. Osvaldo Cruz, 470, Chã de Bebedouro, Maceió (AL).",
-  "cnes": "3821994",
-  "status": ""
- },
- {
-  "id": 24,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOÃO SAMPAIO",
-  "district": "IV",
-  "kind": "USF",
-  "address": "Avenida Denilma Bulhões, Conjunto João Sampaio I, Quadra 01 A, Tabuleiro, Maceió (AL).",
-  "cnes": "2005913",
-  "status": ""
- },
- {
-  "id": 25,
-  "name": "CAPS SADI FEITOSA CARVALHO",
-  "district": "IV",
-  "kind": "CAPS",
-  "address": "Rua Dr. Oswaldo Cruz, S/N, Chã de Bebedouro, Maceió (AL).",
-  "cnes": "2005662",
-  "status": ""
- },
- {
-  "id": 26,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA EDVALDO SILVA",
-  "district": "IV",
-  "kind": "USF",
-  "address": "Praça Coronel Othon Bezerra de Melo, 01, Fernão Velho, Maceió (AL).",
-  "cnes": "2005646",
-  "status": ""
- },
- {
-  "id": 27,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA CLÁUDIO MEDEIROS",
-  "district": "IV",
-  "kind": "USF",
-  "address": "Rua São Francisco, Conjunto Vale do Tocantins, Rio Novo, Maceió (AL).",
-  "cnes": "2005549",
-  "status": ""
- },
- {
-  "id": 28,
-  "name": "UNIDADE BÁSICA DE SAÚDE GERALDO MELO",
-  "district": "IV",
-  "kind": "UBS",
-  "address": "Rua do Campo, S/N, Bom Parto, Maceió (AL).",
-  "cnes": "3020738",
-  "status": ""
- },
- {
-  "id": 29,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOSÉ BERNARDES NETO",
-  "district": "IV",
-  "kind": "USF",
-  "address": "Rua Vereador Hermínio Cardoso, 191, Rio Novo, Maceió (AL).",
-  "cnes": "3413683",
-  "status": ""
- },
- {
-  "id": 30,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA PARAÍSO DO HORTO – AMACOPH",
-  "district": "IV",
-  "kind": "USF",
-  "address": "Rua Braga Neto, s/nº, Conjunto Luiz Pedro V, Chã da Jaqueira, Maceió (AL).",
-  "cnes": "7512392",
-  "status": ""
- },
- {
-  "id": 31,
-  "name": "UNIDADE BÁSICA DE SAÚDE JOSÉ GUEDES DE FARIAS (ZEZITO)",
-  "district": "IV",
-  "kind": "UBS",
-  "address": "Conj. Medeiros Neto I, 03, Santa Amélia, Maceió (AL).",
-  "cnes": "7008023",
-  "status": ""
- },
- {
-  "id": 32,
-  "name": "UNIDADE BÁSICA DE SAÚDE FLEXAL",
-  "district": "IV",
-  "kind": "UBS",
-  "address": "Ladeira Prf. Benedito Silva, 253, Chã de Bebedouro",
-  "cnes": "",
-  "status": ""
- },
- {
-  "id": 33,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOSÉ ARAÚJO SILVA",
-  "district": "V",
-  "kind": "USF",
-  "address": "Rua Pastor Eurico Calheiros, 56, COHAB, Jacintinho, Maceió (AL).",
-  "cnes": "2005689",
-  "status": ""
- },
- {
-  "id": 34,
-  "name": "UNIDADE BÁSICA DE SAÚDE JOSÉ TENÓRIO",
-  "district": "V",
-  "kind": "UBS",
-  "address": "Conj. José Tenório, Serraria, Maceió (AL).",
-  "cnes": "2005832",
-  "status": ""
- },
- {
-  "id": 35,
-  "name": "CAPS ENFERMEIRA NORACI PEDROSA",
-  "district": "V",
-  "kind": "CAPS",
-  "address": "Conj. José da Silva Peixoto R. G, QD 07, Jacintinho, Maceió (AL).",
-  "cnes": "2006170",
-  "status": ""
- },
- {
-  "id": 36,
-  "name": "UNIDADE DE REFERÊNCIA EM SAÚDE JOÃO PAULO II",
-  "district": "V",
-  "kind": "URS",
-  "address": "Rua Manoel Viana de Oliveira, S/N, Jacintinho, Maceió (AL).",
-  "cnes": "5690323",
-  "status": ""
- },
- {
-  "id": 37,
-  "name": "UNIDADE BÁSICA DE SAÚDE FELÍCIO NAPOLEÃO",
-  "district": "V",
-  "kind": "UBS",
-  "address": "Rua Luis Rego Barros 55 Aldeia do Índio, Maceió (AL).",
-  "cnes": "2005670",
-  "status": ""
- },
- {
-  "id": 38,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA DR. PAULO LEAL",
-  "district": "V",
-  "kind": "USF",
-  "address": "Rua Acre, S/N, Feitosa, Maceió (AL).",
-  "cnes": "2005654",
-  "status": ""
- },
- {
-  "id": 39,
-  "name": "UNIDADE BÁSICA DE SAÚDE WALDOMIRO ALENCAR",
-  "district": "V",
-  "kind": "UBS",
-  "address": "Rua Júlio Auto, 431 Jacintinho, Maceió (AL).",
-  "cnes": "2005611",
-  "status": ""
- },
- {
-  "id": 40,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOSÉ MARIA DE VASCONCELOS NETO – SÃO JORGE",
-  "district": "V",
-  "kind": "USF",
-  "address": "Avenida Cor. Salustiano Sarmento, 303, São Jorge, Maceió (AL).",
-  "cnes": "2005891",
-  "status": ""
- },
- {
-  "id": 41,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA NOVO MUNDO",
-  "district": "V",
-  "kind": "USF",
-  "address": "Travessa Boa Esperança, S/N, Novo Mundo, Maceió (AL).",
-  "cnes": "2005751",
-  "status": ""
- },
- {
-  "id": 42,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOÃO MOREIRA – GROTA DO MOREIRA",
-  "district": "V",
-  "kind": "USF",
-  "address": "Vila Padre Cícero, 45, Jacintinho, Maceió (AL).",
-  "cnes": "3231658",
-  "status": ""
- },
- {
-  "id": 43,
-  "name": "CAPSI DR. LUIZ DA ROCHA CERQUEIRA",
-  "district": "V",
-  "kind": "CAPS",
-  "address": "Av. Getúlio Vargas, S/N, Conj. José Tenório, Serraria, Maceió (AL), CEP 57.046-350.",
-  "cnes": "2005867",
-  "status": ""
- },
- {
-  "id": 44,
-  "name": "UNIDADE DOCENTE ASSISTENCIAL GOVERNADOR DIVALDO SURUAGY – UMJ",
-  "district": "V",
-  "kind": "UDA",
-  "address": "Rua Silvio Sandes Torres Junior 109 - Barro Duro, CEP 57.046-418.",
-  "cnes": "9022465",
-  "status": ""
- },
- {
-  "id": 45,
-  "name": "UNIDADE DE ACOLHIMENTO INFANTO JUVENIL DRA NISE DA SILVEIRA",
-  "district": "V",
-  "kind": "Acolhimento",
-  "address": "Travessa São Vicente, S/N, Jacintinho;",
-  "cnes": "",
-  "status": ""
- },
- {
-  "id": 46,
-  "name": "UNIDADE DA SAÚDE DA FAMÍLIA CAIC BENEDITO BENTES",
-  "district": "VI",
-  "kind": "USF",
-  "address": "Av. Benedito Bentes II, S/N, Benedito Bentes, Maceió (AL).",
-  "cnes": "2005875",
-  "status": ""
- },
- {
-  "id": 47,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA FREI DAMIÃO",
-  "district": "VI",
-  "kind": "USF",
-  "address": "Conj. Frei Damião, S/N, Benedito Bentes, Maceió (AL), CEP 57.085-068",
-  "cnes": "2005883",
-  "status": ""
- },
- {
-  "id": 48,
-  "name": "UNIDADE DE REFERÊNCIA EM SAÚDE HAMILTON FALCÃO",
-  "district": "VI",
-  "kind": "URS",
-  "address": "Av. Norma Pimentel Costa, 192 - Benedito Bentes, Maceió - AL.",
-  "cnes": "2005530",
-  "status": ""
- },
- {
-  "id": 49,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA CARLA NOGUEIRA – SELMA BANDEIRA",
-  "district": "VI",
-  "kind": "USF",
-  "address": "Av. do Furto, S/N, Conj. Selma Bandeira, Maceió (AL).",
-  "cnes": "2005794",
-  "status": ""
- },
- {
-  "id": 50,
-  "name": "UNIDADE BÁSICA DE SAÚDE ARTHUR RAMOS",
-  "district": "VI",
-  "kind": "UBS",
-  "address": "Conj. Henrique Hequelman Rua - L, Qd J, S/N, Tabuleiro, Maceió (AL).",
-  "cnes": "2816873",
-  "status": ""
- },
- {
-  "id": 51,
-  "name": "CEO Rafael de Matos Silva",
-  "district": "VI",
-  "kind": "CEO",
-  "address": "Conj. Henrique Hequelman- Rua L, Qd. J, S/N, Tabuleiro, Maceió- AL.",
-  "cnes": "5704111",
-  "status": ""
- },
- {
-  "id": 52,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA ALIOMAR DE ALMEIDA LINS – PASSAREDO",
-  "district": "VI",
-  "kind": "USF",
-  "address": "Av. Corr. Transporte. Moacir Andrade s/n. CJ Bela Vista, Maceió (AL).",
-  "cnes": "2003325",
-  "status": ""
- },
- {
-  "id": 53,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA ROBSON CAVALCANTE DE MELO – FREITAS NETO",
-  "district": "VI",
-  "kind": "USF",
-  "address": "Conj. Freitas Neto Q D. A, Nº 25 B. Bentes, Maceió (AL).",
-  "cnes": "3742482",
-  "status": ""
- },
- {
-  "id": 54,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA DÍDIMO OTTO KUMMER (CARMINHA)",
-  "district": "VI",
-  "kind": "USF",
-  "address": "Conj. Carminha, Rua C, S/N, Benedito Bentes II, Maceió (AL).",
-  "cnes": "3652734",
-  "status": ""
- },
- {
-  "id": 55,
-  "name": "Unidade de Telessaude CAETES",
-  "district": "VI",
-  "kind": "Telessaúde",
-  "address": "Rua Geovanio Constantino S/N, Benedito Bentes II, Maceió/AL",
-  "cnes": "4180879",
-  "status": ""
- },
- {
-  "id": 56,
-  "name": "Unidade FAM – FUNDO DE AMPARO AO MORADOR DO PINHEIRO",
-  "district": "VI",
-  "kind": "FAM",
-  "address": "Av. Antônio Lisboa de Amorim, S/N, Benedito Bentes, Maceió – AL, CEP 57080-000",
-  "cnes": "9979271",
-  "status": ""
- },
- {
-  "id": 57,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA GRACILIANO RAMOS",
-  "district": "VII",
-  "kind": "USF",
-  "address": "R. Quarenta e Nove, Conjunto Graciliano Ramos, s/n - Cidade Universitária, Maceió - AL",
-  "cnes": "2005735",
-  "status": ""
- },
- {
-  "id": 58,
-  "name": "UNIDADE SAÚDE DA FAMÍLIA VILLAGE CAMPESTRE I",
-  "district": "VII",
-  "kind": "USF",
-  "address": "R. Celina Sacramento Silva, s/n - Village, Maceió - AL, 57073-200, Cidade Universitária, Maceió (AL).",
-  "cnes": "2005824",
-  "status": ""
- },
- {
-  "id": 59,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA ROSANE COLLOR",
-  "district": "VII",
-  "kind": "USF",
-  "address": "Rua: Waldemar Pedro da Silva, 28 - Clima Bom, Maceió - AL, 57071-888.",
-  "cnes": "2005786",
-  "status": ""
- },
- {
-  "id": 60,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOÃO MACÁRIO",
-  "district": "VII",
-  "kind": "USF",
-  "address": "R. Corinto Campelo da Paz, Santos Dumont, CEP: 57080-000,Maceió (AL).",
-  "cnes": "6481132",
-  "status": ""
- },
- {
-  "id": 61,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA DENISSON MENEZES",
-  "district": "VII",
-  "kind": "USF",
-  "address": "Conj, R. Dênisson Menezes, s/n Qd A, - Cidade Universitária, Maceió - AL, 57073-639.",
-  "cnes": "2003317",
-  "status": ""
- },
- {
-  "id": 62,
-  "name": "UNIDADE DOCENTE ASSISTENCIAL PROFESSOR GILBERTO DE MACEDO – UFAL",
-  "district": "VII",
-  "kind": "UDA",
-  "address": "Av. Alice Carolina, 339-455 - Cidade Universitária, Maceió - AL, 57073-415.",
-  "cnes": "",
-  "status": ""
- },
- {
-  "id": 63,
-  "name": "UNIDADE BÁSICA DE SAÚDE JORGE DUARTE QUINTELA CAVALCANTE",
-  "district": "VII",
-  "kind": "UBS",
-  "address": "R. Sessenta e Um, 308-354 - Cidade Universitária, Maceió - AL, 57073-047.",
-  "cnes": "9000755",
-  "status": ""
- },
- {
-  "id": 64,
-  "name": "UNIDADE BÁSICA DE SAÚDE WALTER DE MOURA LIMA",
-  "district": "VII",
-  "kind": "UBS",
-  "address": "Rua E, 26-124 - Santa Amelia, Maceió - AL, 57063-650.",
-  "cnes": "9114807",
-  "status": ""
- },
- {
-  "id": 65,
-  "name": "UNIDADE BÁSICA DE SAÚDE TEREZA BARBOSA",
-  "district": "VII",
-  "kind": "UBS",
-  "address": "R. L, 30, Conj. Eustáquio Gomes - Cidade Universitária, AL",
-  "cnes": "2005557",
-  "status": ""
- },
- {
-  "id": 66,
-  "name": "UNIDADE BÁSICA DE SAÚDE DR. DJALMA LOUREIRO",
-  "district": "VII",
-  "kind": "UBS",
-  "address": "Av. Muniz Falcão, s/n - Clima Bom, Maceió - AL, 57071-815.",
-  "cnes": "2005565",
-  "status": ""
- },
- {
-  "id": 67,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA GALBA NOVAES",
-  "district": "VII",
-  "kind": "USF",
-  "address": "Av. Betel, s/n - Tabuleiro do Martins, Maceió - AL, 57081-740.",
-  "cnes": "2005697",
-  "status": ""
- },
- {
-  "id": 68,
-  "name": "UNIDADE DE REFERÊNCIA EM SAÚDE IB GATTO",
-  "district": "VII",
-  "kind": "URS",
-  "address": "Tv. da Floresta, s/n - Tabuleiro, Maceió - AL, 57020-200.",
-  "cnes": "2005727",
-  "status": ""
- },
- {
-  "id": 69,
-  "name": "UNIDADE SAÚDE DA FAMÍLIA VEREADOR SÉRGIO QUINTELLA",
-  "district": "VII",
-  "kind": "USF",
-  "address": "R. Manoel Omena de Farias, 23 - Tabuleiro do Martins, Maceió - AL, 57081-259, Maceió (AL).",
-  "cnes": "3413667",
-  "status": ""
- },
- {
-  "id": 70,
-  "name": "UNIDADE BÁSICA DE SAÚDE MARLENE FERNANDES LANVERLY DE MELO",
-  "district": "VII",
-  "kind": "UBS",
-  "address": "R. Padre Cícero, 386 - Santa Lúcia, Maceió - AL, 57082-190.",
-  "cnes": "",
-  "status": ""
- },
- {
-  "id": 71,
-  "name": "UNIDADE BÁSICA DE SAÚDE JOSÉ PIMENTEL AMORIM",
-  "district": "VII",
-  "kind": "UBS",
-  "address": "Av. Alberto Alves da Câmara, 158 - Tabuleiro do Martins, Maceió - AL, 57081-185.",
-  "cnes": "2006189",
-  "status": ""
- },
- {
-  "id": 72,
-  "name": "CAPS AD III NOVO JARDIM",
-  "district": "VII",
-  "kind": "CAPS",
-  "address": "Rua Professor Benedito Olegário dos Santos, s/n, Residencial Novo Jardim, Cidade Universitária – CEP 57072-812",
-  "cnes": "",
-  "status": ""
- },
- {
-  "id": 73,
-  "name": "CLÍNICA DA FAMÍLIA VILLAGE II",
-  "district": "VII",
-  "kind": "Clínica da Família",
-  "address": "AV. Francisco de Holanda – Cidade Universitária- Maceió/AL – CEP 57072-190",
-  "cnes": "4456793",
-  "status": ""
- },
- {
-  "id": 74,
-  "name": "UNIDADE DE SAÚDE FAMÍLIA PESCARIA",
-  "district": "VIII",
-  "kind": "USF",
-  "address": "Povoado Pescaria, S/N, Ipioca, Maceió (AL).",
-  "cnes": "2009714",
-  "status": ""
- },
- {
-  "id": 75,
-  "name": "UNIDADE DE SAÚDE FAMÍLIA GUAXUMA",
-  "district": "VIII",
-  "kind": "USF",
-  "address": "Conj. Elias Pontes Bonfim, S/N, Guaxuma, Maceió (AL).",
-  "cnes": "2009749",
-  "status": ""
- },
- {
-  "id": 76,
-  "name": "UNIDADE DE SAÚDE FAMÍLIA VANDERLI MARIA DE ANDRADE – RIACHO DOCE",
-  "district": "VIII",
-  "kind": "USF",
-  "address": "Rua do Asfalto, 20, Riacho Doce, Maceió (AL), CEP 57.039-325",
-  "cnes": "2009684",
-  "status": ""
- },
- {
-  "id": 77,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA DR JORGE DAVID NASSER – IPIOCA",
-  "district": "VIII",
-  "kind": "USF",
-  "address": "Rua Alto da Igreja,163, Ipioca.",
-  "cnes": "2009897",
-  "status": ""
- },
- {
-  "id": 78,
-  "name": "UNIDADE DE SAÚDE DA FAMÍLIA SÃO FRANCISCO DE PAULA – GROTA DO ARROZ",
-  "district": "VIII",
-  "kind": "USF",
-  "address": "Rua Ricardo C Moraes, 156, Cruz Das Almas.",
-  "cnes": "2009692",
-  "status": ""
- },
- {
-  "id": 79,
-  "name": "UNIDADE DE REFERÊNCIA MARIA CONCEIÇÃO FONSECA PARANHOS",
-  "district": "VIII",
-  "kind": "URS",
-  "address": "Conjunto Alfredo Gaspar de Mendonça, R. Amanda de Medeiros Carlos, S/N - Jacarecica, Maceió – AL",
-  "cnes": "6898521",
-  "status": ""
- },
- {
-  "id": 80,
-  "name": "UDA- UNIDADE DOCENTE ASSISTENCIAL JOSÉ LAGES FILHO – UNIT",
-  "district": "VIII",
-  "kind": "UDA",
-  "address": "Grota do Arroz, por trás da UNIT.",
-  "cnes": "9027092",
-  "status": ""
- }
+  {
+    "id": 1,
+    "name": "PAM SALGADINHO/CEO PAM SALGADINHO",
+    "district": "I",
+    "kind": "PAM / CEO",
+    "address": "Avenida do Ferroviário (antiga Rua Mizael Domingues), 241 – Centro, Maceió – AL, CEP 57020-600",
+    "cnes": "9158251|2009803",
+    "status": ""
+  },
+  {
+    "id": 2,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA REGINALDO",
+    "district": "I",
+    "kind": "USF",
+    "address": "Rua Doutor Carlos Miranda, 96 – Poço, Maceió – AL, CEP 57025-790",
+    "cnes": "2009706",
+    "status": ""
+  },
+  {
+    "id": 3,
+    "name": "CAPS II DR. ROSTAN SILVESTRE",
+    "district": "I",
+    "kind": "CAPS",
+    "address": "Rua José Maia Gomes, s/n – Jatiúca, Maceió – AL, CEP 57036-240",
+    "cnes": "5194830",
+    "status": ""
+  },
+  {
+    "id": 4,
+    "name": "UNIDADE BÁSICA DE SAÚDE OSVALDO BRANDÃO VILELA",
+    "district": "I",
+    "kind": "UBS",
+    "address": "Rua Lafaiete Pacheco, s/n – Ponta da Terra, Maceió – AL, CEP 57030-646",
+    "cnes": "2009722",
+    "status": ""
+  },
+  {
+    "id": 5,
+    "name": "UNIDADE DE REFERÊNCIA EM SAÚDE DR. DIÓGENES JUCÁ BERNARDES / II CENTRO",
+    "district": "I",
+    "kind": "URS",
+    "address": "Praça da Maravilha, s/n – Poço, Maceió – AL, CEP 57025-860",
+    "cnes": "2719576",
+    "status": ""
+  },
+  {
+    "id": 6,
+    "name": "UNIDADE BÁSICA DE SAÚDE PAM DIQUE ESTRADA",
+    "district": "II",
+    "kind": "UBS",
+    "address": "Rua das Flores, s/n, Conj. Joaquim Leão – Ponta Grossa, Maceió – AL, CEP 57014-600",
+    "cnes": "2009811",
+    "status": ""
+  },
+  {
+    "id": 7,
+    "name": "UNIDADE REFERÊNCIA DE SAÚDE ROLAND SIMON",
+    "district": "II",
+    "kind": "URS",
+    "address": "Rua Cabo Reis, s/n – Vergel do Lago, Maceió – AL, CEP 57015-520",
+    "cnes": "2009757",
+    "status": ""
+  },
+  {
+    "id": 8,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA JARDIM SÃO FRANCISCO",
+    "district": "II",
+    "kind": "USF",
+    "address": "Rua São Francisco, s/n – Brejal, Maceió – AL",
+    "cnes": "2009889",
+    "status": ""
+  },
+  {
+    "id": 9,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA PROF. DURVAL CORTEZ",
+    "district": "II",
+    "kind": "USF",
+    "address": "Rua João Ulisses Marques, s/n – Prado, Maceió – AL",
+    "cnes": "2009870",
+    "status": ""
+  },
+  {
+    "id": 10,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA – CAIC VIRGEM DOS POBRES",
+    "district": "II",
+    "kind": "USF",
+    "address": "Avenida Senador Rui Palmeira, s/n – Dique Estrada, Maceió – AL",
+    "cnes": "2009854",
+    "status": ""
+  },
+  {
+    "id": 11,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA TARCÍSIO PALMEIRA",
+    "district": "II",
+    "kind": "USF",
+    "address": "Rua Alípio Barbosa da Silva, s/n – Pontal da Barra, Maceió – AL, CEP 57010-810",
+    "cnes": "2009838",
+    "status": ""
+  },
+  {
+    "id": 12,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA HÉLVIO AUTO",
+    "district": "II",
+    "kind": "USF",
+    "address": "Avenida Assis Chateaubriand, s/n, Complexo Lourenço Vasconcelos – Trapiche da Barra, Maceió – AL",
+    "cnes": "3741141",
+    "status": ""
+  },
+  {
+    "id": 13,
+    "name": "MÓDULO ODONTOLÓGICO RUI PALMEIRA",
+    "district": "II",
+    "kind": "Módulo odontológico",
+    "address": "Avenida Monte Castelo, s/n – Vergel do Lago, Maceió – AL, CEP 57015-130",
+    "cnes": "2009781",
+    "status": "Sem funcionamento conforme fonte"
+  },
+  {
+    "id": 14,
+    "name": "UNIDADE DOCENTE ASSISTENCIAL EVA FARIAS (UNCISAL)",
+    "district": "II",
+    "kind": "UDA",
+    "address": "Rua Dr. Jorge de Lima, s/n – Trapiche da Barra, Maceió – AL, CEP 57010-300",
+    "cnes": "",
+    "status": ""
+  },
+  {
+    "id": 15,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA SÃO VICENTE DE PAULA",
+    "district": "III",
+    "kind": "USF",
+    "address": "Rua José Maria Corrêa das Neves, 146 – Farol, Maceió – AL",
+    "cnes": "9307338",
+    "status": ""
+  },
+  {
+    "id": 16,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA SÃO JOSÉ – CANAÃ",
+    "district": "III",
+    "kind": "USF",
+    "address": "Rua Maragogi, s/n – Canaã, Maceió – AL, CEP 57080-110",
+    "cnes": "2005638",
+    "status": ""
+  },
+  {
+    "id": 17,
+    "name": "UNIDADE BÁSICA DE SAÚDE MARIA TEREZA HOLANDA COSTA",
+    "district": "III",
+    "kind": "UBS",
+    "address": "Rua Padre Cícero, 224 – Ouro Preto, Maceió – AL",
+    "cnes": "9306471",
+    "status": ""
+  },
+  {
+    "id": 18,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA OURO PRETO",
+    "district": "III",
+    "kind": "USF",
+    "address": "Travessa Camaragibe, s/n – Ouro Preto, Maceió – AL",
+    "cnes": "2005778",
+    "status": ""
+  },
+  {
+    "id": 19,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA PAULO OLIVEIRA COSTA – UDA (CESMAC)",
+    "district": "III",
+    "kind": "UDA",
+    "address": "Rua Radialista Odete Pacheco, s/n – Farol, Maceió – AL",
+    "cnes": "3413659",
+    "status": ""
+  },
+  {
+    "id": 20,
+    "name": "UNIDADE DE REFERÊNCIA EM SAÚDE PITANGUINHA",
+    "district": "III",
+    "kind": "URS",
+    "address": "Rua Antônio Nogueira, s/n – Pitanguinha, Maceió – AL",
+    "cnes": "2005808|2005603",
+    "status": ""
+  },
+  {
+    "id": 21,
+    "name": "CAPS AD INFANTO JUVENIL DR. EVERALDO MOREIRA",
+    "district": "III",
+    "kind": "CAPS",
+    "address": "Rua Barão José Miguel, 373 – Farol, Maceió – AL, CEP 57055-160",
+    "cnes": "5123143",
+    "status": ""
+  },
+  {
+    "id": 22,
+    "name": "UNIDADE DE REFERÊNCIA EM SAÚDE DR. ANTÔNIO DE PÁDUA CAVALCANTE",
+    "district": "IV",
+    "kind": "URS",
+    "address": "Alameda Carmelita Omena de Farias, 189 – Jardim Petrópolis, Maceió – AL",
+    "cnes": "9940499",
+    "status": ""
+  },
+  {
+    "id": 23,
+    "name": "UNIDADE BÁSICA DE SAÚDE BEBEDOURO",
+    "district": "IV",
+    "kind": "UBS",
+    "address": "Rua Dr. Osvaldo Cruz, 470 – Chã de Bebedouro, Maceió – AL",
+    "cnes": "3821994",
+    "status": ""
+  },
+  {
+    "id": 24,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOÃO SAMPAIO",
+    "district": "IV",
+    "kind": "USF",
+    "address": "Avenida Denilma Bulhões, Quadra 01 A, Conjunto João Sampaio I – Tabuleiro do Martins, Maceió – AL",
+    "cnes": "2005913",
+    "status": ""
+  },
+  {
+    "id": 25,
+    "name": "CAPS SADI FEITOSA CARVALHO",
+    "district": "IV",
+    "kind": "CAPS",
+    "address": "Rua Dr. Oswaldo Cruz, s/n – Chã de Bebedouro, Maceió – AL",
+    "cnes": "2005662",
+    "status": ""
+  },
+  {
+    "id": 26,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA EDVALDO SILVA",
+    "district": "IV",
+    "kind": "USF",
+    "address": "Praça Coronel Othon Bezerra de Melo, 01 – Fernão Velho, Maceió – AL",
+    "cnes": "2005646",
+    "status": ""
+  },
+  {
+    "id": 27,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA CLÁUDIO MEDEIROS",
+    "district": "IV",
+    "kind": "USF",
+    "address": "Rua São Francisco, Conjunto Vale do Tocantins – Rio Novo, Maceió – AL",
+    "cnes": "2005549",
+    "status": ""
+  },
+  {
+    "id": 28,
+    "name": "UNIDADE BÁSICA DE SAÚDE GERALDO MELO",
+    "district": "IV",
+    "kind": "UBS",
+    "address": "Rua do Campo, s/n – Bom Parto, Maceió – AL",
+    "cnes": "3020738",
+    "status": ""
+  },
+  {
+    "id": 29,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOSÉ BERNARDES NETO",
+    "district": "IV",
+    "kind": "USF",
+    "address": "Rua Vereador Hermínio Cardoso, 191 – Rio Novo, Maceió – AL",
+    "cnes": "3413683",
+    "status": ""
+  },
+  {
+    "id": 30,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA PARAÍSO DO HORTO – AMACOPH",
+    "district": "IV",
+    "kind": "USF",
+    "address": "Rua Braga Neto, s/n, Conjunto Luiz Pedro V – Chã da Jaqueira, Maceió – AL",
+    "cnes": "7512392",
+    "status": ""
+  },
+  {
+    "id": 31,
+    "name": "UNIDADE BÁSICA DE SAÚDE JOSÉ GUEDES DE FARIAS (ZEZITO)",
+    "district": "IV",
+    "kind": "UBS",
+    "address": "Conjunto Medeiros Neto I, 03 – Santa Amélia, Maceió – AL",
+    "cnes": "7008023",
+    "status": ""
+  },
+  {
+    "id": 32,
+    "name": "UNIDADE BÁSICA DE SAÚDE FLEXAL",
+    "district": "IV",
+    "kind": "UBS",
+    "address": "Ladeira Professor Benedito Silva, 253 – Chã de Bebedouro, Maceió – AL",
+    "cnes": "",
+    "status": ""
+  },
+  {
+    "id": 33,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOSÉ ARAÚJO SILVA",
+    "district": "V",
+    "kind": "USF",
+    "address": "Rua Pastor Eurico Calheiros, 56, COHAB – Jacintinho, Maceió – AL",
+    "cnes": "2005689",
+    "status": ""
+  },
+  {
+    "id": 34,
+    "name": "UNIDADE BÁSICA DE SAÚDE JOSÉ TENÓRIO",
+    "district": "V",
+    "kind": "UBS",
+    "address": "Conjunto José Tenório – Serraria, Maceió – AL",
+    "cnes": "2005832",
+    "status": ""
+  },
+  {
+    "id": 35,
+    "name": "CAPS ENFERMEIRA NORACI PEDROSA",
+    "district": "V",
+    "kind": "CAPS",
+    "address": "Conjunto José da Silva Peixoto, Rua G, Quadra 07 – Jacintinho, Maceió – AL",
+    "cnes": "2006170",
+    "status": ""
+  },
+  {
+    "id": 36,
+    "name": "UNIDADE DE REFERÊNCIA EM SAÚDE JOÃO PAULO II",
+    "district": "V",
+    "kind": "URS",
+    "address": "Rua Manoel Viana de Oliveira, s/n – Jacintinho, Maceió – AL",
+    "cnes": "5690323",
+    "status": ""
+  },
+  {
+    "id": 37,
+    "name": "UNIDADE BÁSICA DE SAÚDE FELÍCIO NAPOLEÃO",
+    "district": "V",
+    "kind": "UBS",
+    "address": "Rua Luís Rego Barros, 55 – Aldeia do Índio, Maceió – AL",
+    "cnes": "2005670",
+    "status": ""
+  },
+  {
+    "id": 38,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA DR. PAULO LEAL",
+    "district": "V",
+    "kind": "USF",
+    "address": "Rua Acre, s/n – Feitosa, Maceió – AL",
+    "cnes": "2005654",
+    "status": ""
+  },
+  {
+    "id": 39,
+    "name": "UNIDADE BÁSICA DE SAÚDE WALDOMIRO ALENCAR",
+    "district": "V",
+    "kind": "UBS",
+    "address": "Rua Júlio Auto, 431 – Jacintinho, Maceió – AL",
+    "cnes": "2005611",
+    "status": ""
+  },
+  {
+    "id": 40,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOSÉ MARIA DE VASCONCELOS NETO – SÃO JORGE",
+    "district": "V",
+    "kind": "USF",
+    "address": "Avenida Coronel Salustiano Sarmento, 303 – São Jorge, Maceió – AL",
+    "cnes": "2005891",
+    "status": ""
+  },
+  {
+    "id": 41,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA NOVO MUNDO",
+    "district": "V",
+    "kind": "USF",
+    "address": "Travessa Boa Esperança, s/n – Novo Mundo, Maceió – AL",
+    "cnes": "2005751",
+    "status": ""
+  },
+  {
+    "id": 42,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOÃO MOREIRA – GROTA DO MOREIRA",
+    "district": "V",
+    "kind": "USF",
+    "address": "Vila Padre Cícero, 45 – Jacintinho, Maceió – AL",
+    "cnes": "3231658",
+    "status": ""
+  },
+  {
+    "id": 43,
+    "name": "CAPSI DR. LUIZ DA ROCHA CERQUEIRA",
+    "district": "V",
+    "kind": "CAPS",
+    "address": "Avenida Getúlio Vargas, s/n, Conj. José Tenório – Serraria, Maceió – AL, CEP 57046-350",
+    "cnes": "2005867",
+    "status": ""
+  },
+  {
+    "id": 44,
+    "name": "UNIDADE DOCENTE ASSISTENCIAL GOVERNADOR DIVALDO SURUAGY – UMJ",
+    "district": "V",
+    "kind": "UDA",
+    "address": "Rua Silvio Sandes Torres Júnior, 109 – Barro Duro, Maceió – AL, CEP 57046-418",
+    "cnes": "9022465",
+    "status": ""
+  },
+  {
+    "id": 45,
+    "name": "UNIDADE DE ACOLHIMENTO INFANTO JUVENIL DRA NISE DA SILVEIRA",
+    "district": "V",
+    "kind": "Acolhimento",
+    "address": "Travessa São Vicente, s/n – Jacintinho, Maceió – AL",
+    "cnes": "",
+    "status": ""
+  },
+  {
+    "id": 46,
+    "name": "UNIDADE DA SAÚDE DA FAMÍLIA CAIC BENEDITO BENTES",
+    "district": "VI",
+    "kind": "USF",
+    "address": "Avenida Benedito Bentes II, s/n – Benedito Bentes, Maceió – AL",
+    "cnes": "2005875",
+    "status": ""
+  },
+  {
+    "id": 47,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA FREI DAMIÃO",
+    "district": "VI",
+    "kind": "USF",
+    "address": "Conjunto Frei Damião, s/n – Benedito Bentes, Maceió – AL, CEP 57085-068",
+    "cnes": "2005883",
+    "status": ""
+  },
+  {
+    "id": 48,
+    "name": "UNIDADE DE REFERÊNCIA EM SAÚDE HAMILTON FALCÃO",
+    "district": "VI",
+    "kind": "URS",
+    "address": "Avenida Norma Pimentel Costa, 192 – Benedito Bentes, Maceió – AL",
+    "cnes": "2005530",
+    "status": ""
+  },
+  {
+    "id": 49,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA CARLA NOGUEIRA – SELMA BANDEIRA",
+    "district": "VI",
+    "kind": "USF",
+    "address": "Avenida do Furto, s/n, Conj. Selma Bandeira – Benedito Bentes, Maceió – AL",
+    "cnes": "2005794",
+    "status": ""
+  },
+  {
+    "id": 50,
+    "name": "UNIDADE BÁSICA DE SAÚDE ARTHUR RAMOS",
+    "district": "VI",
+    "kind": "UBS",
+    "address": "Conjunto Henrique Hequelman, Rua L, Quadra J, s/n – Tabuleiro do Martins, Maceió – AL",
+    "cnes": "2816873",
+    "status": ""
+  },
+  {
+    "id": 51,
+    "name": "CEO Rafael de Matos Silva",
+    "district": "VI",
+    "kind": "CEO",
+    "address": "Conjunto Henrique Hequelman, Rua L, Quadra J, s/n – Tabuleiro do Martins, Maceió – AL",
+    "cnes": "5704111",
+    "status": ""
+  },
+  {
+    "id": 52,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA ALIOMAR DE ALMEIDA LINS – PASSAREDO",
+    "district": "VI",
+    "kind": "USF",
+    "address": "Avenida Corredor de Transporte Moacir Andrade, s/n, Conj. Bela Vista – Benedito Bentes, Maceió – AL",
+    "cnes": "2003325",
+    "status": ""
+  },
+  {
+    "id": 53,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA ROBSON CAVALCANTE DE MELO – FREITAS NETO",
+    "district": "VI",
+    "kind": "USF",
+    "address": "Conjunto Freitas Neto, Quadra A, 25 – Benedito Bentes, Maceió – AL",
+    "cnes": "3742482",
+    "status": ""
+  },
+  {
+    "id": 54,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA DÍDIMO OTTO KUMMER (CARMINHA)",
+    "district": "VI",
+    "kind": "USF",
+    "address": "Conjunto Carminha, Rua C, s/n – Benedito Bentes, Maceió – AL",
+    "cnes": "3652734",
+    "status": ""
+  },
+  {
+    "id": 55,
+    "name": "Unidade de Telessaude CAETES",
+    "district": "VI",
+    "kind": "Telessaúde",
+    "address": "Rua Geovanio Constantino, s/n – Benedito Bentes, Maceió – AL",
+    "cnes": "4180879",
+    "status": ""
+  },
+  {
+    "id": 56,
+    "name": "Unidade FAM – FUNDO DE AMPARO AO MORADOR DO PINHEIRO",
+    "district": "VI",
+    "kind": "FAM",
+    "address": "Avenida Antônio Lisboa de Amorim, s/n – Benedito Bentes, Maceió – AL, CEP 57080-000",
+    "cnes": "9979271",
+    "status": ""
+  },
+  {
+    "id": 57,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA GRACILIANO RAMOS",
+    "district": "VII",
+    "kind": "USF",
+    "address": "Rua Quarenta e Nove, s/n, Conjunto Graciliano Ramos – Cidade Universitária, Maceió – AL",
+    "cnes": "2005735",
+    "status": ""
+  },
+  {
+    "id": 58,
+    "name": "UNIDADE SAÚDE DA FAMÍLIA VILLAGE CAMPESTRE I",
+    "district": "VII",
+    "kind": "USF",
+    "address": "Rua Celina Sacramento Silva, s/n, Village Campestre – Cidade Universitária, Maceió – AL, CEP 57073-200",
+    "cnes": "2005824",
+    "status": ""
+  },
+  {
+    "id": 59,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA ROSANE COLLOR",
+    "district": "VII",
+    "kind": "USF",
+    "address": "Rua Waldemar Pedro da Silva, 28 – Clima Bom, Maceió – AL, CEP 57071-888",
+    "cnes": "2005786",
+    "status": ""
+  },
+  {
+    "id": 60,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA JOÃO MACÁRIO",
+    "district": "VII",
+    "kind": "USF",
+    "address": "Rua Corinto Campelo da Paz – Santos Dumont, Maceió – AL, CEP 57080-000",
+    "cnes": "6481132",
+    "status": ""
+  },
+  {
+    "id": 61,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA DENISSON MENEZES",
+    "district": "VII",
+    "kind": "USF",
+    "address": "Rua Dênisson Menezes, s/n, Quadra A – Cidade Universitária, Maceió – AL, CEP 57073-639",
+    "cnes": "2003317",
+    "status": ""
+  },
+  {
+    "id": 62,
+    "name": "UNIDADE DOCENTE ASSISTENCIAL PROFESSOR GILBERTO DE MACEDO – UFAL",
+    "district": "VII",
+    "kind": "UDA",
+    "address": "Avenida Alice Carolina, 339-455 – Cidade Universitária, Maceió – AL, CEP 57073-415",
+    "cnes": "",
+    "status": ""
+  },
+  {
+    "id": 63,
+    "name": "UNIDADE BÁSICA DE SAÚDE JORGE DUARTE QUINTELA CAVALCANTE",
+    "district": "VII",
+    "kind": "UBS",
+    "address": "Rua Sessenta e Um, 308-354 – Cidade Universitária, Maceió – AL, CEP 57073-047",
+    "cnes": "9000755",
+    "status": ""
+  },
+  {
+    "id": 64,
+    "name": "UNIDADE BÁSICA DE SAÚDE WALTER DE MOURA LIMA",
+    "district": "VII",
+    "kind": "UBS",
+    "address": "Rua E, 26-124 – Santa Amélia, Maceió – AL, CEP 57063-650",
+    "cnes": "9114807",
+    "status": ""
+  },
+  {
+    "id": 65,
+    "name": "UNIDADE BÁSICA DE SAÚDE TEREZA BARBOSA",
+    "district": "VII",
+    "kind": "UBS",
+    "address": "Rua L, 30, Conj. Eustáquio Gomes – Cidade Universitária, Maceió – AL",
+    "cnes": "2005557",
+    "status": ""
+  },
+  {
+    "id": 66,
+    "name": "UNIDADE BÁSICA DE SAÚDE DR. DJALMA LOUREIRO",
+    "district": "VII",
+    "kind": "UBS",
+    "address": "Avenida Muniz Falcão, s/n – Clima Bom, Maceió – AL, CEP 57071-815",
+    "cnes": "2005565",
+    "status": ""
+  },
+  {
+    "id": 67,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA GALBA NOVAES",
+    "district": "VII",
+    "kind": "USF",
+    "address": "Avenida Betel, s/n – Tabuleiro do Martins, Maceió – AL, CEP 57081-740",
+    "cnes": "2005697",
+    "status": ""
+  },
+  {
+    "id": 68,
+    "name": "UNIDADE DE REFERÊNCIA EM SAÚDE IB GATTO",
+    "district": "VII",
+    "kind": "URS",
+    "address": "Travessa da Floresta, s/n – Tabuleiro do Martins, Maceió – AL",
+    "cnes": "2005727",
+    "status": ""
+  },
+  {
+    "id": 69,
+    "name": "UNIDADE SAÚDE DA FAMÍLIA VEREADOR SÉRGIO QUINTELLA",
+    "district": "VII",
+    "kind": "USF",
+    "address": "Rua Manoel Omena de Farias, 23 – Tabuleiro do Martins, Maceió – AL, CEP 57081-259",
+    "cnes": "3413667",
+    "status": ""
+  },
+  {
+    "id": 70,
+    "name": "UNIDADE BÁSICA DE SAÚDE MARLENE FERNANDES LANVERLY DE MELO",
+    "district": "VII",
+    "kind": "UBS",
+    "address": "Rua Padre Cícero, 386 – Santa Lúcia, Maceió – AL, CEP 57082-190",
+    "cnes": "",
+    "status": ""
+  },
+  {
+    "id": 71,
+    "name": "UNIDADE BÁSICA DE SAÚDE JOSÉ PIMENTEL AMORIM",
+    "district": "VII",
+    "kind": "UBS",
+    "address": "Avenida Alberto Alves da Câmara, 158 – Tabuleiro do Martins, Maceió – AL, CEP 57081-185",
+    "cnes": "2006189",
+    "status": ""
+  },
+  {
+    "id": 72,
+    "name": "CAPS AD III NOVO JARDIM",
+    "district": "VII",
+    "kind": "CAPS",
+    "address": "Rua Professor Benedito Olegário dos Santos, s/n, Residencial Novo Jardim – Cidade Universitária, Maceió – AL, CEP 57072-812",
+    "cnes": "",
+    "status": ""
+  },
+  {
+    "id": 73,
+    "name": "CLÍNICA DA FAMÍLIA VILLAGE II",
+    "district": "VII",
+    "kind": "Clínica da Família",
+    "address": "Avenida Francisco de Holanda – Cidade Universitária, Maceió – AL, CEP 57072-190",
+    "cnes": "4456793",
+    "status": ""
+  },
+  {
+    "id": 74,
+    "name": "UNIDADE DE SAÚDE FAMÍLIA PESCARIA",
+    "district": "VIII",
+    "kind": "USF",
+    "address": "Povoado Pescaria, s/n – Ipioca, Maceió – AL",
+    "cnes": "2009714",
+    "status": ""
+  },
+  {
+    "id": 75,
+    "name": "UNIDADE DE SAÚDE FAMÍLIA GUAXUMA",
+    "district": "VIII",
+    "kind": "USF",
+    "address": "Conjunto Elias Pontes Bonfim, s/n – Guaxuma, Maceió – AL",
+    "cnes": "2009749",
+    "status": ""
+  },
+  {
+    "id": 76,
+    "name": "UNIDADE DE SAÚDE FAMÍLIA VANDERLI MARIA DE ANDRADE – RIACHO DOCE",
+    "district": "VIII",
+    "kind": "USF",
+    "address": "Rua do Asfalto, 20 – Riacho Doce, Maceió – AL, CEP 57039-325",
+    "cnes": "2009684",
+    "status": ""
+  },
+  {
+    "id": 77,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA DR JORGE DAVID NASSER – IPIOCA",
+    "district": "VIII",
+    "kind": "USF",
+    "address": "Rua Alto da Igreja, 163 – Ipioca, Maceió – AL",
+    "cnes": "2009897",
+    "status": ""
+  },
+  {
+    "id": 78,
+    "name": "UNIDADE DE SAÚDE DA FAMÍLIA SÃO FRANCISCO DE PAULA – GROTA DO ARROZ",
+    "district": "VIII",
+    "kind": "USF",
+    "address": "Rua Ricardo C. Moraes, 156, Grota do Arroz – Cruz das Almas, Maceió – AL",
+    "cnes": "2009692",
+    "status": ""
+  },
+  {
+    "id": 79,
+    "name": "UNIDADE DE REFERÊNCIA MARIA CONCEIÇÃO FONSECA PARANHOS",
+    "district": "VIII",
+    "kind": "URS",
+    "address": "Rua Amanda de Medeiros Carlos, s/n, Conj. Alfredo Gaspar de Mendonça – Jacarecica, Maceió – AL",
+    "cnes": "6898521",
+    "status": ""
+  },
+  {
+    "id": 80,
+    "name": "UDA- UNIDADE DOCENTE ASSISTENCIAL JOSÉ LAGES FILHO – UNIT",
+    "district": "VIII",
+    "kind": "UDA",
+    "address": "Grota do Arroz, por trás da UNIT – Cruz das Almas, Maceió – AL",
+    "cnes": "9027092",
+    "status": ""
+  }
 ]

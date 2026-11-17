@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Campo, Selo, VerMidia } from './ui'
 import marca from './assets/marca.png'
 import {
-  LIMITE_BYTES, PRIORIDADES, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, resumoPrioridade, semAcento,
+  LIMITE_BYTES, PRIORIDADES, linkMapa, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, resumoPrioridade, semAcento,
   type Ambiente, type Midia, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
@@ -577,7 +577,7 @@ export default function App() {
                       <div className="row">
                         <button className="primary" disabled={ocupado} onClick={() => abrir(u, rascunho)}>{rascunho ? 'Retomar rascunho' : 'Nova vistoria'}</button>
                         {ultima && <button onClick={() => { setRelatorioId(ultima.id); ir('relatorios') }}>Último relatório</button>}
-                        <a href={'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(u.address + ' Maceió AL')} target="_blank" rel="noreferrer">Abrir mapa ↗</a>
+                        <a className="btn-mapa" href={linkMapa(u)} target="_blank" rel="noopener noreferrer">📍 Ver no mapa</a>
                       </div>
                     </article>
                   )

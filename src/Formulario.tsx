@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { IMPACTOS } from './lib/analise'
 import {
-  AMBIENTES_SUGERIDOS, PRIORIDADES, TIPOS_ACEITOS, checklistDoAmbiente, maiorPrioridade, novoId,
+  AMBIENTES_SUGERIDOS, PRIORIDADES, TIPOS_ACEITOS, checklistDoAmbiente, linkMapa, maiorPrioridade, novoId,
   type Ambiente, type Midia, type Ocorrencia, type Unidade, type Vistoria,
 } from './lib/modelo'
 import { Campo, Selo, VerMidia } from './ui'
@@ -131,7 +131,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
         <div>
           <p className="eyebrow">VISTORIA · DISTRITO {u.district}</p>
           <h1>{u.name}</h1>
-          <p>{u.address}</p>
+          <p>{u.address} <a className="btn-mapa" href={linkMapa(u)} target="_blank" rel="noopener noreferrer">📍 Ver no mapa</a></p>
         </div>
         <div className="topo-acoes">
           <Selo value={v.status === 'completed' ? 'Concluída' : pendente ? 'Salvando…' : 'Rascunho salvo'} />
