@@ -370,7 +370,7 @@ export default function App() {
           {admin && <button className={tela === 'acessos' ? 'active' : ''} onClick={() => ir('acessos')}><i aria-hidden="true">👥</i>Acessos{pedidos > 0 && <span className="contador">{pedidos}</span>}</button>}
         </nav>
         <main>
-          {DEMO && <div className="banner no-print">Modo de demonstração · Use dados fictícios. As vistorias e mídias ficam neste navegador.</div>}
+          {DEMO && <div className="banner no-print">Modo de demonstração · Use dados fictícios. As vistorias ficam neste navegador.</div>}
           {erro && <div role="alert" className="error toast" onClick={() => setErro('')}>⚠️ {erro}<small>Toque para fechar</small></div>}
           {aviso && <div role="status" className="notice toast" onClick={() => setAviso('')}>{aviso}</div>}
           {admin && pedidos > 0 && tela !== 'acessos' && <div className="banner no-print">{pedidos === 1 ? 'Há 1 pedido de acesso' : `Há ${pedidos} pedidos de acesso`} esperando a sua aprovação. <a href="#acessos" onClick={() => ir('acessos')}>Ver pedidos</a></div>}
@@ -384,7 +384,7 @@ export default function App() {
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
           ) :
 
-          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} secao={secaoPainel} mudarSecao={setSecaoPainel} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} /> :
+          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} secao={secaoPainel} mudarSecao={setSecaoPainel} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} iniciar={(u) => abrir(u)} /> :
 
           tela === 'relatorios' ? (
             <>
@@ -474,9 +474,11 @@ export default function App() {
                 </div>
               )}
               <div className="stats">
-                <div><strong>{unidades.length}</strong><span>Unidades disponíveis</span></div>
-                <div><strong>{vistorias.filter((v) => v.status === 'draft').length}</strong><span>Rascunhos</span></div>
-                <div><strong>{concluidas.length}</strong><span>Vistorias concluídas</span></div>
+                <button onClick={() => abrirPainel('visitadas')}><strong>{rank.length}<small>/{unidades.length}</small></strong><span>Unidades vistoriadas</span></button>
+                <button onClick={() => abrirPainel('sem')}><strong>{unidades.length - rank.length}</strong><span>Faltam vistoriar</span></button>
+                <button onClick={() => { setRelatorioId(''); ir('relatorios') }}><strong>{concluidas.length}</strong><span>Vistorias concluídas</span></button>
+                <button onClick={() => document.querySelector(meusRascunhos.length ? '.continuar' : '.em-visita-lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><strong>{vistorias.filter((v) => v.status === 'draft').length}</strong><span>Rascunhos</span></button>
+                <button onClick={() => document.getElementById('lista-unidades')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}><strong>{unidades.length}</strong><span>Unidades disponíveis</span></button>
               </div>
               <div className="atalhos">
                 <Atalho ic="📝" t="Nova vistoria" n={String(unidades.length)} e="Escolher a unidade e começar" onClick={() => ir('unidades')} destaque />

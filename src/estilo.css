@@ -41,7 +41,7 @@ main{width:100%;min-width:0;max-width:1480px;padding:clamp(1rem,3vw,2.4rem)}
 .badge.urgent{color:#941828;background:#fde6e6}
 .badge.priority{color:#704800;background:#ffefd4}
 .stats{grid-template-columns:repeat(3,1fr);gap:.7rem;margin:1rem 0;display:grid}
-.stats div{background:#e4eff7;border-radius:12px;gap:.15rem;padding:1rem;display:grid}
+.stats>*{background:#e4eff7;border-radius:12px;gap:.15rem;padding:1rem;display:grid}
 .stats strong{font-size:1.65rem}
 .stats span{font-size:.85rem}
 .banner,.error,.notice{color:#66430a;background:#fff1d6;border-radius:8px;margin-bottom:1rem;padding:.72rem 1rem}
@@ -68,7 +68,7 @@ header span{font-size:.8rem}
 .layout{display:block}
 nav{z-index:1;flex-flow:wrap;justify-content:center;padding:.45rem;position:sticky;top:0}
 nav button{padding:.42rem;font-size:.9rem}
-.stats div{padding:.58rem}
+.stats>*{padding:.58rem}
 .stats span{font-size:.72rem}
 }
 @media print{header,nav,.no-print,.media video{display:none!important}
@@ -152,7 +152,7 @@ header .instalar+.quiet{margin-left:0}
 .em-visita{color:#15513d;font-weight:650}
 .em-visita-lista{border-left:4px solid #1e8a55}
 .kpis-painel{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:.8rem;margin:0 0 1rem}
-.kpis-painel>div{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1rem;display:grid;gap:.2rem}
+.kpis-painel>*{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1rem;display:grid;gap:.2rem}
 .kpis-painel strong{font-size:2rem;color:var(--navy)}
 .kpis-painel strong small{font-size:1rem;color:#4f6476}
 .kpis-painel .k-critica strong{color:#b3261e}.kpis-painel .k-imediata strong{color:#c45d0a}
@@ -265,3 +265,23 @@ header .instalar+.quiet{margin-left:0}
 @media (width<=650px){.rel-fotos{grid-template-columns:repeat(2,1fr)}}
 
 .ia{color:#076493;font-weight:600}
+
+/* números clicáveis */
+.stats>button,.kpis-painel>button{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%;align-content:start}
+.kpis-painel>button{border:1px solid var(--border)}
+.stats>button:hover,.kpis-painel>button:hover{outline:2px solid var(--navy);outline-offset:-2px}
+.stats strong small{font-size:.9rem;opacity:.7}
+.stats{grid-template-columns:repeat(auto-fit,minmax(min(100%,8.5rem),1fr))}
+.kpis-painel em{font-style:normal;font-size:.8rem;font-weight:700;color:var(--navy);text-decoration:underline}
+.kpis-painel .k-falta strong{color:#4f6476}
+.lista-visitadas{list-style:none;padding:0;margin:0;display:grid;gap:.6rem}
+.lista-visitadas li{border:1px solid var(--border);border-radius:12px;padding:.7rem;display:grid;gap:.5rem}
+.lista-visitadas li>div:first-child{display:grid}
+.lista-visitadas small{color:#4f6476}
+.lista-visitadas .datas{display:flex;flex-wrap:wrap;gap:.4rem}
+.lista-visitadas .datas button{display:inline-flex;gap:.35rem;align-items:baseline;padding:.45rem .7rem;border-radius:999px}
+.lista-visitadas .datas .nova{background:transparent;border:1px dashed var(--navy);color:var(--navy)}
+.ver-faltam{margin-top:.8rem;width:100%}
+.lista-sem li button{font:inherit;color:inherit;text-align:left;width:100%;display:grid;gap:.1rem;background:transparent;border:0;padding:0;cursor:pointer}
+.lista-sem li button span{font-size:.85rem;font-weight:700;color:var(--navy)}
+@media (max-width:700px){.kpis-painel{grid-template-columns:1fr 1fr;gap:.5rem}.kpis-painel>*{padding:.7rem}.kpis-painel strong{font-size:1.5rem}.kpis-painel>:first-child{grid-column:1/-1}}

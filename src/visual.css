@@ -48,7 +48,7 @@ main{padding:clamp(1rem,3vw,2.2rem)}
 .hero h1{color:#fff;margin:.2rem 0 .4rem}
 .hero p{color:#dce8f2;max-width:56ch}
 .stats{gap:.6rem}
-.stats div{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:14px}
+.stats>*{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:14px}
 .stats strong{color:var(--navy)}
 .continuar{border-left:4px solid var(--orange)}
 .continuar h2{margin-top:0;font-size:1.1rem}
@@ -110,7 +110,7 @@ main{padding:clamp(1rem,3vw,2.2rem)}
 
 /* ---------- Tema Sol forte (alto contraste para a rua) ---------- */
 [data-tema=sol]{--bg:#fff;--card:#fff;--ink:#000;--muted:#222;--line:#000;--shadow:none;--nav-bg:#000;--nav-ink:#fff;--nav-active:#333;font-size:17.5px}
-[data-tema=sol] .panel,[data-tema=sol] .stats div,[data-tema=sol] .finding{border:2px solid #000}
+[data-tema=sol] .panel,[data-tema=sol] .stats>*,[data-tema=sol] .finding{border:2px solid #000}
 [data-tema=sol] button,[data-tema=sol] .btn-arquivo,[data-tema=sol] .chip{border:2px solid #000;color:#000;font-weight:800}
 [data-tema=sol] .primary,[data-tema=sol] .chip.ativo{background:#000;color:#ffd400;border-color:#000}
 [data-tema=sol] nav button{border:0;color:#fff}

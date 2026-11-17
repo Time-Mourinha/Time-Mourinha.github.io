@@ -3,11 +3,12 @@ import { problemasDaRede, ranking } from './lib/analise'
 import { PRIORIDADES, dataBR, type Unidade, type Vistoria } from './lib/modelo'
 import { Campo, Selo } from './ui'
 
-export type SecaoPainel = 'ranking' | 'problemas' | 'imediatas' | 'distritos' | 'sem'
+export type SecaoPainel = 'visitadas' | 'ranking' | 'problemas' | 'imediatas' | 'distritos' | 'sem'
 
 /** Painel da rede: piores unidades, problemas mais frequentes e situação por distrito. */
-export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao }: {
+export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao, iniciar }: {
   unidades: Unidade[]; vistorias: Vistoria[]; abrirRelatorio: (id: string) => void; secao: SecaoPainel; mudarSecao: (s: SecaoPainel) => void
+  iniciar: (u: Unidade) => void
 }) {
   const [distrito, setDistrito] = useState('')
   const [de, setDe] = useState('')
@@ -26,10 +27,16 @@ export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao 
   const listaImediatas = linhas.flatMap((l) => l.vistoria.rooms.flatMap((amb) => amb.findings
     .filter((o) => o.priority === PRIORIDADES[0]).map((o) => ({ l, amb, o }))))
   const semVistoria = doDistrito.filter((u) => !linhas.some((l) => l.unidade.id === u.id))
+  // Uma unidade pode ser visitada quantas vezes for preciso: aqui entram todas as visitas concluídas.
+  const visitadas = doDistrito.map((u) => ({
+    u, visitas: recorte.filter((v) => v.status === 'completed' && v.unit_id === u.id)
+      .sort((a, b) => (b.inspected_on + (b.updated_at ?? '')).localeCompare(a.inspected_on + (a.updated_at ?? ''))),
+  })).filter((x) => x.visitas.length).sort((a, b) => b.visitas[0].inspected_on.localeCompare(a.visitas[0].inspected_on))
+  const totalVisitas = visitadas.reduce((s, x) => s + x.visitas.length, 0)
   const SECOES: [SecaoPainel, string, string, number][] = [
-    ['ranking', '🏆', 'Ranking', linhas.length], ['problemas', '⚠️', 'Problemas', problemas.length],
+    ['visitadas', '✅', 'Visitadas', visitadas.length], ['ranking', '🏆', 'Ranking', linhas.length], ['problemas', '⚠️', 'Problemas', problemas.length],
     ['imediatas', '🚨', 'Ações imediatas', listaImediatas.length], ['distritos', '🗺️', 'Por distrito', distritos.length],
-    ['sem', '📭', 'Sem vistoria', semVistoria.length],
+    ['sem', '📭', 'Faltam', semVistoria.length],
   ]
 
   return (
@@ -37,7 +44,7 @@ export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao 
       <div className="heading"><div>
         <p className="eyebrow">PAINEL DA REDE</p>
         <h1>Situação das unidades</h1>
-        <p>Com base na última vistoria concluída de cada unidade.</p>
+        <p>Ranking e problemas com base na última vistoria concluída de cada unidade. Toque em qualquer número para ver a lista.</p>
       </div></div>
 
       <div className="panel filters no-print">
@@ -47,11 +54,13 @@ export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao 
       </div>
 
       <div className="kpis-painel">
-        <div><strong>{linhas.length}<small>/{doDistrito.length}</small></strong><span>unidades vistoriadas</span>
-          <i className="barra"><b style={{ width: `${(linhas.length / Math.max(1, doDistrito.length)) * 100}%` }} /></i></div>
-        <div className="k-critica"><strong>{criticas}</strong><span>em situação crítica</span></div>
-        <div className="k-imediata"><strong>{imediatas}</strong><span>ações imediatas pedidas</span></div>
-        <div><strong>{verificados ? Math.round((comProblema / verificados) * 100) : 0}%</strong><span>dos itens verificados com problema</span></div>
+        <button onClick={() => mudarSecao('visitadas')}><strong>{linhas.length}<small>/{doDistrito.length}</small></strong><span>unidades vistoriadas · {totalVisitas} {totalVisitas === 1 ? 'visita' : 'visitas'}</span>
+          <i className="barra"><b style={{ width: `${(linhas.length / Math.max(1, doDistrito.length)) * 100}%` }} /></i>
+          <em>Ver as visitadas e as datas</em></button>
+        <button className="k-falta" onClick={() => mudarSecao('sem')}><strong>{semVistoria.length}</strong><span>faltam vistoriar</span><em>Ver quais faltam</em></button>
+        <button className="k-critica" onClick={() => mudarSecao('ranking')}><strong>{criticas}</strong><span>em situação crítica</span><em>Ver o ranking</em></button>
+        <button className="k-imediata" onClick={() => mudarSecao('imediatas')}><strong>{imediatas}</strong><span>ações imediatas pedidas</span><em>Ver as ações</em></button>
+        <button onClick={() => mudarSecao('problemas')}><strong>{verificados ? Math.round((comProblema / verificados) * 100) : 0}%</strong><span>dos itens verificados com problema</span><em>Ver os problemas</em></button>
       </div>
 
       <div className="secoes" role="tablist" aria-label="O que ver">
@@ -62,8 +71,25 @@ export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao 
         ))}
       </div>
 
-      {!linhas.length && secao !== 'sem' && secao !== 'distritos' ? <div className="panel"><p>Ainda não há vistorias concluídas neste recorte. O painel se monta sozinho conforme as vistorias forem concluídas.</p></div> : (
+      {!linhas.length && secao !== 'sem' && secao !== 'distritos' && secao !== 'visitadas' ? <div className="panel"><p>Ainda não há vistorias concluídas neste recorte. O painel se monta sozinho conforme as vistorias forem concluídas.</p></div> : (
         <>
+          {secao === 'visitadas' && (
+          <section className="panel">
+            <h2>Unidades visitadas <small>{visitadas.length} de {doDistrito.length} · {totalVisitas} {totalVisitas === 1 ? 'visita' : 'visitas'}</small></h2>
+            <p className="dica">Cada unidade pode ser visitada quantas vezes for preciso. Toque numa data para abrir o relatório daquela visita.</p>
+            {!visitadas.length ? <p>Nenhuma vistoria concluída neste recorte ainda.</p> : (
+              <ul className="lista-visitadas">{visitadas.map(({ u, visitas }) => (
+                <li key={u.id}>
+                  <div><b>{u.name}</b><small>Distrito {u.district} · {u.kind} · {visitas.length} {visitas.length === 1 ? 'visita' : 'visitas'}</small></div>
+                  <div className="datas">{visitas.map((v) => (
+                    <button key={v.id} onClick={() => abrirRelatorio(v.id)} title={`Relatório de ${dataBR(v.inspected_on)}`}>📄 {dataBR(v.inspected_on)}{v.inspector ? <small>{v.inspector.split(' ')[0]}</small> : null}</button>
+                  ))}<button className="nova" onClick={() => iniciar(u)}>＋ Nova visita</button></div>
+                </li>
+              ))}</ul>
+            )}
+            {semVistoria.length > 0 && <button className="ver-faltam" onClick={() => mudarSecao('sem')}>📭 Faltam {semVistoria.length} {semVistoria.length === 1 ? 'unidade' : 'unidades'}: ver quais</button>}
+          </section>
+          )}
           {secao === 'ranking' && (
             <section className="panel">
             <h2>Ranking: unidades em pior situação</h2>
@@ -140,9 +166,11 @@ export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao 
           )}
           {secao === 'sem' && (
           <section className="panel">
-            <h2>Unidades ainda sem vistoria concluída <small>{semVistoria.length}</small></h2>
-            {!semVistoria.length ? <p>Todas as unidades já foram vistoriadas.</p> : (
-              <ul className="lista-sem">{semVistoria.map((u) => <li key={u.id}><b>{u.name}</b><small>Distrito {u.district} · {u.kind}</small></li>)}</ul>
+            <h2>Faltam vistoriar <small>{semVistoria.length} de {doDistrito.length}</small></h2>
+            {!semVistoria.length ? <p>Todas as unidades já foram vistoriadas.</p> : (<>
+              <p className="dica">Toque na unidade para começar a vistoria.</p>
+              <ul className="lista-sem">{semVistoria.map((u) => <li key={u.id}><button onClick={() => iniciar(u)}><b>{u.name}</b><small>Distrito {u.district} · {u.kind}</small><span>📝 Começar vistoria</span></button></li>)}</ul>
+            </>
             )}
           </section>
           )}
