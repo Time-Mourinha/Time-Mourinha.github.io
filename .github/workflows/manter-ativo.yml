@@ -77,6 +77,12 @@ jobs:
                 "(select count(*) from public.inspections where status='completed') as relatorios")[0]
           mb = t["total"] / 1048576
           print(f"Espaço usado: {mb:.1f} MB de 500 MB ({mb/5:.1f}%). Vistorias: {t['vistorias']/1024:.0f} KB em {t['relatorios']} relatório(s).")
+          partes = q("select n.nspname as esquema, sum(pg_total_relation_size(c.oid)) as bytes from pg_class c join pg_namespace n on n.oid = c.relnamespace "
+                     "where c.relkind in ('r','m','t') group by 1 order by 2 desc limit 8")
+          print("Onde está o espaço: " + " · ".join(f"{p['esquema']} {int(p['bytes'])/1048576:.1f} MB" for p in partes))
+          tabs = q("select c.relname as tabela, pg_total_relation_size(c.oid) as bytes from pg_class c join pg_namespace n on n.oid = c.relnamespace "
+                   "where n.nspname = 'public' and c.relkind = 'r' order by 2 desc")
+          print("Tabelas do app: " + " · ".join(f"{t['tabela']} {int(t['bytes'])/1024:.0f} KB" for t in tabs))
           if mb > 400:
               print("::warning::O banco passou de 400 MB. Hora de arquivar relatórios antigos em PDF.")
           PY
