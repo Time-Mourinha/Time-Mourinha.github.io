@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { problemasDaRede, ranking } from './lib/analise'
-import { PRIORIDADES, dataBR, type Unidade, type Vistoria } from './lib/modelo'
+import { PRIORIDADES, dataBR, type Unidade, type VisitaAntiga, type Vistoria } from './lib/modelo'
 import { Campo, Selo } from './ui'
 
 export type SecaoPainel = 'visitadas' | 'ranking' | 'problemas' | 'imediatas' | 'distritos' | 'sem'
 
 /** Painel da rede: piores unidades, problemas mais frequentes e situação por distrito. */
-export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao, iniciar }: {
-  unidades: Unidade[]; vistorias: Vistoria[]; abrirRelatorio: (id: string) => void; secao: SecaoPainel; mudarSecao: (s: SecaoPainel) => void
+export function Painel({ unidades, vistorias, historico = [], abrirRelatorio, secao, mudarSecao, iniciar }: {
+  unidades: Unidade[]; vistorias: Vistoria[]; historico?: VisitaAntiga[]; abrirRelatorio: (id: string) => void; secao: SecaoPainel; mudarSecao: (s: SecaoPainel) => void
   iniciar: (u: Unidade) => void
 }) {
   const [distrito, setDistrito] = useState('')
@@ -28,9 +28,14 @@ export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao,
     .filter((o) => o.priority === PRIORIDADES[0]).map((o) => ({ l, amb, o }))))
   const semVistoria = doDistrito.filter((u) => !linhas.some((l) => l.unidade.id === u.id))
   // Uma unidade pode ser visitada quantas vezes for preciso: aqui entram todas as visitas concluídas.
+  // relatórios completos + visitas antigas compactadas (só o resumo)
+  type Visita = { id: string; inspected_on: string; inspector: string; antiga?: VisitaAntiga }
+  const antigas = historico.filter((h) => (!de || h.inspected_on >= de) && (!ate || h.inspected_on <= ate))
   const visitadas = doDistrito.map((u) => ({
-    u, visitas: recorte.filter((v) => v.status === 'completed' && v.unit_id === u.id)
-      .sort((a, b) => (b.inspected_on + (b.updated_at ?? '')).localeCompare(a.inspected_on + (a.updated_at ?? ''))),
+    u, visitas: [
+      ...recorte.filter((v) => v.status === 'completed' && v.unit_id === u.id).map((v): Visita => ({ id: v.id, inspected_on: v.inspected_on, inspector: v.inspector })),
+      ...antigas.filter((h) => h.unit_id === u.id).map((h): Visita => ({ id: h.id, inspected_on: h.inspected_on, inspector: h.inspector, antiga: h })),
+    ].sort((a, b) => b.inspected_on.localeCompare(a.inspected_on)),
   })).filter((x) => x.visitas.length).sort((a, b) => b.visitas[0].inspected_on.localeCompare(a.visitas[0].inspected_on))
   const totalVisitas = visitadas.reduce((s, x) => s + x.visitas.length, 0)
   const SECOES: [SecaoPainel, string, string, number][] = [
@@ -76,12 +81,15 @@ export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao,
           {secao === 'visitadas' && (
           <section className="panel">
             <h2>Unidades visitadas <small>{visitadas.length} de {doDistrito.length} · {totalVisitas} {totalVisitas === 1 ? 'visita' : 'visitas'}</small></h2>
-            <p className="dica">Cada unidade pode ser visitada quantas vezes for preciso. Toque numa data para abrir o relatório daquela visita.</p>
+            <p className="dica">Cada unidade pode ser visitada quantas vezes for preciso. 📄 abre o relatório completo. 🗂️ é uma visita antiga: o relatório completo já foi para o PDF e aqui fica só o resumo (situação e principais problemas).</p>
             {!visitadas.length ? <p>Nenhuma vistoria concluída neste recorte ainda.</p> : (
               <ul className="lista-visitadas">{visitadas.map(({ u, visitas }) => (
                 <li key={u.id}>
                   <div><b>{u.name}</b><small>Distrito {u.district} · {u.kind} · {visitas.length} {visitas.length === 1 ? 'visita' : 'visitas'}</small></div>
-                  <div className="datas">{visitas.map((v) => (
+                  <div className="datas">{visitas.map((v) => v.antiga ? (
+                    <span key={v.id} className="data-antiga" title={`Resumo guardado: ${v.antiga.summary.problemas ?? 0} problema(s)${v.antiga.summary.principais?.length ? ' · ' + v.antiga.summary.principais.join(', ') : ''}`}>
+                      🗂️ {dataBR(v.inspected_on)}{v.antiga.summary.nivel ? <small>{v.antiga.summary.nivel}</small> : null}{v.inspector ? <small>{v.inspector.split(' ')[0]}</small> : null}</span>
+                  ) : (
                     <button key={v.id} onClick={() => abrirRelatorio(v.id)} title={`Relatório de ${dataBR(v.inspected_on)}`}>📄 {dataBR(v.inspected_on)}{v.inspector ? <small>{v.inspector.split(' ')[0]}</small> : null}</button>
                   ))}<button className="nova" onClick={() => iniciar(u)}>＋ Nova visita</button></div>
                 </li>

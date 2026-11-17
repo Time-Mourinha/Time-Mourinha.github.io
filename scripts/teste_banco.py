@@ -61,6 +61,21 @@ try:
     print("Conta removida =", not sql(f"select 1 from auth.users where id = '{uid}'"))
     r8 = requests.post(f"{URL}/rest/v1/rpc/remover_usuario", headers=adm, json={"alvo": uid2}, timeout=60)
     print("Remover a própria conta (deve recusar):", r8.status_code)
+
+    # --- compactar relatórios antigos: fica o último completo da unidade, o anterior vira resumo
+    v_old, v_new = str(uuid.uuid4()), str(uuid.uuid4())
+    sql(f"""set session_replication_role = replica;
+      insert into public.inspections (id, unit_id, owner, inspected_on, inspector, status, rooms, summary, completed_at, updated_at) values
+      ('{v_old}', 79, null, '2026-01-10', 'Teste Compacta', 'completed', '[]', '{{"nivel":"Alta","problemas":3,"principais":["Corrimãos"]}}', now() - interval '60 days', now() - interval '60 days'),
+      ('{v_new}', 79, null, '2026-02-10', 'Teste Compacta', 'completed', '[]', null, now() - interval '40 days', now() - interval '40 days');
+      set session_replication_role = origin;""")
+    n = sql("select public.compactar_relatorios(30) as n")[0]["n"]
+    ficou = sql(f"select id from public.inspections where id in ('{v_old}','{v_new}')")
+    hist = sql(f"select summary->>'nivel' as nivel from public.visit_history where id = '{v_old}'")
+    print("Compactar:", n, "compactado(s) | último completo ficou =", [x["id"] for x in ficou] == [v_new], "| resumo guardado =", hist[0]["nivel"] if hist else None)
+    lido = requests.get(f"{URL}/rest/v1/visit_history", headers=adm, params={"id": f"eq.{v_old}", "select": "inspected_on"}, timeout=60)
+    print("Histórico visível para a administração:", lido.status_code, len(lido.json()) if lido.ok else lido.text[:200])
+    sql(f"delete from public.inspections where id in ('{v_old}','{v_new}'); delete from public.visit_history where id = '{v_old}'")
 finally:
     sql(f"delete from public.inspections where id = '{vid}' or owner = '{uid}'")
     for x in [uid, *extras]:

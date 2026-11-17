@@ -1,7 +1,8 @@
 name: Manter banco ativo
 # O plano gratuito do Supabase pausa o projeto depois de 7 dias sem uso.
 # A cada 3 dias este robô consulta o banco para ele nunca pausar (e religa se pausar)
-# e faz a faxina: apaga rascunhos abandonados há 30 dias e registros técnicos antigos.
+# e faz a faxina: apaga rascunhos abandonados há 30 dias e registros técnicos antigos,
+# e compacta relatórios: fica o último completo de cada unidade; os anteriores (após 30 dias) viram só um resumo.
 # Não guarda nada e não tem custo.
 
 on:
@@ -66,6 +67,8 @@ jobs:
                   headers={"Authorization": "Bearer " + os.environ["SUPABASE_ACCESS_TOKEN"], "Content-Type": "application/json"})
               return json.load(urllib.request.urlopen(req))
           r = q(open("/tmp/faxina.sql").read())[0]
+          c = q("select public.compactar_relatorios(30) as n")[0]["n"]
+          print(f"Relatórios antigos compactados (viraram resumo; fica o último completo de cada unidade): {c}")
           print(f"Apagado: {r['rascunhos']} rascunho(s) parado(s) há mais de 30 dias, {r['registros_login']} registro(s) antigo(s) de login, "
                 f"{r['respostas_avisos']} resposta(s) de avisos, {r['tentativas_codigo']} tentativa(s) de código.")
           t = q("select pg_database_size(current_database()) as total, pg_total_relation_size('public.inspections') as vistorias, "

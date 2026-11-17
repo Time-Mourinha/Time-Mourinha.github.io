@@ -46,6 +46,20 @@ create table if not exists public.inspections (
 );
 create index if not exists inspections_unit on public.inspections(unit_id, inspected_on desc);
 alter table public.inspections add column if not exists photos jsonb not null default '[]'::jsonb;  -- galeria de fotos da visita
+alter table public.inspections add column if not exists summary jsonb;  -- resumo pequeno (situação, pontos, principais problemas)
+
+-- Visitas antigas compactadas: o relatório completo é apagado e fica só esta linha (poucos bytes).
+create table if not exists public.visit_history (
+  id uuid primary key,
+  unit_id int not null references public.units(id),
+  inspected_on date not null,
+  inspector text not null default '',
+  summary jsonb not null default '{}'::jsonb,
+  completed_at timestamptz,
+  compacted_at timestamptz not null default now()
+);
+create index if not exists visit_history_unit on public.visit_history(unit_id, inspected_on desc);
+
 -- Usuário removido: os relatórios dele ficam (sem dono); só o vínculo some.
 alter table public.inspections alter column owner drop not null;
 alter table public.inspections drop constraint if exists inspections_owner_fkey;
@@ -150,6 +164,34 @@ end $$;
 drop trigger if exists guard_inspection on public.inspections;
 create trigger guard_inspection before insert or update on public.inspections for each row execute function public.guard_inspection();
 
+-- ------------------------------------------------------------------ compactar relatórios antigos
+-- Fica o relatório completo só da ÚLTIMA vistoria de cada unidade (é ela que entra no painel e no ranking).
+-- Os anteriores, depois de 30 dias (tempo de reimprimir o PDF), viram uma linha de resumo e são apagados.
+create or replace function public.compactar_relatorios(dias int default 30) returns int language plpgsql security definer set search_path = public as $$
+declare n int;
+begin
+  with ultimas as (
+    select distinct on (unit_id) id from inspections where status = 'completed'
+    order by unit_id, inspected_on desc, completed_at desc nulls last
+  ), velhas as (
+    select i.* from inspections i
+    where i.status = 'completed' and i.id not in (select id from ultimas)
+      and coalesce(i.completed_at, i.updated_at) < now() - make_interval(days => dias)
+  ), guardadas as (
+    insert into visit_history (id, unit_id, inspected_on, inspector, summary, completed_at)
+    select id, unit_id, inspected_on, inspector,
+      coalesce(summary, jsonb_build_object('problemas', (select coalesce(sum(jsonb_array_length(coalesce(r->'findings', '[]'::jsonb))), 0) from jsonb_array_elements(rooms) r))),
+      completed_at
+    from velhas
+    on conflict (id) do nothing
+    returning id
+  )
+  delete from inspections where id in (select id from velhas);
+  get diagnostics n = row_count;
+  return n;
+end $$;
+revoke all on function public.compactar_relatorios(int) from public, anon, authenticated;
+
 -- ------------------------------------------------------------------ remover usuário
 -- Só a administração. Apaga a conta e os rascunhos dela; os relatórios concluídos ficam.
 create or replace function public.remover_usuario(alvo uuid) returns void language plpgsql security definer set search_path = public, auth as $$
@@ -191,6 +233,12 @@ drop policy if exists assign_read on public.unit_assignments;
 create policy assign_read on public.unit_assignments for select to authenticated using (user_id = auth.uid() or public.is_admin());
 drop policy if exists assign_admin on public.unit_assignments;
 create policy assign_admin on public.unit_assignments for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+alter table public.visit_history enable row level security;
+drop policy if exists hist_read on public.visit_history;
+create policy hist_read on public.visit_history for select to authenticated using (public.is_approved());
+drop policy if exists hist_admin_delete on public.visit_history;
+create policy hist_admin_delete on public.visit_history for delete to authenticated using (public.is_admin());
 
 drop policy if exists insp_read on public.inspections;
 create policy insp_read on public.inspections for select to authenticated using (public.can_access_unit(unit_id));

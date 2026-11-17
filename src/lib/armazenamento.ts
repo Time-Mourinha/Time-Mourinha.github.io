@@ -1,5 +1,5 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import type { Midia, Perfil, Unidade, Vistoria } from './modelo'
+import type { Midia, Perfil, Unidade, VisitaAntiga, Vistoria } from './modelo'
 
 const URL_SUPABASE = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const CHAVE_PUBLICA = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
@@ -73,6 +73,14 @@ export async function carregarVistorias(): Promise<Vistoria[]> {
   const { data, error } = await sb!.from('inspections').select('*').order('inspected_on', { ascending: false })
   falhou(error)
   return (data ?? []) as Vistoria[]
+}
+
+/** Visitas antigas já compactadas (só o resumo). */
+export async function carregarHistorico(): Promise<VisitaAntiga[]> {
+  if (!sb) return []
+  const { data, error } = await sb.from('visit_history').select('id,unit_id,inspected_on,inspector,summary').order('inspected_on', { ascending: false })
+  if (error) return []   // histórico nunca impede o app de abrir
+  return (data ?? []) as VisitaAntiga[]
 }
 
 export async function salvarVistoria(v: Vistoria) {

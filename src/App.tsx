@@ -3,10 +3,10 @@ import { Campo, Selo, VerMidia } from './ui'
 import marca from './assets/marca.png'
 import {
   LIMITE_BYTES, PRIORIDADES, linkMapa, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, resumoPrioridade, semAcento,
-  type Ambiente, type Midia, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
+  type Ambiente, type Midia, type VisitaAntiga, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
-  DEMO, apagarFotosLocais, excluirVistoria, carregarPerfil, carregarUnidades, carregarVistorias, gravarDemo, lerDemo,
+  DEMO, apagarFotosLocais, excluirVistoria, carregarPerfil, carregarHistorico, carregarUnidades, carregarVistorias, gravarDemo, lerDemo,
   limparFotosAntigas, midiaDemo, salvarVistoria, sb, temFotosLocais,
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
@@ -16,7 +16,7 @@ import { Aparencia } from './Aparencia'
 import { Instalar } from './Instalar'
 import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
-import { problemasDaRede, ranking, resumir } from './lib/analise'
+import { compactar, problemasDaRede, ranking, resumir } from './lib/analise'
 import { reduzirImagem } from './lib/imagem'
 
 type Tela = 'inicio' | 'unidades' | 'painel' | 'vistoria' | 'relatorios' | 'acessos'
@@ -74,6 +74,7 @@ export default function App() {
   const [carregando, setCarregando] = useState(!DEMO)
   const [unidades, setUnidades] = useState<Unidade[]>(DEMO ? UNIDADES : [])
   const [vistorias, setVistorias] = useState<Vistoria[]>(DEMO ? lerDemo() : [])
+  const [historico, setHistorico] = useState<VisitaAntiga[]>([])
   const [tela, setTela] = useState<Tela>((location.hash.slice(1) as Tela) || 'inicio')
   const [secaoPainel, setSecaoPainel] = useState<SecaoPainel>('ranking')
   const [aberta, setAberta] = useState<Vistoria | null>(null)
@@ -146,8 +147,8 @@ export default function App() {
       const p = await carregarPerfil()
       setPerfil(p)
       if (p?.approved) {
-        const [u, v] = await Promise.all([carregarUnidades(), carregarVistorias()])
-        setUnidades(u); setVistorias(v)
+        const [u, v, h] = await Promise.all([carregarUnidades(), carregarVistorias(), carregarHistorico()])
+        setUnidades(u); setVistorias(v); setHistorico(h)
         void limparFotosAntigas(v)
         if (p.role === 'admin') {
           const { count } = await sb!.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false).eq('needs_code', false)
@@ -297,7 +298,8 @@ export default function App() {
     await executar(async () => {
       // ação em branco não trava: entra a ação padrão (dá para editar depois)
       const rooms = aberta.rooms.map((r) => ({ ...r, findings: r.findings.map((f) => (f.action.trim() ? f : { ...f, action: 'Verificar e corrigir.' })) }))
-      const v: Vistoria = { ...aberta, rooms, inspector, status: 'completed' }
+      const pronta: Vistoria = { ...aberta, rooms, inspector, status: 'completed' }
+      const v: Vistoria = { ...pronta, summary: compactar(pronta) }
       await gravar(v); setAberta(v); setPendente(false); setRelatorioId(v.id); ir('relatorios')
       setAviso('Vistoria concluída. Abrindo o PDF do relatório…')
       imprimirDepois.current = true
@@ -420,7 +422,7 @@ export default function App() {
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
           ) :
 
-          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} secao={secaoPainel} mudarSecao={setSecaoPainel} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} iniciar={(u) => abrir(u)} /> :
+          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} historico={historico} secao={secaoPainel} mudarSecao={setSecaoPainel} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} iniciar={(u) => abrir(u)} /> :
 
           tela === 'relatorios' ? (
             <>

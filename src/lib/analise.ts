@@ -1,4 +1,4 @@
-import { PRIORIDADES, checklistDoAmbiente, semAcento, type Ocorrencia, type Unidade, type Vistoria } from './modelo'
+import { PRIORIDADES, checklistDoAmbiente, semAcento, type Ocorrencia, type ResumoCompacto, type Unidade, type Vistoria } from './modelo'
 
 /* Respostas do checklist que indicam problema, da mais grave para a mais leve */
 export const RESPOSTAS_PROBLEMA = ['Faltante', 'Substituição', 'Reparo'] as const
@@ -144,6 +144,13 @@ export function resumir(v: Vistoria): Resumo {
     ambientes: v.rooms.length, respondidos, total, ok, problemas: lista.length, naoTestados, naoSeAplica,
     ocorrencias: ocorr.length, porPrioridade, pontos, nivel: nivelDe(pontos, porPrioridade['Imediata'] ?? 0, geral), listaChecklist: lista,
   }
+}
+
+/** Resumo pequeno guardado junto do relatório (e que fica quando o relatório antigo é apagado). */
+export function compactar(v: Vistoria): ResumoCompacto {
+  const r = resumir(v)
+  return { nivel: r.nivel.nome, pontos: r.pontos, problemas: r.problemas + r.ocorrencias, imediatas: r.porPrioridade['Imediata'] ?? 0,
+    principais: principaisProblemas(v, 5).map((p) => p.titulo) }
 }
 
 /** Principais problemas de uma vistoria: ocorrências (pela prioridade) e itens do checklist, agrupados com o impacto. */

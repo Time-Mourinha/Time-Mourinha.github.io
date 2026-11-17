@@ -10,7 +10,12 @@ export type Ambiente = { id: string; name: string; checks: Record<string, string
 export type Vistoria = {
   id: string; unit_id: number; owner?: string; inspected_on: string; inspector: string
   status: 'draft' | 'completed'; rooms: Ambiente[]; photos?: Midia[]; general_reason: string; general_by: string; updated_at?: string; created_at?: string
+  summary?: ResumoCompacto
 }
+/** Resumo de poucos bytes que fica para sempre; o relatório completo antigo é apagado para o banco não encher. */
+export type ResumoCompacto = { nivel: string; pontos: number; problemas: number; imediatas: number; principais: string[] }
+/** Visita antiga já compactada: só data, quem fez e o resumo. */
+export type VisitaAntiga = { id: string; unit_id: number; inspected_on: string; inspector: string; summary: Partial<ResumoCompacto> }
 export type Perfil = { id: string; email: string; name?: string; approved: boolean; role: 'inspector' | 'admin'; needs_code: boolean; created_at?: string }
 
 /** Catálogo das 80 unidades dos oito distritos sanitários (lista da SMS de 13/11/2026). */
