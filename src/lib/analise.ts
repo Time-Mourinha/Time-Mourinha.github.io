@@ -1,4 +1,4 @@
-import { CHECKLIST, PRIORIDADES, itensDoAmbiente, semAcento, type Ocorrencia, type Unidade, type Vistoria } from './modelo'
+import { PRIORIDADES, checklistDoAmbiente, semAcento, type Ocorrencia, type Unidade, type Vistoria } from './modelo'
 
 /* Respostas do checklist que indicam problema, da mais grave para a mais leve */
 export const RESPOSTAS_PROBLEMA = ['Faltante', 'Substituição', 'Reparo'] as const
@@ -118,11 +118,14 @@ export function resumir(v: Vistoria): Resumo {
   const lista: ProblemaChecklist[] = []
   let respondidos = 0, total = 0, ok = 0, naoTestados = 0, naoSeAplica = 0
   for (const amb of v.rooms) {
-    const grupos = { ...CHECKLIST, ...(itensDoAmbiente(amb.name).length ? { 'Itens do ambiente': itensDoAmbiente(amb.name) } : {}) }
-    for (const [grupo, itens] of Object.entries(grupos)) {
-      for (const item of itens) {
+    // itens do tipo de ambiente + qualquer outro item que tenha sido respondido
+    const chaves = new Set(Object.entries(checklistDoAmbiente(amb.name)).flatMap(([g, its]) => its.map((it) => g + ' · ' + it)))
+    for (const k of Object.keys(amb.checks)) if (amb.checks[k]) chaves.add(k)
+    for (const chave of chaves) {
+      {
+        const [grupo, item] = chave.split(' · ')
         total++
-        const r = amb.checks[grupo + ' · ' + item]
+        const r = amb.checks[chave]
         if (!r) continue
         respondidos++
         if (r === 'OK') ok++

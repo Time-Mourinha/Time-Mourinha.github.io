@@ -87,7 +87,11 @@ export default function App() {
   const unidadeAberta = unidades.find((u) => u.id === aberta?.unit_id)
   const bloqueada = aberta?.status === 'completed' && !DEMO && !admin
 
-  function ir(t: Tela) { location.hash = t; setTela(t); setErro(''); setAviso(''); window.scrollTo(0, 0) }
+  function ir(t: Tela) {
+    location.hash = t; setTela(t); setErro(''); setAviso('')
+    if (t === 'unidades') setTimeout(() => document.getElementById('lista-unidades')?.scrollIntoView({ block: 'start' }), 60)
+    else window.scrollTo(0, 0)
+  }
   function abrirPainel(s: SecaoPainel) { setSecaoPainel(s); ir('painel') }
 
   useEffect(() => {
@@ -334,8 +338,8 @@ export default function App() {
     .filter((x) => (!fPrioridade || x.f.priority === fPrioridade) && (!fAmbiente || semAcento(x.r.name).includes(semAcento(fAmbiente))))
     .sort((a, b) => PRIORIDADES.indexOf(a.f.priority) - PRIORIDADES.indexOf(b.f.priority))
   const distritos = [...new Set(unidades.map((u) => u.district))]
-  // rascunhos mexidos nas últimas 6 horas = gente em visita agora
-  const emVisita = vistorias.filter((v) => v.status === 'draft' && v.updated_at && Date.now() - Date.parse(v.updated_at) < 6 * 3600e3)
+  // rascunhos mexidos nas últimas 12 horas = gente em visita agora
+  const emVisita = vistorias.filter((v) => v.status === 'draft' && v.updated_at && Date.now() - Date.parse(v.updated_at) < 12 * 3600e3)
 
   function exportarCsv() {
     const cel = (t: string) => '"' + (/^[\s\u0000-\u001f]*[=+@-]/.test(t) ? "'" + t : t).replaceAll('"', '""') + '"'
@@ -372,50 +376,6 @@ export default function App() {
               anexar={(destino, l) => void anexar(destino, l)} concluir={() => void concluir()}
               excluir={aberta.status === 'draft' && (DEMO || admin || aberta.owner === perfil?.id || !aberta.owner) ? () => excluir(aberta) : undefined}
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
-          ) :
-
-          tela === 'inicio' ? (
-            <>
-              <div className="hero">
-                <p className="eyebrow">SECRETARIA EXECUTIVA · GABINETE DO PREFEITO</p>
-                <h1>{perfil?.name ? `Olá, ${perfil.name.split(' ')[0]}!` : 'Vistorias das unidades'}</h1>
-                <p>Fiscalização das unidades da rede municipal de saúde. Escolha a unidade e toque em <b>Nova vistoria</b>; tudo é salvo sozinho enquanto você preenche.</p>
-              </div>
-              {!DEMO && perfil && !perfil.name && <PedirNome aoSalvar={(n) => setPerfil({ ...perfil, name: n })} />}
-              {meusRascunhos.length > 0 && (
-                <div className="panel continuar">
-                  <h2>Continue de onde parou</h2>
-                  {meusRascunhos.map((v) => {
-                    const u = unidades.find((x) => x.id === v.unit_id)
-                    return u && (
-                      <div key={v.id} className="continuar-linha">
-                        <button className="continuar-item" onClick={() => abrir(u, v)}>
-                          <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.reduce((s, r) => s + r.findings.length, 0)} problema(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
-                          <b>Retomar →</b>
-                        </button>
-                        <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho" title="Excluir rascunho">🗑️</button>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-              {emVisita.length > 0 && (
-                <div className="panel em-visita-lista">
-                  <h2>🟢 Em visita agora <small>{emVisita.length}</small></h2>
-                  {emVisita.map((x) => <p key={x.id}><strong>{x.inspector || 'Vistoriador'}</strong> · {unidades.find((u) => u.id === x.unit_id)?.name} · desde {new Date(x.created_at ?? x.updated_at ?? '').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Maceio' })}</p>)}
-                </div>
-              )}
-              <div className="atalhos">
-                <Atalho ic="📝" t="Nova vistoria" n={String(unidades.length)} e="Escolher a unidade e começar" onClick={() => ir('unidades')} destaque />
-                <Atalho ic="🏆" t="Ranking" n={String(rank.filter((l) => ['Crítica', 'Alta'].includes(l.resumo.nivel.nome)).length)} e="Unidades em pior situação" onClick={() => abrirPainel('ranking')} />
-                <Atalho ic="⚠️" t="Principais problemas" n={String(problemasRede)} e="O que mais se repete na rede e o que causa" onClick={() => abrirPainel('problemas')} />
-                <Atalho ic="🚨" t="Ações imediatas" n={String(imediatas)} e="O que precisa ser resolvido já" onClick={() => abrirPainel('imediatas')} alerta={imediatas > 0} />
-                <Atalho ic="🗺️" t="Por distrito" n={String(new Set(rank.map((l) => l.unidade.district)).size) + '/8'} e="Situação de cada distrito sanitário" onClick={() => abrirPainel('distritos')} />
-                <Atalho ic="📭" t="Sem vistoria" n={String(unidades.length - rank.length)} e="Unidades que ainda não foram vistoriadas" onClick={() => abrirPainel('sem')} />
-                <Atalho ic="📄" t="Relatórios" n={String(concluidas.length)} e="Vistorias concluídas, para imprimir em PDF" onClick={() => { setRelatorioId(''); ir('relatorios') }} />
-                {admin && <Atalho ic="👥" t="Acessos" n={String(pedidos)} e="Pedidos de acesso para aprovar" onClick={() => ir('acessos')} alerta={pedidos > 0} />}
-              </div>
-            </>
           ) :
 
           tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} secao={secaoPainel} mudarSecao={setSecaoPainel} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} /> :
@@ -476,11 +436,52 @@ export default function App() {
             </>
           ) : (
             <>
-              <div className="heading"><div>
-                <p className="eyebrow">UNIDADES · {unidades.length}</p>
-                <h1>Escolha a unidade</h1>
-                <p>Toque em <b>Nova vistoria</b> na unidade onde você está.</p>
-              </div></div>
+              <div className="hero">
+                <p className="eyebrow">SECRETARIA EXECUTIVA · GABINETE DO PREFEITO</p>
+                <h1>{perfil?.name ? `Olá, ${perfil.name.split(' ')[0]}!` : 'Vistorias das unidades'}</h1>
+                <p>Fiscalização das unidades da rede municipal de saúde. Escolha a unidade e toque em <b>Nova vistoria</b>; tudo é salvo sozinho enquanto você preenche.</p>
+              </div>
+              {!DEMO && perfil && !perfil.name && <PedirNome aoSalvar={(n) => setPerfil({ ...perfil, name: n })} />}
+              {meusRascunhos.length > 0 && (
+                <div className="panel continuar">
+                  <h2>Continue de onde parou</h2>
+                  {meusRascunhos.map((v) => {
+                    const u = unidades.find((x) => x.id === v.unit_id)
+                    return u && (
+                      <div key={v.id} className="continuar-linha">
+                        <button className="continuar-item" onClick={() => abrir(u, v)}>
+                          <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.reduce((s, r) => s + r.findings.length, 0)} problema(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
+                          <b>Retomar →</b>
+                        </button>
+                        <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho" title="Excluir rascunho">🗑️</button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+              {(
+                <div className="panel em-visita-lista">
+                  <h2>🟢 Em visita agora <small>{emVisita.length}</small></h2>
+                  {!emVisita.length && <p className="dica">Ninguém em visita neste momento.</p>}
+                  {emVisita.map((x) => <p key={x.id}><strong>{x.inspector || 'Vistoriador'}</strong> · {unidades.find((u) => u.id === x.unit_id)?.name} · desde {new Date(x.created_at ?? x.updated_at ?? '').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Maceio' })}</p>)}
+                </div>
+              )}
+              <div className="stats">
+                <div><strong>{unidades.length}</strong><span>Unidades disponíveis</span></div>
+                <div><strong>{vistorias.filter((v) => v.status === 'draft').length}</strong><span>Rascunhos</span></div>
+                <div><strong>{concluidas.length}</strong><span>Vistorias concluídas</span></div>
+              </div>
+              <div className="atalhos">
+                <Atalho ic="📝" t="Nova vistoria" n={String(unidades.length)} e="Escolher a unidade e começar" onClick={() => ir('unidades')} destaque />
+                <Atalho ic="🏆" t="Ranking" n={String(rank.filter((l) => ['Crítica', 'Alta'].includes(l.resumo.nivel.nome)).length)} e="Unidades em pior situação" onClick={() => abrirPainel('ranking')} />
+                <Atalho ic="⚠️" t="Principais problemas" n={String(problemasRede)} e="O que mais se repete na rede e o que causa" onClick={() => abrirPainel('problemas')} />
+                <Atalho ic="🚨" t="Ações imediatas" n={String(imediatas)} e="O que precisa ser resolvido já" onClick={() => abrirPainel('imediatas')} alerta={imediatas > 0} />
+                <Atalho ic="🗺️" t="Por distrito" n={String(new Set(rank.map((l) => l.unidade.district)).size) + '/8'} e="Situação de cada distrito sanitário" onClick={() => abrirPainel('distritos')} />
+                <Atalho ic="📭" t="Sem vistoria" n={String(unidades.length - rank.length)} e="Unidades que ainda não foram vistoriadas" onClick={() => abrirPainel('sem')} />
+                <Atalho ic="📄" t="Relatórios" n={String(concluidas.length)} e="Vistorias concluídas, para imprimir em PDF" onClick={() => { setRelatorioId(''); ir('relatorios') }} />
+                {admin && <Atalho ic="👥" t="Acessos" n={String(pedidos)} e="Pedidos de acesso para aprovar" onClick={() => ir('acessos')} alerta={pedidos > 0} />}
+              </div>
+              <h2 id="lista-unidades" className="titulo-lista">Unidades <small>{filtradas.length}</small></h2>
               <div className="panel busca">
                 <input type="search" className="busca-campo" placeholder="🔎 Buscar por nome, bairro, CNES ou endereço" value={busca} onChange={(e) => setBusca(e.target.value)} aria-label="Buscar unidade" />
                 <div className="chips" role="group" aria-label="Distrito">
@@ -494,7 +495,6 @@ export default function App() {
                   <select className="chip-select" value={tipo} onChange={(e) => setTipo(e.target.value)} aria-label="Tipo de unidade"><option value="">Todos os tipos</option>{[...new Set(unidades.map((u) => u.kind))].sort().map((k) => <option key={k}>{k}</option>)}</select>
                 </div>
               </div>
-              <h2>Unidades <small>{filtradas.length}</small></h2>
               {!filtradas.length && <p>Nenhuma unidade disponível neste recorte.</p>}
               <div className="cards">
                 {filtradas.map((u) => {

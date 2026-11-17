@@ -42,6 +42,31 @@ export function itensDoAmbiente(nome: string): string[] {
   return []
 }
 
+/* Que grupos e itens cada tipo de ambiente mostra. Ambiente criado com outro nome mostra a lista completa. */
+const SO = (grupo: string, itens?: string[]) => [grupo, itens ?? CHECKLIST[grupo]] as const
+const INTERNO_BASICO = [SO('Conservação'), SO('Portas e janelas'), SO('Elétrica e climatização')]
+const PERFIS: [RegExp, (readonly [string, string[]])[]][] = [
+  [/^area externa|^fachada|^estacionamento|^patio|^jardim/, [SO('Área externa'), SO('Elétrica e climatização', ['Lâmpadas e luminárias', 'Fiação visível'])]],
+  [/^recepcao|^espera|^triagem|^acolhimento/, [...INTERNO_BASICO, SO('Mobília e equipamentos', ['Mesas e cadeiras', 'Armários e bancadas', 'Informática e rede']), SO('Uso e segurança')]],
+  [/^consultorio|^sala de curativo|^curativo|^procedimento/, [...INTERNO_BASICO, SO('Hidráulica e sanitários', ['Torneiras e pias', 'Insumos de higiene']), SO('Mobília e equipamentos'), SO('Uso e segurança', ['Privacidade e limpeza'])]],
+  [/^vacina/, [...INTERNO_BASICO, SO('Hidráulica e sanitários', ['Torneiras e pias', 'Insumos de higiene']), SO('Mobília e equipamentos', ['Mesas e cadeiras', 'Armários e bancadas', 'Informática e rede'])]],
+  [/^farmacia|^almoxarifado/, [...INTERNO_BASICO, SO('Mobília e equipamentos', ['Armários e bancadas', 'Informática e rede']), SO('Uso e segurança', ['Passagem e acessibilidade', 'Privacidade e limpeza'])]],
+  [/^sanitario|^banheiro|^wc/, [SO('Conservação'), SO('Portas e janelas', ['Folhas e batentes', 'Maçanetas e trincos', 'Fechaduras e chaves']), SO('Elétrica e climatização', ['Lâmpadas e luminárias', 'Interruptores', 'Tomadas e espelhos']), SO('Hidráulica e sanitários'), SO('Uso e segurança', ['Passagem e acessibilidade', 'Privacidade e limpeza'])]],
+  [/^odonto/, [...INTERNO_BASICO, SO('Hidráulica e sanitários', ['Torneiras e pias', 'Ralos, vazamentos e escoamento', 'Insumos de higiene']), SO('Mobília e equipamentos', ['Armários e bancadas', 'Macas e equipamentos'])]],
+  [/^esteriliza|^expurgo/, [...INTERNO_BASICO, SO('Hidráulica e sanitários', ['Torneiras e pias', 'Ralos, vazamentos e escoamento', 'Insumos de higiene']), SO('Mobília e equipamentos', ['Armários e bancadas'])]],
+  [/^abrigo de residuos|^residuos|^lixo/, [SO('Conservação', ['Paredes e pintura', 'Piso, rodapés e soleiras']), SO('Portas e janelas', ['Folhas e batentes', 'Fechaduras e chaves', 'Vedação e grades'])]],
+  [/^sala de convivencia|^dormitorio|^copa|^cozinha|^administracao|^sala de reuniao/, [...INTERNO_BASICO, SO('Mobília e equipamentos', ['Mesas e cadeiras', 'Armários e bancadas']), SO('Uso e segurança')]],
+]
+
+/** Checklist do ambiente: só o que existe naquele lugar (+ itens específicos, como rede de frio na vacinação). */
+export function checklistDoAmbiente(nome: string): Record<string, string[]> {
+  const n = semAcento(nome).trim()
+  const perfil = PERFIS.find(([re]) => re.test(n))
+  const base: Record<string, string[]> = perfil ? Object.fromEntries(perfil[1].map(([g, i]) => [g, [...i]])) : { ...CHECKLIST }
+  const extras = itensDoAmbiente(nome)
+  return extras.length ? { ...base, 'Itens do ambiente': extras } : base
+}
+
 export const AMBIENTES_SUGERIDOS = ['Área externa', 'Recepção', 'Consultório 01', 'Vacinação', 'Farmácia', 'Sanitário acessível', 'Odontologia', 'Esterilização', 'Abrigo de resíduos']
 
 export const novoId = () => crypto.randomUUID()

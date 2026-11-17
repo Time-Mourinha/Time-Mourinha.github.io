@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { IMPACTOS } from './lib/analise'
 import {
-  AMBIENTES_SUGERIDOS, CHECKLIST, PRIORIDADES, TIPOS_ACEITOS, itensDoAmbiente, maiorPrioridade, novoId,
+  AMBIENTES_SUGERIDOS, PRIORIDADES, TIPOS_ACEITOS, checklistDoAmbiente, maiorPrioridade, novoId,
   type Ambiente, type Midia, type Ocorrencia, type Unidade, type Vistoria,
 } from './lib/modelo'
 import { Campo, Selo, VerMidia } from './ui'
@@ -53,6 +53,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
     }
     setTimeout(() => document.querySelector('.form-vistoria .falta')?.scrollIntoView({ block: 'center' }), 350)
   }, [faltas])
+  const atual = v.rooms.find((r) => r.id === abertoAmb)
   const sugeridos = [...AMBIENTES_SUGERIDOS, ...(u.kind === 'CAPS' ? ['Sala de convivência', 'Dormitório'] : [])]
 
   function trocarAmbiente(a: Ambiente) { mudar({ ...v, rooms: v.rooms.map((r) => (r.id === a.id ? a : r)) }) }
@@ -134,43 +135,65 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
       {bloqueada && <div className="banner">Vistoria concluída: só a administração pode alterar.</div>}
 
       <fieldset disabled={ocupado || bloqueada} className="plain">
-        <div className="panel grid">
+        <div className="panel grid dados-visita">
           <Campo label="Data" falta={falta('data')}><input type="date" value={v.inspected_on} onChange={(e) => mudar({ ...v, inspected_on: e.target.value })} /></Campo>
           <Campo label="Vistoriador(a)" falta={falta('vistoriador')}><input value={v.inspector} onChange={(e) => mudar({ ...v, inspector: e.target.value })} /></Campo>
         </div>
 
-        <div className={'panel' + (falta('conteudo') ? ' falta' : '')}>
-          <h2 className="passo">1. Em que ambiente ou setor você está?</h2>
+        {/* Ambientes: um por vez. Os botões de cima trocam de ambiente; "+ Ambiente" cria outro. */}
+        <div className={'panel ambientes-bar' + (falta('conteudo') ? ' falta' : '')}>
+          <h2 className="passo">Ambientes desta vistoria</h2>
           {falta('conteudo') && <p className="falta-msg">Adicione pelo menos um ambiente ou uma foto da visita para concluir.</p>}
-          <p className="dica">Toque num dos mais comuns ou escreva o nome do setor do jeito que ele é chamado na unidade.</p>
-          <div className="row outro">
-            <input value={outro} placeholder="Nome do setor (ex.: Sala de curativo, Triagem, Almoxarifado)" onChange={(e) => setOutro(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') adicionarAmbiente(outro) }} />
-            <button className="primary" disabled={!outro.trim()} onClick={() => adicionarAmbiente(outro)}>Adicionar</button>
-          </div>
-          <div className="chips">
-            {sugeridos.map((a) => <button key={a} className={'chip' + (v.rooms.some((r) => r.name === a) ? ' feito' : '')} onClick={() => adicionarAmbiente(a)}>+ {a}</button>)}
+          <div className="chips amb-chips">
+            {v.rooms.map((r) => {
+              const tot = Object.values(checklistDoAmbiente(r.name)).flat().length
+              const fe = Object.values(r.checks).filter(Boolean).length
+              return (
+                <button key={r.id} className={'chip amb-chip' + (abertoAmb === r.id ? ' ativo' : '') + (fe >= tot ? ' completo' : '')} onClick={() => setAbertoAmb(r.id)}>
+                  {r.name}<small>{fe}/{tot}{r.findings.length ? ` · ${r.findings.length}⚠️` : ''}</small>
+                </button>
+              )
+            })}
+            <button className={'chip amb-novo' + (!atual ? ' ativo' : '')} onClick={() => setAbertoAmb('')}>＋ Ambiente</button>
           </div>
         </div>
 
-        {v.rooms.length > 0 && <h2 className="passo">2. Em cada ambiente, toque na situação de cada item</h2>}
-        {v.rooms.map((amb, i) => {
-          const grupos = { ...CHECKLIST, ...(itensDoAmbiente(amb.name).length ? { 'Itens do ambiente': itensDoAmbiente(amb.name) } : {}) }
+        {!atual ? (
+          <div className="panel">
+            <h2 className="passo">Em que ambiente você está?</h2>
+            <p className="dica">Toque no ambiente. Se ele não estiver na lista, crie com o nome que é usado na unidade.</p>
+            <div className="chips quebra">
+              {sugeridos.filter((a) => !v.rooms.some((r) => r.name === a)).map((a) => <button key={a} className="chip" onClick={() => adicionarAmbiente(a)}>{a}</button>)}
+            </div>
+            <div className="criar-amb">
+              <label htmlFor="novo-amb"><b>➕ Criar ambiente</b> <small>(vem com todas as opções)</small></label>
+              <div className="row outro">
+                <input id="novo-amb" value={outro} placeholder="Ex.: Sala de curativo, Triagem, Almoxarifado" onChange={(e) => setOutro(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') adicionarAmbiente(outro) }} />
+                <button className="primary" disabled={!outro.trim()} onClick={() => adicionarAmbiente(outro)}>Criar</button>
+              </div>
+            </div>
+          </div>
+        ) : (() => {
+          const amb = atual
+          const grupos = checklistDoAmbiente(amb.name)
           const total = Object.values(grupos).flat().length
           const feitos = Object.values(amb.checks).filter(Boolean).length
-          const aberto = abertoAmb === amb.id
+          const i = v.rooms.findIndex((r) => r.id === amb.id)
+          const proximo = v.rooms[i + 1]
           return (
-            <section className={'panel ambiente' + (aberto ? ' aberto' : '')} key={amb.id}>
-              <button className="amb-cabeca" onClick={() => setAbertoAmb(aberto ? '' : amb.id)} aria-expanded={aberto}>
-                <span><strong>{i + 1}. {amb.name}</strong><small>{feitos}/{total} itens · {amb.findings.length} problema(s)</small></span>
-                <span className="amb-dir">{maiorPrioridade(amb.findings) && <Selo value={maiorPrioridade(amb.findings)} />}<i>{aberto ? '▲' : '▼'}</i></span>
-              </button>
-              <i className="barra"><b style={{ width: `${(feitos / total) * 100}%` }} /></i>
-              {aberto && (
-                <>
-                  <div className="row renomear">
-                    <Campo label="Nome do ambiente"><input value={amb.name} onChange={(e) => trocarAmbiente({ ...amb, name: e.target.value })} /></Campo>
-                    <button className="quiet" onClick={() => { if (confirm(`Tirar "${amb.name}" desta vistoria?`)) mudar({ ...v, rooms: v.rooms.filter((r) => r.id !== amb.id) }) }}>Remover ambiente</button>
-                  </div>
+            <section className="panel ambiente aberto" key={amb.id}>
+              <div className="amb-cabeca">
+                <span><strong>{amb.name}</strong><small>{feitos}/{total} itens · {amb.findings.length} problema(s)</small></span>
+                <span className="amb-dir">{maiorPrioridade(amb.findings) && <Selo value={maiorPrioridade(amb.findings)} />}</span>
+              </div>
+              <i className="barra"><b style={{ width: `${(feitos / Math.max(1, total)) * 100}%` }} /></i>
+              <details className="amb-opcoes">
+                <summary>Renomear ou remover este ambiente</summary>
+                <div className="row renomear">
+                  <Campo label="Nome do ambiente"><input value={amb.name} onChange={(e) => trocarAmbiente({ ...amb, name: e.target.value })} /></Campo>
+                  <button className="quiet" onClick={() => { if (confirm(`Tirar "${amb.name}" desta vistoria?`)) { mudar({ ...v, rooms: v.rooms.filter((r) => r.id !== amb.id) }); setAbertoAmb('') } }}>Remover ambiente</button>
+                </div>
+              </details>
                   {Object.entries(grupos).map(([grupo, itens]) => {
                     const resp = itens.filter((it) => amb.checks[grupo + ' · ' + it]).length
                     return (
@@ -244,12 +267,15 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                       </article>
                     ))}
                   </div>
-                  <small className="dica">Evite fotografar pacientes, prontuários ou telas.</small>
-                </>
-              )}
+              <small className="dica">Evite fotografar pacientes, prontuários ou telas.</small>
+              <div className="amb-fim">
+                {proximo
+                  ? <button className="primary" onClick={() => { setAbertoAmb(proximo.id); window.scrollTo(0, 0) }}>Próximo: {proximo.name} →</button>
+                  : <button className="primary" onClick={() => { setAbertoAmb(''); window.scrollTo(0, 0) }}>✓ Terminei · ir para outro ambiente</button>}
+              </div>
             </section>
           )
-        })}
+        })()}
 
         <details className={'panel' + (falta('validacao') ? ' falta' : '')} open={falta('validacao') || undefined}>
           <summary>A unidade inteira precisa de intervenção imediata?</summary>
@@ -288,7 +314,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
         <div className="barra-final no-print">
           <label className="btn-arquivo">📷 Foto<input type="file" multiple accept={TIPOS_ACEITOS.join(',')} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar({ roomId: abertoAmb || undefined }, l) }} /></label>
           <button disabled={!pendente} onClick={salvar}>Salvar</button>
-          <button className="primary" onClick={concluir}>Concluir e gerar relatório</button>
+          <button className="primary" onClick={concluir}>✓ Concluir<span className="so-pc"> e gerar relatório</span></button>
         </div>
       </fieldset>
     </div>
