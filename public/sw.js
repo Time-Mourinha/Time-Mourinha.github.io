@@ -1,6 +1,6 @@
 // Formulário de Vistoria Saúde — funciona como aplicativo instalado e recebe avisos.
 // Sempre busca a versão nova; o que ficou guardado só é usado sem internet.
-const CACHE = 'vistoria-v1'
+const CACHE = 'vistoria-v2'
 
 self.addEventListener('install', () => self.skipWaiting())
 self.addEventListener('activate', (e) => {
@@ -10,8 +10,10 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return // banco, fotos e mapas: direto
+  // página principal: sempre confere a versão nova no servidor (não usa a cópia guardada do navegador)
+  const pedido = req.mode === 'navigate' ? new Request(req, { cache: 'no-cache' }) : req
   e.respondWith(
-    fetch(req)
+    fetch(pedido)
       .then((r) => { if (r.ok) { const c = r.clone(); caches.open(CACHE).then((x) => x.put(req, c)) } return r })
       .catch(() => caches.match(req).then((r) => r || caches.match('./')))
   )

@@ -120,7 +120,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
   function mudarOcorrencia(amb: Ambiente, o: Ocorrencia) { trocarAmbiente({ ...amb, findings: amb.findings.map((f) => (f.id === o.id ? o : f)) }) }
 
   return (
-    <div className="form-vistoria">
+    <div className="form-vistoria" data-pendente={pendente ? 'sim' : 'nao'}>
       <div className="heading">
         <div>
           <p className="eyebrow">VISTORIA · DISTRITO {u.district}</p>
