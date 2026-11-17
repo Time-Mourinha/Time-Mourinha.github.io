@@ -197,9 +197,10 @@ begin
     from velhas left join report_files rf on rf.inspection_id = velhas.id
     on conflict (id) do nothing
     returning id
+  ), apagadas as (
+    delete from inspections where id in (select id from velhas) returning 1
   )
-  delete from inspections where id in (select id from velhas);
-  get diagnostics n = row_count;
+  select count(*) into n from apagadas;
   return n;
 end $$;
 revoke all on function public.compactar_relatorios(int) from public, anon, authenticated;

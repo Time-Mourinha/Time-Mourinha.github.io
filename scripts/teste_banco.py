@@ -5,6 +5,7 @@ from __future__ import annotations
 import secrets
 import uuid
 
+import base64
 import json
 import requests
 
@@ -69,6 +70,12 @@ try:
         try:
             rd = requests.post(cfg["drive_url"], data=json.dumps({"acao": "teste", "token": tok2}), headers={"Content-Type": "text/plain"}, timeout=90)
             print("Drive (teste):", rd.status_code, rd.text[:300].replace(cfg["drive_url"], "<url>"))
+            vt = str(uuid.uuid4())
+            pdf = base64.b64encode(b"%PDF-1.4\n% teste do app\n").decode()
+            re_ = requests.post(cfg["drive_url"], data=json.dumps({"acao": "enviar", "token": tok2, "vistoria": vt, "unidade": "TESTE AUTOMATICO", "data": "2026-01-01", "nome": "teste.pdf", "tipo": "application/pdf", "base64": pdf}), headers={"Content-Type": "text/plain"}, timeout=90).json()
+            print("Drive enviar arquivo:", "ok" if re_.get("id") else re_)
+            ra = requests.post(cfg["drive_url"], data=json.dumps({"acao": "apagar", "token": tok2, "vistoria": vt}), headers={"Content-Type": "text/plain"}, timeout=90).json()
+            print("Drive apagar pasta:", ra)
             rn = requests.post(cfg["drive_url"], data=json.dumps({"acao": "teste", "token": "invalido"}), headers={"Content-Type": "text/plain"}, timeout=90)
             print("Drive sem login (deve negar):", rn.text[:120])
         except Exception as e:
