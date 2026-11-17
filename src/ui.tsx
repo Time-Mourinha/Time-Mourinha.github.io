@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { midiaDemo, urlMidia, DEMO } from './lib/armazenamento'
+import { midiaDemo } from './lib/armazenamento'
 import type { Midia } from './lib/modelo'
 
 export function Campo({ label, children, falta }: { label: string; children: ReactNode; falta?: boolean }) {
@@ -19,28 +19,17 @@ export function VerMidia({ media }: { media: Midia }) {
     let objeto = ''
     ;(async () => {
       try {
-        if (media.path && !DEMO) {
-          const u = await urlMidia(media.path)
-          if (vivo) setUrl(u)
-        } else {
-          const blob = await midiaDemo(media.id)
-          if (blob && vivo) { objeto = URL.createObjectURL(blob); setUrl(objeto) } else if (vivo) setFalha(true)
-        }
+        const blob = await midiaDemo(media.id)
+        if (blob && vivo) { objeto = URL.createObjectURL(blob); setUrl(objeto) } else if (vivo) setFalha(true)
       } catch { if (vivo) setFalha(true) }
     })()
     return () => { vivo = false; if (objeto) URL.revokeObjectURL(objeto) }
-  }, [media.id, media.path])
+  }, [media.id])
   return (
     <figure>
-      {url ? (media.type.startsWith('image/')
-        ? <img src={url} alt={media.caption || media.name} />
-        : <video src={url} controls preload="metadata" />)
-        : <span>{falha ? 'Anexo indisponível' : 'Carregando anexo…'}</span>}
-      <figcaption>{media.caption || media.name}
-        {media.ai && media.caption === media.ai && <small className="ia"> · descrição automática</small>}
-        {media.type.startsWith('video/') && <span className="print-only"> · vídeo disponível no aplicativo</span>}
-      </figcaption>
+      {url ? <img src={url} alt={media.caption || media.name} />
+        : <span className="sem-foto">{falha ? '📷 Foto não guardada neste aparelho (está no PDF gerado na conclusão)' : 'Carregando foto…'}</span>}
+      <figcaption>{media.caption || media.name}</figcaption>
     </figure>
   )
 }
-

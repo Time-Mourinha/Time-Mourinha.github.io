@@ -7,7 +7,6 @@ const CHAVE_PUBLICA = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | 
 /** Com as variáveis de ambiente, usa o Supabase; sem elas, abre o modo de demonstração. */
 export const sb: SupabaseClient | null = URL_SUPABASE && CHAVE_PUBLICA ? createClient(URL_SUPABASE, CHAVE_PUBLICA) : null
 export const DEMO = !sb
-export const BUCKET = 'vistorias'
 
 /* ------------------------------------------------------------------ demonstração (navegador) */
 const CHAVE_DEMO = 'vistoria-maceio-demo'
@@ -30,6 +29,7 @@ function abrirIdb(): Promise<IDBDatabase> {
     r.onerror = () => erro(r.error)
   })
 }
+/** Fotos ficam só neste aparelho (IndexedDB), enquanto a vistoria não vira PDF. Nada vai para servidor. */
 export async function midiaDemo(id: string, arquivo?: Blob): Promise<Blob | undefined> {
   const db = await abrirIdb()
   return new Promise((ok, erro) => {
@@ -70,22 +70,6 @@ export async function salvarVistoria(v: Vistoria) {
   falhou(error)
 }
 
-export function caminhoMidia(v: Vistoria, m: Midia, arquivo: File) {
-  const ext = (arquivo.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '')
-  return `${v.unit_id}/${v.id}/${m.id}.${ext}`
-}
-
-export async function enviarMidia(caminho: string, arquivo: File) {
-  const { error } = await sb!.storage.from(BUCKET).upload(caminho, arquivo, { contentType: arquivo.type, upsert: false })
-  falhou(error)
-}
-
-export async function urlMidia(caminho: string): Promise<string> {
-  const { data, error } = await sb!.storage.from(BUCKET).createSignedUrl(caminho, 60 * 60)
-  falhou(error)
-  return data!.signedUrl
-}
-
 /* Acessos (administração) */
 export type Atribuicao = { user_id: string; unit_id: number }
 export async function carregarAcessos(): Promise<{ perfis: Perfil[]; atribuicoes: Atribuicao[] }> {
@@ -118,28 +102,40 @@ export async function confirmarCodigoAdmin(codigo: string): Promise<boolean> {
   return Boolean(data)
 }
 
-/** Pede à IA a descrição do problema visível na foto. Devolve null se a IA não estiver ligada ou falhar. */
-export type DescricaoFoto = { descricao: string; item?: string; gravidade?: string }
-let iaDesligada = false
-export const iaLigada = () => !iaDesligada
-export async function descreverFoto(caminho: string): Promise<DescricaoFoto | null> {
-  if (iaDesligada) return null // sem a chave da IA: nem tenta, para não atrasar o envio
-  try {
-    const { data, error } = await sb!.functions.invoke('descrever', { body: { path: caminho } })
-    if (data && data.ativo === false) { iaDesligada = true; return null }
-    if (error || !data?.ativo || !data.descricao) return null
-    return data as DescricaoFoto
-  } catch { return null }
-}
-
 /** Exclui um rascunho (e tenta apagar as fotos dele). */
 export async function excluirVistoria(v: Vistoria) {
+  await apagarFotosLocais(v)
   if (!sb) {
     localStorage.setItem(CHAVE_DEMO, JSON.stringify(lerDemo().filter((x) => x.id !== v.id)))
     return
   }
-  const caminhos = [...(v.photos ?? []), ...v.rooms.flatMap((r) => r.findings.flatMap((f) => f.media))].map((m) => m.path).filter(Boolean) as string[]
   const { error } = await sb.from('inspections').delete().eq('id', v.id)
   falhou(error)
-  if (caminhos.length) await sb.storage.from(BUCKET).remove(caminhos).catch(() => null)
+}
+
+/** Ids de todas as fotos de uma vistoria (galeria + problemas). */
+export const fotosDa = (v: Vistoria) => [...(v.photos ?? []), ...v.rooms.flatMap((r) => r.findings.flatMap((f) => f.media))]
+
+/** Apaga deste aparelho as fotos de uma vistoria. */
+export async function apagarFotosLocais(v: Vistoria) {
+  const ids = fotosDa(v).map((m) => m.id)
+  if (!ids.length) return
+  const db = await abrirIdb()
+  await new Promise<void>((ok) => {
+    const t = db.transaction('media', 'readwrite')
+    ids.forEach((id) => t.objectStore('media').delete(id))
+    t.oncomplete = t.onerror = t.onabort = () => { db.close(); ok() }
+  })
+}
+
+/** Há fotos desta vistoria ainda guardadas neste aparelho? */
+export async function temFotosLocais(v: Vistoria): Promise<boolean> {
+  for (const m of fotosDa(v)) if (await midiaDemo(m.id).catch(() => undefined)) return true
+  return false
+}
+
+/** Limpeza: vistorias concluídas há mais de 24 h não deixam fotos no aparelho. */
+export async function limparFotosAntigas(vistorias: Vistoria[]) {
+  const limite = Date.now() - 24 * 3600e3
+  for (const v of vistorias) if (v.status === 'completed' && v.updated_at && Date.parse(v.updated_at) < limite) await apagarFotosLocais(v)
 }

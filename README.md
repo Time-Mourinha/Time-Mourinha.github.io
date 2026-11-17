@@ -22,7 +22,7 @@ Para definir a administração manualmente, use o SQL Editor: `update public.pro
 
 **Confirmação de e-mail.** O e-mail gratuito do Supabase só entrega mensagens para quem faz parte da equipe do projeto. Por isso o cadastro entra direto, e quem libera o uso é a administração. Para exigir a confirmação por e-mail de todos, configure um SMTP próprio no Supabase (Authentication → Emails) e mude `mailer_autoconfirm` para `false` em `scripts/supabase_setup.py`.
 
-A conta administradora aprova usuários no menu **Acessos**. Quem é aprovado pode vistoriar qualquer unidade. Os anexos ficam no bucket privado `vistorias`, visível só para contas aprovadas. O relatório é salvo em PDF pela impressão do navegador. O vídeo é acessado pela vistoria no aplicativo. Vistorias concluídas só podem ser alteradas pela administração.
+A conta administradora aprova usuários no menu **Acessos**. Quem é aprovado pode vistoriar qualquer unidade. Só fotos podem ser anexadas (sem vídeo). O app não guarda fotos em nenhuma base, nem no servidor: elas ficam só no aparelho do vistoriador até o PDF do relatório ser salvo, e depois são apagadas (na hora, pelo botão, ou sozinhas em 24 horas). O relatório é salvo em PDF pela impressão do navegador. Vistorias concluídas só podem ser alteradas pela administração.
 
 Para rodar localmente contra o Supabase, copie `.env.example` para `.env.local` e informe a URL e a chave pública do projeto. Nunca coloque uma chave service role no frontend.
 

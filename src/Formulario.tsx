@@ -290,7 +290,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
             <h2 className="passo">3. Fotos da visita <small>{fotos.length}</small></h2>
             <label className="btn-arquivo primary">📷 Adicionar fotos<input type="file" multiple accept={TIPOS_ACEITOS.join(',')} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar({ roomId: abertoAmb || undefined }, l) }} /></label>
           </div>
-          <p className="dica">Tire quantas fotos quiser durante a visita: elas entram no relatório. Se a foto mostrar um problema, toque em <b>⚠️ É um problema</b>.</p>
+          <p className="dica">Tire quantas fotos quiser: elas vão direto para o PDF do relatório. O app não guarda fotos em lugar nenhum; elas ficam só no seu celular até o PDF. Se a foto mostrar um problema, toque em <b>⚠️ É um problema</b>.</p>
           {fotos.length > 0 && (
             <div className="galeria-grade">
               {fotos.map((m) => (

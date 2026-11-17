@@ -83,5 +83,5 @@ export function resumoPrioridade(v: Vistoria): string {
   return maiorPrioridade(todas) === 'Imediata' ? 'Imediata localizada' : maiorPrioridade(todas)
 }
 
-export const TIPOS_ACEITOS = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm', 'video/quicktime']
+export const TIPOS_ACEITOS = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
 export const LIMITE_BYTES = 50 * 1024 * 1024

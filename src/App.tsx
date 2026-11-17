@@ -6,8 +6,8 @@ import {
   type Ambiente, type Midia, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
-  DEMO, caminhoMidia, descreverFoto, iaLigada, excluirVistoria, type DescricaoFoto, carregarPerfil, carregarUnidades, carregarVistorias, enviarMidia, gravarDemo, lerDemo,
-  midiaDemo, salvarVistoria, sb, urlMidia,
+  DEMO, apagarFotosLocais, excluirVistoria, carregarPerfil, carregarUnidades, carregarVistorias, gravarDemo, lerDemo,
+  limparFotosAntigas, midiaDemo, salvarVistoria, sb, temFotosLocais,
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
 import { Entrada } from './Entrada'
@@ -16,7 +16,7 @@ import { Aparencia } from './Aparencia'
 import { Instalar } from './Instalar'
 import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
-import { IMPACTOS, problemasDaRede, ranking, resumir } from './lib/analise'
+import { problemasDaRede, ranking, resumir } from './lib/analise'
 import { reduzirImagem } from './lib/imagem'
 
 type Tela = 'inicio' | 'unidades' | 'painel' | 'vistoria' | 'relatorios' | 'acessos'
@@ -29,6 +29,23 @@ function Atalho({ ic, t, n, e, onClick, destaque, alerta }: { ic: string; t: str
       <span className="a-tit">{t}</span>
       <span className="a-desc">{e}</span>
     </button>
+  )
+}
+
+/** No relatório: as fotos ficam só neste aparelho até o PDF ser salvo; depois o fiscal apaga. */
+function AvisoFotos({ v }: { v: Vistoria }) {
+  const [tem, setTem] = useState(false)
+  useEffect(() => { void temFotosLocais(v).then(setTem) }, [v.id])
+  if (!tem) return null
+  return (
+    <div className="panel aviso-fotos no-print">
+      <p><b>📷 As fotos não ficam guardadas no app.</b> Elas estão só neste aparelho para montar o PDF. Salve o PDF e depois apague as fotos.
+        Se não apagar, elas saem sozinhas em 24 horas.</p>
+      <div className="row">
+        <button className="primary" onClick={() => window.print()}>📄 Salvar PDF</button>
+        <button onClick={async () => { if (confirm('Já salvou o PDF? As fotos desta vistoria serão apagadas deste aparelho.')) { await apagarFotosLocais(v); setTem(false); location.reload() } }}>✓ Já salvei o PDF · apagar fotos</button>
+      </div>
+    </div>
   )
 }
 
@@ -128,6 +145,7 @@ export default function App() {
       if (p?.approved) {
         const [u, v] = await Promise.all([carregarUnidades(), carregarVistorias()])
         setUnidades(u); setVistorias(v)
+        void limparFotosAntigas(v)
         if (p.role === 'admin') {
           const { count } = await sb!.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false).eq('needs_code', false)
           setPedidos(count ?? 0)
@@ -204,44 +222,32 @@ export default function App() {
   }
 
 
-  /** Envia fotos/vídeos: para a galeria da visita (com o ambiente) ou para um problema. A IA descreve cada foto. */
+  /** Anexa fotos (só fotos) à galeria da visita ou a um problema. Elas ficam só neste aparelho até o PDF. */
   async function anexar(destino: { roomId?: string; ocorrencia?: Ocorrencia }, arquivos: File[]) {
     if (!aberta || !arquivos.length) return
     const base = aberta
     await executar(async () => {
       if (base.status === 'draft' && pendente) { await gravar(base); setPendente(false) }
       let atual = base
-      let descritas = 0
       for (const [n, original] of arquivos.entries()) {
-        if (!TIPOS_ACEITOS.includes(original.type) || original.size > LIMITE_BYTES) throw new Error('Use JPG, PNG, WebP, MP4, WebM ou MOV de até 50 MB.')
-        setAviso(arquivos.length > 1 ? `Enviando ${n + 1} de ${arquivos.length}…` : 'Enviando…')
+        if (!original.type.startsWith('image/')) throw new Error('Só fotos podem ser anexadas (JPG, PNG, WebP ou HEIC).')
+        if (original.size > LIMITE_BYTES) throw new Error('A foto passa de 50 MB.')
+        setAviso(arquivos.length > 1 ? `Guardando ${n + 1} de ${arquivos.length}…` : 'Guardando a foto…')
         const arq = await reduzirImagem(original)
+        // a foto fica só neste aparelho até o PDF; não vai para servidor nenhum
         const m: Midia = { id: novoId(), type: arq.type, name: arq.name, caption: '', room: destino.roomId }
-        let ia: DescricaoFoto | null = null
-        if (DEMO) await midiaDemo(m.id, arq)
-        else {
-          m.path = caminhoMidia(atual, m, arq); await enviarMidia(m.path, arq)
-          if (arq.type.startsWith('image/')) { if (iaLigada()) setAviso('Foto enviada. Descrevendo o que aparece nela…'); ia = await descreverFoto(m.path) }
-        }
-        if (ia && !/^sem problema/i.test(ia.descricao)) { m.ai = ia.descricao; m.caption = ia.descricao; m.item = ia.item; descritas++ }
+        await midiaDemo(m.id, arq)
         const o = destino.ocorrencia
         if (!o) atual = { ...atual, photos: [...(atual.photos ?? []), m] }
         else atual = { ...atual, rooms: atual.rooms.map((r) => ({ ...r, findings: r.findings.map((f) => {
           if (f.id !== o.id) return f
           const g = { ...f, media: [...f.media, m] }
-          if (m.ai) {
-            // a descrição da foto completa o problema, sem repetir
-            if (!g.issue.includes(m.ai)) g.issue = g.issue ? `${g.issue} Na foto: ${m.ai}` : m.ai
-            if (!g.item && ia?.item) g.item = ia.item
-            if (!g.reason && ia?.item && IMPACTOS[ia.item]) g.reason = IMPACTOS[ia.item]
-            if (!g.action && ia?.item) g.action = `Corrigir: ${ia.item.toLowerCase()}.`
-          }
           return g
         }) })) }
         setAberta(atual); setPendente(true)
         await gravar(atual); setPendente(false)
       }
-      setAviso(arquivos.length === 1 ? (descritas ? 'Foto salva e descrita. Confira o texto.' : 'Foto salva.') : `${arquivos.length} arquivos salvos${descritas ? `, ${descritas} descritos automaticamente` : ''}.`)
+      setAviso(arquivos.length === 1 ? 'Foto anexada.' : `${arquivos.length} fotos anexadas.`)
     })
   }
 
@@ -395,6 +401,7 @@ export default function App() {
                   <button className="primary" onClick={() => window.print()}>Imprimir / PDF</button>
                 </div>
               </div>
+              {relatorio && <AvisoFotos v={relatorio} />}
               {relatorio ? (
                 <Relatorio vistoria={relatorio} unidade={unidades.find((u) => u.id === relatorio.unit_id)} estilo={estilo} />
               ) : (

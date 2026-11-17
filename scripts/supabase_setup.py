@@ -99,6 +99,23 @@ alter default privileges in schema public grant all on sequences to postgres, an
     return email
 
 
+def apagar_fotos_guardadas():
+    """O app não guarda fotos: esvazia e apaga o depósito de fotos e a função de IA que lia as fotos."""
+    serv = chaves()["servico"]
+    cab = {"apikey": serv, "Authorization": f"Bearer {serv}"}
+    for _ in range(20):
+        requests.post(f"{URL}/storage/v1/bucket/vistorias/empty", headers=cab, timeout=120)
+        r = requests.delete(f"{URL}/storage/v1/bucket/vistorias", headers=cab, timeout=120)
+        if r.status_code < 300 or r.status_code == 404 or "not found" in r.text.lower():
+            break
+        time.sleep(3)
+    api("DELETE", f"/projects/{REF}/functions/descrever", ok404=True)
+    existentes = {s["name"] for s in (api("GET", f"/projects/{REF}/secrets") or [])}
+    if "ANTHROPIC_API_KEY" in existentes:
+        api("DELETE", f"/projects/{REF}/secrets", json=["ANTHROPIC_API_KEY"])
+    print("Fotos: nada guardado no servidor (depósito e função de IA apagados).")
+
+
 def apagar_segredos_antigos():
     """Segredos das funções do Time Mourinha (ponte, WhatsApp): apaga os que ainda existirem."""
     existentes = {s["name"] for s in (api("GET", f"/projects/{REF}/secrets") or [])}
@@ -175,6 +192,7 @@ if __name__ == "__main__":
     else:
         email = limpar_projeto_antigo()
         apagar_segredos_antigos()
+        apagar_fotos_guardadas()
         aplicar(email)
         preparar_avisos()
         ajustar_login()

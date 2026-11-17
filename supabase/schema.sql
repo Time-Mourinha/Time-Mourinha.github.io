@@ -178,27 +178,13 @@ drop policy if exists insp_delete on public.inspections;
 create policy insp_delete on public.inspections for delete to authenticated
   using (public.is_admin() or (status = 'draft' and owner = auth.uid()));  -- rascunho: quem começou pode excluir
 
--- ------------------------------------------------------------------ anexos privados
-insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('vistorias', 'vistorias', false, 52428800,
-        array['image/jpeg','image/png','image/webp','video/mp4','video/webm','video/quicktime'])
-on conflict (id) do update set public = false, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
-
--- Caminho: {unidade}/{vistoria}/{anexo}.ext — só quem tem a unidade atribuída (ou a administração) vê e envia.
-create or replace function public.can_access_path(path text) returns boolean language sql stable security definer set search_path = public as $$
-  select case when split_part(path, '/', 1) ~ '^[0-9]+$' then public.can_access_unit(split_part(path, '/', 1)::int) else false end;
-$$;
+-- ------------------------------------------------------------------ fotos
+-- O app NÃO guarda fotos: elas ficam só no aparelho do vistoriador até o PDF do relatório.
+-- (o antigo depósito "vistorias" é esvaziado e apagado pelo scripts/supabase_setup.py)
 drop policy if exists vist_read on storage.objects;
-create policy vist_read on storage.objects for select to authenticated using (bucket_id = 'vistorias' and public.can_access_path(name));
 drop policy if exists vist_insert on storage.objects;
-create policy vist_insert on storage.objects for insert to authenticated with check (bucket_id = 'vistorias' and public.can_access_path(name));
 drop policy if exists vist_delete on storage.objects;
-create policy vist_delete on storage.objects for delete to authenticated using (bucket_id = 'vistorias' and public.is_admin());
-
--- Conta da administração que ainda esteja esperando código: libera direto.
-update public.profiles p set approved = true, role = 'admin', needs_code = false
-  from public.private_config c
- where c.key = 'admin_email' and lower(p.email) = lower(c.value) and (not p.approved or p.needs_code);
+drop function if exists public.can_access_path(text);
 
 -- ------------------------------------------------------------------ avisos no celular (novos pedidos de acesso)
 create extension if not exists pg_net;
