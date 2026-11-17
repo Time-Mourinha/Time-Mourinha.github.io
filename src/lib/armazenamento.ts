@@ -21,22 +21,33 @@ export function gravarDemo(v: Vistoria) {
   localStorage.setItem(CHAVE_DEMO, JSON.stringify([v, ...lerDemo().filter((x) => x.id !== v.id)]))
 }
 
-function abrirIdb(): Promise<IDBDatabase> {
-  return new Promise((ok, erro) => {
-    const r = indexedDB.open(CHAVE_DEMO, 1)
-    r.onupgradeneeded = () => r.result.createObjectStore('media')
-    r.onsuccess = () => ok(r.result)
-    r.onerror = () => erro(r.error)
+// Alguns celulares (iPhone em certos modos, navegação privada) não têm IndexedDB:
+// aí as fotos ficam só na memória enquanto o app está aberto. Nunca pode travar o app.
+const memoria = new Map<string, Blob>()
+let idbFalhou = false
+function abrirIdb(): Promise<IDBDatabase | null> {
+  if (idbFalhou || typeof indexedDB === 'undefined' || !indexedDB) return Promise.resolve(null)
+  return new Promise((ok) => {
+    try {
+      const r = indexedDB.open(CHAVE_DEMO, 1)
+      r.onupgradeneeded = () => r.result.createObjectStore('media')
+      r.onsuccess = () => ok(r.result)
+      r.onerror = r.onblocked = () => { idbFalhou = true; ok(null) }
+    } catch { idbFalhou = true; ok(null) }
   })
 }
-/** Fotos ficam só neste aparelho (IndexedDB), enquanto a vistoria não vira PDF. Nada vai para servidor. */
+/** Fotos ficam só neste aparelho (IndexedDB ou memória), enquanto a vistoria não vira PDF. Nada vai para servidor. */
 export async function midiaDemo(id: string, arquivo?: Blob): Promise<Blob | undefined> {
+  if (arquivo) memoria.set(id, arquivo)
   const db = await abrirIdb()
-  return new Promise((ok, erro) => {
-    const t = db.transaction('media', arquivo ? 'readwrite' : 'readonly')
-    const req = arquivo ? t.objectStore('media').put(arquivo, id) : t.objectStore('media').get(id)
-    t.oncomplete = () => { db.close(); ok(arquivo ? undefined : (req.result as Blob | undefined)) }
-    t.onerror = t.onabort = () => { db.close(); erro(t.error) }
+  if (!db) return arquivo ? undefined : memoria.get(id)
+  return new Promise((ok) => {
+    try {
+      const t = db.transaction('media', arquivo ? 'readwrite' : 'readonly')
+      const req = arquivo ? t.objectStore('media').put(arquivo, id) : t.objectStore('media').get(id)
+      t.oncomplete = () => { db.close(); ok(arquivo ? undefined : ((req.result as Blob | undefined) ?? memoria.get(id))) }
+      t.onerror = t.onabort = () => { db.close(); ok(arquivo ? undefined : memoria.get(id)) }
+    } catch { db.close(); ok(arquivo ? undefined : memoria.get(id)) }
   })
 }
 
@@ -110,7 +121,7 @@ export async function confirmarCodigoAdmin(codigo: string): Promise<boolean> {
 
 /** Exclui um rascunho (e tenta apagar as fotos dele). */
 export async function excluirVistoria(v: Vistoria) {
-  await apagarFotosLocais(v)
+  await apagarFotosLocais(v).catch(() => undefined)
   if (!sb) {
     localStorage.setItem(CHAVE_DEMO, JSON.stringify(lerDemo().filter((x) => x.id !== v.id)))
     return
@@ -122,15 +133,19 @@ export async function excluirVistoria(v: Vistoria) {
 /** Ids de todas as fotos de uma vistoria (galeria + problemas). */
 export const fotosDa = (v: Vistoria) => [...(v.photos ?? []), ...v.rooms.flatMap((r) => r.findings.flatMap((f) => f.media))]
 
-/** Apaga deste aparelho as fotos de uma vistoria. */
+/** Apaga deste aparelho as fotos de uma vistoria. Nunca dá erro. */
 export async function apagarFotosLocais(v: Vistoria) {
   const ids = fotosDa(v).map((m) => m.id)
   if (!ids.length) return
+  ids.forEach((id) => memoria.delete(id))
   const db = await abrirIdb()
+  if (!db) return
   await new Promise<void>((ok) => {
-    const t = db.transaction('media', 'readwrite')
-    ids.forEach((id) => t.objectStore('media').delete(id))
-    t.oncomplete = t.onerror = t.onabort = () => { db.close(); ok() }
+    try {
+      const t = db.transaction('media', 'readwrite')
+      ids.forEach((id) => t.objectStore('media').delete(id))
+      t.oncomplete = t.onerror = t.onabort = () => { db.close(); ok() }
+    } catch { db.close(); ok() }
   })
 }
 
@@ -143,5 +158,7 @@ export async function temFotosLocais(v: Vistoria): Promise<boolean> {
 /** Limpeza: vistorias concluídas há mais de 24 h não deixam fotos no aparelho. */
 export async function limparFotosAntigas(vistorias: Vistoria[]) {
   const limite = Date.now() - 24 * 3600e3
-  for (const v of vistorias) if (v.status === 'completed' && v.updated_at && Date.parse(v.updated_at) < limite) await apagarFotosLocais(v)
+  try {
+    for (const v of vistorias) if (v.status === 'completed' && v.updated_at && Date.parse(v.updated_at) < limite) await apagarFotosLocais(v)
+  } catch { /* limpeza nunca atrapalha o uso */ }
 }
