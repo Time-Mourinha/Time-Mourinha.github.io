@@ -1,3 +1,4 @@
+import json
 """Teste de ponta a ponta no banco real: cria um vistoriador temporário, salva rascunho, conclui e apaga tudo.
 Roda no GitHub Actions; não imprime chaves nem dados pessoais."""
 from __future__ import annotations
@@ -61,6 +62,17 @@ try:
     print("Conta removida =", not sql(f"select 1 from auth.users where id = '{uid}'"))
     r8 = requests.post(f"{URL}/rest/v1/rpc/remover_usuario", headers=adm, json={"alvo": uid2}, timeout=60)
     print("Remover a própria conta (deve recusar):", r8.status_code)
+
+    # --- Google Drive: o script aceita quem está aprovado e consegue usar o Drive?
+    cfg = json.loads(open("modelo.config.json", encoding="utf-8").read())
+    if cfg.get("drive_url"):
+        try:
+            rd = requests.post(cfg["drive_url"], data=json.dumps({"acao": "teste", "token": tok2}), headers={"Content-Type": "text/plain"}, timeout=90)
+            print("Drive (teste):", rd.status_code, rd.text[:300].replace(cfg["drive_url"], "<url>"))
+            rn = requests.post(cfg["drive_url"], data=json.dumps({"acao": "teste", "token": "invalido"}), headers={"Content-Type": "text/plain"}, timeout=90)
+            print("Drive sem login (deve negar):", rn.text[:120])
+        except Exception as e:
+            print("Drive: falhou", e)
 
     # --- compactar relatórios antigos: fica o último completo da unidade, o anterior vira resumo
     v_old, v_new = str(uuid.uuid4()), str(uuid.uuid4())
