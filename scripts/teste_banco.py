@@ -1,4 +1,3 @@
-import json
 """Teste de ponta a ponta no banco real: cria um vistoriador temporário, salva rascunho, conclui e apaga tudo.
 Roda no GitHub Actions; não imprime chaves nem dados pessoais."""
 from __future__ import annotations
@@ -6,6 +5,7 @@ from __future__ import annotations
 import secrets
 import uuid
 
+import json
 import requests
 
 from supabase_setup import URL, chaves, sql
