@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { problemasDaRede, ranking } from './lib/analise'
-import { PRIORIDADES, dataBR, type Unidade, type VisitaAntiga, type Vistoria } from './lib/modelo'
-import { Campo, Selo } from './ui'
+import { REGRA_CLASSIFICACAO, problemasDaRede, ranking } from './lib/analise'
+import { dataBR, type Unidade, type VisitaAntiga, type Vistoria } from './lib/modelo'
+import { Campo } from './ui'
 
 export type SecaoPainel = 'visitadas' | 'ranking' | 'problemas' | 'imediatas' | 'distritos' | 'sem'
 
@@ -19,13 +19,12 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
   const linhas = todas.filter((l) => !distrito || l.unidade.district === distrito)
   const doDistrito = unidades.filter((u) => !distrito || u.district === distrito)
   const problemas = problemasDaRede(linhas, 10)
-  const maxPontos = Math.max(1, ...linhas.map((l) => l.resumo.pontos))
-  const imediatas = linhas.reduce((s, l) => s + (l.resumo.porPrioridade['Imediata'] ?? 0), 0)
-  const verificados = linhas.reduce((s, l) => s + l.resumo.respondidos, 0)
+  const conta = (n: string) => linhas.filter((l) => l.resumo.nivel.nome === n).length
+  const pessimas = conta('Péssima'), regulares = conta('Regular'), boas = conta('Boa')
+  const avaliados = linhas.reduce((s, l) => s + l.resumo.avaliados, 0)
   const comProblema = linhas.reduce((s, l) => s + l.resumo.problemas, 0)
-  const criticas = linhas.filter((l) => l.resumo.nivel.nome === 'Crítica').length
-  const listaImediatas = linhas.flatMap((l) => l.vistoria.rooms.flatMap((amb) => amb.findings
-    .filter((o) => o.priority === PRIORIDADES[0]).map((o) => ({ l, amb, o }))))
+  // ambientes péssimos da última vistoria de cada unidade: o que resolver primeiro
+  const listaImediatas = linhas.flatMap((l) => l.resumo.comProblema.filter((p) => p.situacao === 'Péssimo').map((p) => ({ l, p })))
   const semVistoria = doDistrito.filter((u) => !linhas.some((l) => l.unidade.id === u.id))
   // Uma unidade pode ser visitada quantas vezes for preciso: aqui entram todas as visitas concluídas.
   // relatórios completos + visitas antigas compactadas (só o resumo)
@@ -42,7 +41,7 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
   useEffect(() => { if (secao === 'visitadas' && !historicoDesde && pedirHistorico) pedirHistorico(false) }, [secao, historicoDesde])
   const SECOES: [SecaoPainel, string, string, number][] = [
     ['visitadas', '✅', 'Visitadas', visitadas.length], ['ranking', '🏆', 'Ranking', linhas.length], ['problemas', '⚠️', 'Problemas', problemas.length],
-    ['imediatas', '🚨', 'Ações imediatas', listaImediatas.length], ['distritos', '🗺️', 'Por distrito', distritos.length],
+    ['imediatas', '🔴', 'Ambientes péssimos', listaImediatas.length], ['distritos', '🗺️', 'Por distrito', distritos.length],
     ['sem', '📭', 'Faltam', semVistoria.length],
   ]
 
@@ -65,9 +64,10 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
           <i className="barra"><b style={{ width: `${(linhas.length / Math.max(1, doDistrito.length)) * 100}%` }} /></i>
           <em>Ver as visitadas e as datas</em></button>
         <button className="k-falta" onClick={() => mudarSecao('sem')}><strong>{semVistoria.length}</strong><span>faltam vistoriar</span><em>Ver quais faltam</em></button>
-        <button className="k-critica" onClick={() => mudarSecao('ranking')}><strong>{criticas}</strong><span>em situação crítica</span><em>Ver o ranking</em></button>
-        <button className="k-imediata" onClick={() => mudarSecao('imediatas')}><strong>{imediatas}</strong><span>ações imediatas pedidas</span><em>Ver as ações</em></button>
-        <button onClick={() => mudarSecao('problemas')}><strong>{verificados ? Math.round((comProblema / verificados) * 100) : 0}%</strong><span>dos itens verificados com problema</span><em>Ver os problemas</em></button>
+        <button className="k-critica" onClick={() => mudarSecao('ranking')}><strong>{pessimas}</strong><span>🔴 unidades péssimas</span><em>Ver o ranking</em></button>
+        <button className="k-imediata" onClick={() => mudarSecao('ranking')}><strong>{regulares}</strong><span>🟡 unidades regulares</span><em>Ver o ranking</em></button>
+        <button className="k-boa" onClick={() => mudarSecao('ranking')}><strong>{boas}</strong><span>🟢 unidades boas</span><em>Ver o ranking</em></button>
+        <button onClick={() => mudarSecao('problemas')}><strong>{avaliados ? Math.round((comProblema / avaliados) * 100) : 0}%</strong><span>dos ambientes avaliados estão regulares ou péssimos</span><em>Ver os problemas</em></button>
       </div>
 
       <div className="secoes" role="tablist" aria-label="O que ver">
@@ -105,17 +105,17 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
           )}
           {secao === 'ranking' && (
             <section className="panel">
-            <h2>Ranking: unidades em pior situação</h2>
-            <p className="legenda">Índice de criticidade: ação imediata vale 10 pontos, prioritária 5, programável 2; item faltante 3, substituição 2, reparo 1; intervenção na unidade inteira, 20.</p>
+            <h2>Ranking: da pior para a melhor</h2>
+            <p className="legenda">{REGRA_CLASSIFICACAO} Dentro de cada cor, vem primeiro quem tem o maior índice (0 = todos os ambientes bons; 100 = todos péssimos).</p>
             <ol className="ranking">
-              {linhas.slice(0, 15).map((l, i) => (
+              {linhas.map((l, i) => (
                 <li key={l.unidade.id}>
                   <span className="pos">{i + 1}º</span>
                   <div className="r-corpo">
                     <div className="r-topo"><strong>{l.unidade.name}</strong><span className={'nivel ' + l.resumo.nivel.classe}>{l.resumo.nivel.nome}</span></div>
-                    <i className="barra"><b className={l.resumo.nivel.classe} style={{ width: `${(l.resumo.pontos / maxPontos) * 100}%` }} /></i>
-                    <p>Distrito {l.unidade.district} · {l.unidade.kind} · vistoria de {dataBR(l.vistoria.inspected_on)} · <strong>{l.resumo.pontos} pontos</strong> ·
-                      {' '}{l.resumo.porPrioridade['Imediata'] ?? 0} imediata(s), {l.resumo.problemas} item(ns) com problema</p>
+                    <i className="barra"><b className={l.resumo.nivel.classe} style={{ width: `${Math.max(3, l.resumo.pontos)}%` }} /></i>
+                    <p>Distrito {l.unidade.district} · {l.unidade.kind} · vistoria de {dataBR(l.vistoria.inspected_on)} · índice <strong>{l.resumo.pontos}</strong> ·
+                      {' '}🔴 {l.resumo.pessimos} · 🟡 {l.resumo.regulares} · 🟢 {l.resumo.bons} ambiente(s)</p>
                   </div>
                   <button className="no-print" onClick={() => abrirRelatorio(l.vistoria.id)}>Relatório</button>
                 </li>
@@ -125,15 +125,16 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
           )}
           {secao === 'problemas' && (
           <section className="panel">
-            <h2>Principais problemas na rede</h2>
-            <p className="legenda">Itens com problema mais frequentes, contando cada unidade uma vez, e o que eles causam no atendimento.</p>
+            <h2>Ambientes com mais problemas na rede</h2>
+            <p className="legenda">Tipos de ambiente que aparecem como regular ou péssimo em mais unidades (cada unidade conta uma vez), e o que costuma causar no atendimento.</p>
+            {!problemas.length && <p>Nenhum ambiente regular ou péssimo neste recorte.</p>}
             <div className="problemas-rede">
               {problemas.map((p) => (
                 <article key={p.item}>
                   <div className="r-topo"><strong>{p.item}</strong><span className="badge">{p.unidades.size} unidade(s)</span></div>
                   <i className="barra"><b style={{ width: `${(p.unidades.size / Math.max(1, linhas.length)) * 100}%` }} /></i>
-                  <p className="p-impacto"><span>O que causa:</span> {p.impacto || 'Ver detalhes nas vistorias.'}</p>
-                  <small>{Object.entries(p.respostas).map(([k, n]) => `${k}: ${n}`).join(' · ')}</small>
+                  {p.impacto && <p className="p-impacto"><span>O que causa:</span> {p.impacto}</p>}
+                  <small>🔴 péssimo em {p.respostas['Péssimo'] ?? 0} · 🟡 regular em {p.respostas['Regular'] ?? 0}</small>
                 </article>
               ))}
             </div>
@@ -141,14 +142,14 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
           )}
           {secao === 'imediatas' && (
           <section className="panel">
-            <h2>Ações imediatas pedidas</h2>
-            <p className="legenda">Problemas marcados como Imediata na última vistoria de cada unidade.</p>
-            {!listaImediatas.length && <p>Nenhuma ação imediata pendente neste recorte.</p>}
-            {listaImediatas.map(({ l, amb, o }) => (
-              <article className="result" key={o.id}>
-                <div className="r-topo"><strong>{l.unidade.name}</strong><Selo value={o.priority} /></div>
-                <p>{amb.name}{o.point && o.point !== amb.name ? ' · ' + o.point : ''} — {o.item && <b>{o.item}: </b>}{o.issue}</p>
-                <p><b>Ação:</b> {o.action}{o.owner && ` · ${o.owner}`}{o.due && ` · prazo ${dataBR(o.due)}`}</p>
+            <h2>Ambientes péssimos: resolver primeiro</h2>
+            <p className="legenda">Ambientes marcados como péssimos na última vistoria de cada unidade.</p>
+            {!listaImediatas.length && <p>Nenhum ambiente péssimo neste recorte.</p>}
+            {listaImediatas.map(({ l, p }) => (
+              <article className="result" key={l.vistoria.id + p.roomId}>
+                <div className="r-topo"><strong>{l.unidade.name}</strong><span className="nivel critica">🔴 {p.ambiente}</span></div>
+                <p>{p.descricao}</p>
+                {p.impacto[0] && <p className="p-impacto"><span>O que causa:</span> {p.impacto[0]}</p>}
                 <button className="no-print" onClick={() => abrirRelatorio(l.vistoria.id)}>Relatório</button>
               </article>
             ))}
@@ -158,7 +159,7 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
           <section className="panel">
             <h2>Por distrito sanitário</h2>
             <table className="rel-tabela">
-              <thead><tr><th>Distrito</th><th>Vistoriadas</th><th>Críticas</th><th>Ações imediatas</th><th>Índice médio</th></tr></thead>
+              <thead><tr><th>Distrito</th><th>Vistoriadas</th><th>🔴 Péssimas</th><th>🟡 Regulares</th><th>🟢 Boas</th><th>Índice médio</th></tr></thead>
               <tbody>
                 {distritos.filter((d) => !distrito || d === distrito).map((d) => {
                   const ls = todas.filter((l) => l.unidade.district === d)
@@ -167,8 +168,9 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
                   return (
                     <tr key={d}>
                       <td><strong>{d}</strong></td><td>{ls.length}/{total}</td>
-                      <td>{ls.filter((l) => l.resumo.nivel.nome === 'Crítica').length}</td>
-                      <td>{ls.reduce((s, l) => s + (l.resumo.porPrioridade['Imediata'] ?? 0), 0)}</td>
+                      <td>{ls.filter((l) => l.resumo.nivel.nome === 'Péssima').length}</td>
+                      <td>{ls.filter((l) => l.resumo.nivel.nome === 'Regular').length}</td>
+                      <td>{ls.filter((l) => l.resumo.nivel.nome === 'Boa').length}</td>
                       <td>{ls.length ? media : '—'}</td>
                     </tr>
                   )

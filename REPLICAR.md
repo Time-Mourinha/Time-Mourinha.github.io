@@ -3,8 +3,8 @@
 Este repositório é um **modelo completo**. Um site novo leva tudo o que este tem:
 
 - **Layout**: as 3 aparências e o modo celular com abas.
-- **Formulário**: ambientes um de cada vez, com a faixa "📍 Você está em".
-- **Relatório em PDF**: 3 estilos, 2 a 3 páginas.
+- **Formulário**: ambientes um de cada vez, com a faixa "📍 Você está em". Cada ambiente é Bom, Regular ou Péssimo. Regular e Péssimo exigem descrição e foto, e toda foto exige descrição. Há também as Observações, com o que funcionários e agentes relatam.
+- **Relatório em PDF (A4)**: classificação da unidade em verde, amarelo ou vermelho, situação de cada ambiente, fotos grandes por ambiente, observações. 3 estilos.
 - **Painel**: ranking, problemas, ações imediatas, distritos, visitadas e as que faltam.
 - **App instalável**: no Android e no iPhone, e se atualiza sozinho.
 - **Avisos no celular**: novo pedido de acesso, vistoria começou, vistoria concluída.
@@ -86,8 +86,8 @@ O GitHub também roda esse script sozinho a cada publicação.
 | O quê | Onde |
 |---|---|
 | Lista de unidades (nome, distrito, tipo, endereço, código) | `src/data/unidades.json`. O banco recebe o mesmo conteúdo sozinho. |
-| Itens do checklist (grupos e itens) | `CHECKLIST` em `src/lib/modelo.ts` |
-| Itens que aparecem em cada tipo de ambiente | `itensDoAmbiente` e `checklistDoAmbiente` em `src/lib/modelo.ts` |
+| Situações de cada ambiente (Bom, Regular, Péssimo) | `SITUACOES` em `src/lib/modelo.ts` |
+| Regra da classificação da unidade (verde, amarelo, vermelho) | `nivelDe` e `REGRA_CLASSIFICACAO` em `src/lib/analise.ts` |
 | Ambientes sugeridos (Recepção, Sala de aula…) | `AMBIENTES_SUGERIDOS` em `src/lib/modelo.ts` |
 | O que cada problema causa (texto do painel e do relatório) | `IMPACTOS` em `src/lib/analise.ts` |
 | Logotipo do topo e do relatório | `src/assets/marca.png` |

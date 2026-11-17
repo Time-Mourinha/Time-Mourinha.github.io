@@ -1,7 +1,7 @@
 import marca from './assets/marca.png'
-import { principaisProblemas, resumir } from './lib/analise'
-import { PRIORIDADES, dataBR, type Unidade, type Vistoria } from './lib/modelo'
-import { Selo, VerMidia } from './ui'
+import { REGRA_CLASSIFICACAO, impactosDoTexto, resumir } from './lib/analise'
+import { dataBR, fotosDaObservacao, fotosDoAmbiente, precisaFoto, semAcento, type Midia, type Unidade, type Vistoria } from './lib/modelo'
+import { VerMidia } from './ui'
 import { CFG } from './config'
 
 export const ESTILOS_RELATORIO = [
@@ -16,18 +16,22 @@ const hojeBR = () => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Macei
 /** Relatório de visita técnica: pronto para imprimir em PDF ou apresentar. */
 export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Vistoria; unidade?: Unidade; estilo: EstiloRelatorio }) {
   const r = resumir(v)
-  const principais = principaisProblemas(v, 6)
-  const acoes = v.rooms.flatMap((amb) => amb.findings.map((o) => ({ amb, o })))
-    .sort((a, b) => PRIORIDADES.indexOf(a.o.priority) - PRIORIDADES.indexOf(b.o.priority))
   const numero = v.id.slice(0, 8).toUpperCase()
-  const pct = r.respondidos ? Math.round((r.problemas / r.respondidos) * 100) : 0
-  // todas as fotos num só bloco, pequenas e numeradas (o relatório fica curto)
-  // fotos da galeria da visita + fotos dos problemas, na ordem dos ambientes
-  const ordem = (roomId?: string) => { const i = v.rooms.findIndex((r) => r.id === roomId); return i < 0 ? -1 : i }
-  const fotos = [
-    ...(v.photos ?? []).map((m) => ({ m, lugar: v.rooms.find((r) => r.id === m.room)?.name ?? 'Visão geral', titulo: '', pos: ordem(m.room) })),
-    ...v.rooms.flatMap((amb, i) => amb.findings.flatMap((o) => o.media.map((m) => ({ m, lugar: amb.name, titulo: o.item || '', pos: i })))),
-  ].sort((a, b) => a.pos - b.pos)
+  const ordemSit: Record<string, number> = { 'Péssimo': 0, Regular: 1, Bom: 2 }
+  // ambientes com problema primeiro (péssimo, regular), depois os bons, na ordem da visita
+  const ambientes = [...v.rooms].sort((a, b) => (ordemSit[a.situacao ?? ''] ?? 3) - (ordemSit[b.situacao ?? ''] ?? 3))
+  const obs = v.observacoes ?? []
+  // fotos numeradas na ordem em que aparecem no relatório
+  let n = 0
+  const numerar = (lista: Midia[]) => lista.map((m) => ({ m, num: ++n }))
+  const fotosAmb = ambientes.map((amb) => ({ amb, fotos: numerar(fotosDoAmbiente(v, amb.id)) })).filter((x) => x.fotos.length)
+  const fotosObs = obs.map((o) => ({ o, fotos: numerar(fotosDaObservacao(v, o.id)) }))
+  const temFotos = fotosAmb.length > 0
+  const sec = { fotos: temFotos ? 4 : 0, obs: obs.length ? (temFotos ? 5 : 4) : 0 }
+  const texto = r.avaliados
+    ? `Foram avaliados ${r.avaliados} ambiente(s): ${r.bons} bom(ns), ${r.regulares} regular(es) e ${r.pessimos} péssimo(s).` +
+      (r.problemas ? ` Os ambientes com problema estão descritos abaixo, com fotos.` : ' Nenhum ambiente com problema.')
+    : 'Nenhum ambiente foi avaliado nesta vistoria.'
 
   return (
     <article className={`relatorio estilo-${estilo}`}>
@@ -52,90 +56,36 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
       </section>
 
       <section className="rel-bloco">
-        <h2>2. Resumo da situação</h2>
-        <div className="rel-nivel">
-          <span className={'nivel ' + r.nivel.classe}>Situação {r.nivel.nome.toLowerCase()}</span>
-          <span>Índice de criticidade: <strong>{r.pontos}</strong> pontos</span>
-          {v.general_reason && v.general_by && <Selo value="Intervenção imediata na unidade" />}
+        <h2>2. Classificação da unidade</h2>
+        <div className={'rel-classif ' + r.nivel.cor}>
+          <span className="sinal" aria-hidden="true" />
+          <div><small>Classificação</small><strong>Unidade {r.nivel.nome.toLowerCase()}</strong></div>
+          <div className="indice"><small>Índice</small><strong>{r.pontos}</strong><small>de 100</small></div>
         </div>
         <div className="rel-kpis">
-          <div><strong>{r.ambientes}</strong><span>ambientes vistoriados</span></div>
-          <div><strong>{r.respondidos}</strong><span>itens verificados</span></div>
-          <div><strong>{r.problemas}</strong><span>itens com problema ({pct}%)</span></div>
-          <div className="k-imediata"><strong>{r.porPrioridade['Imediata'] ?? 0}</strong><span>ações imediatas</span></div>
-          <div className="k-prioritaria"><strong>{r.porPrioridade['Prioritária'] ?? 0}</strong><span>ações prioritárias</span></div>
-          <div><strong>{r.porPrioridade['Programável'] ?? 0}</strong><span>ações programáveis</span></div>
+          <div><strong>{r.avaliados}</strong><span>ambientes avaliados</span></div>
+          <div className="k-pessimo"><strong>{r.pessimos}</strong><span>🔴 péssimos</span></div>
+          <div className="k-regular"><strong>{r.regulares}</strong><span>🟡 regulares</span></div>
+          <div className="k-bom"><strong>{r.bons}</strong><span>🟢 bons</span></div>
+          <div><strong>{r.fotos}</strong><span>fotos</span></div>
+          <div><strong>{r.observacoes}</strong><span>observações</span></div>
         </div>
-        <p className="rel-texto">
-          Foram vistoriados {r.ambientes} ambiente(s) e verificados {r.respondidos} itens: {r.ok} em condições adequadas, {r.problemas} com
-          necessidade de reparo, substituição ou reposição{r.naoTestados ? `, e ${r.naoTestados} não testado(s)` : ''}. Foram registradas {r.ocorrencias} ocorrência(s)
-          que pedem ação da gestão.
-        </p>
-        {v.general_reason && <p className="rel-alerta"><strong>Intervenção imediata na unidade inteira.</strong> {v.general_reason} — validação: {v.general_by}.</p>}
+        <p className="rel-texto">{texto}</p>
+        <p className="rel-regra">Critério: {REGRA_CLASSIFICACAO} Índice: 0 = todos os ambientes bons; 100 = todos péssimos.</p>
       </section>
 
       <section className="rel-bloco">
-        <h2>3. Principais problemas e o que causam</h2>
-        {!principais.length ? <p className="rel-texto">Nenhum problema registrado nesta vistoria.</p> : (
-          <ol className="rel-principais">
-            {principais.map((p) => (
-              <li key={p.titulo}>
-                <div className="p-topo"><strong>{p.titulo}</strong><Selo value={p.gravidade} /></div>
-                <p className="p-onde">{[...new Set(p.onde)].join('; ')}{p.impacto && <> — <span className="p-causa">{p.impacto}</span></>}</p>
-              </li>
-            ))}
-          </ol>
-        )}
-      </section>
-
-      {acoes.length > 0 && (
-        <section className="rel-bloco">
-          <h2>4. Ações recomendadas</h2>
-          <table className="rel-tabela">
-            <thead><tr><th>Prioridade</th><th>Local</th><th>Problema</th><th>Ação indicada</th><th>Responsável · prazo</th></tr></thead>
-            <tbody>
-              {acoes.map(({ amb, o }) => (
-                <tr key={o.id}>
-                  <td><Selo value={o.priority} /></td>
-                  <td>{amb.name}{o.point && o.point !== amb.name && <><br /><small>{o.point}</small></>}</td>
-                  <td>{o.item && <strong>{o.item}: </strong>}{o.issue}</td>
-                  <td>{o.action}</td>
-                  <td>{[o.owner, o.due && dataBR(o.due)].filter(Boolean).join(' · ') || '—'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      )}
-
-      {fotos.length > 0 && (
-        <section className="rel-bloco">
-          <h2>{acoes.length ? 5 : 4}. Registro fotográfico</h2>
-          <div className="rel-fotos">
-            {fotos.map(({ m, lugar, titulo }, i) => (
-              <div className="rel-foto" key={m.id}>
-                <span className="f-num">Foto {i + 1}</span>
-                <VerMidia media={{ ...m, caption: [lugar, titulo && !m.caption.includes(titulo) ? titulo : '', m.caption].filter(Boolean).join(' · ') }} />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section className="rel-bloco">
-        <h2>{4 + (acoes.length ? 1 : 0) + (fotos.length ? 1 : 0)}. Itens verificados por ambiente</h2>
-        <table className="rel-tabela compacta">
-          <thead><tr><th>Ambiente</th><th>Verificados</th><th>Adequados</th><th>Com problema</th></tr></thead>
+        <h2>3. Situação de cada ambiente</h2>
+        <table className="rel-tabela">
+          <thead><tr><th>Ambiente</th><th>Situação</th><th>O que foi observado</th></tr></thead>
           <tbody>
-            {v.rooms.map((amb) => {
-              const respostas = Object.values(amb.checks).filter(Boolean)
-              const probs = r.listaChecklist.filter((p) => p.ambiente === amb.name)
+            {ambientes.map((amb) => {
+              const imp = precisaFoto(amb.situacao) ? impactosDoTexto([amb.descricao, ...fotosDoAmbiente(v, amb.id).map((m) => m.caption)].join(' '), 1)[0] : ''
               return (
-                <tr key={amb.id}>
+                <tr key={amb.id} className={'sit-' + (amb.situacao ? semAcento(amb.situacao) : 'nada')}>
                   <td><strong>{amb.name}</strong></td>
-                  <td>{respostas.length}</td>
-                  <td>{respostas.filter((x) => x === 'OK').length}</td>
-                  <td>{probs.length ? probs.map((p) => `${p.item} (${p.resposta.toLowerCase()})`).join('; ') : '—'}</td>
+                  <td className="sit-cel">{amb.situacao ? `${amb.situacao === 'Bom' ? '🟢' : amb.situacao === 'Regular' ? '🟡' : '🔴'} ${amb.situacao}` : '—'}</td>
+                  <td>{amb.descricao || (amb.situacao === 'Bom' ? 'Sem problemas.' : '—')}{imp && <><br /><small className="p-causa">O que causa: {imp}</small></>}</td>
                 </tr>
               )
             })}
@@ -143,10 +93,42 @@ export function Relatorio({ vistoria: v, unidade: u, estilo }: { vistoria: Visto
         </table>
       </section>
 
+      {temFotos && (
+        <section className="rel-bloco">
+          <h2>{sec.fotos}. Registro fotográfico por ambiente</h2>
+          {fotosAmb.map(({ amb, fotos }) => (
+            <div className="rel-fotos-amb" key={amb.id}>
+              <h3>{amb.name} <small>{amb.situacao}</small></h3>
+              <div className="rel-fotos">
+                {fotos.map(({ m, num }) => (
+                  <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} /></div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {obs.length > 0 && (
+        <section className="rel-bloco">
+          <h2>{sec.obs}. Observações da visita</h2>
+          <p className="rel-texto">Demandas e situações relatadas durante a visita.</p>
+          {fotosObs.map(({ o, fotos }, i) => (
+            <div className="rel-obs" key={o.id}>
+              <p><strong>{i + 1}. {o.quem ? `Relatado por ${o.quem}` : 'Observação'}:</strong> {o.texto}</p>
+              {fotos.length > 0 && (
+                <div className="rel-fotos">
+                  {fotos.map(({ m, num }) => <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} /></div>)}
+                </div>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
+
       <section className="rel-bloco rel-assinaturas">
         <div><span />{v.inspector || 'Vistoriador(a)'}<small>Vistoriador(a) da {CFG.secretaria}</small></div>
         <div><span />Responsável pela unidade<small>Nome e matrícula</small></div>
-        {v.general_by && <div><span />{v.general_by}<small>Validação da intervenção</small></div>}
       </section>
       <footer className="rel-rodape">{CFG.orgao} · {CFG.vinculo} · {CFG.secretaria} · {CFG.titulo} · Relatório nº {numero} · {u?.name}</footer>
     </article>

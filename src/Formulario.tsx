@@ -1,69 +1,69 @@
 import { useEffect, useState } from 'react'
-import { IMPACTOS } from './lib/analise'
 import {
-  AMBIENTES_SUGERIDOS, PRIORIDADES, TIPOS_ACEITOS, checklistDoAmbiente, linkMapa, maiorPrioridade, novoId,
-  type Ambiente, type Midia, type Ocorrencia, type Unidade, type Vistoria,
+  AMBIENTES_SUGERIDOS, SITUACOES, TIPOS_ACEITOS, fotosDaObservacao, fotosDoAmbiente, linkMapa, novoId, precisaFoto,
+  type Ambiente, type Midia, type Observacao, type Unidade, type Vistoria,
 } from './lib/modelo'
 import { Campo, Selo, VerMidia } from './ui'
 
+export type Destino = { roomId?: string; obsId?: string }
 type Props = {
   v: Vistoria; u: Unidade; ocupado: boolean; bloqueada: boolean; pendente: boolean
   mudar: (v: Vistoria) => void
-  anexar: (destino: { roomId?: string; ocorrencia?: Ocorrencia }, arquivos: File[]) => void
+  anexar: (destino: Destino, arquivos: File[]) => void
   salvar: () => void; concluir: () => void; excluir?: () => void; faltas?: string[]
 }
 
-/* Botões de resposta: rótulo curto no botão, resposta gravada igual ao relatório */
-const BOTOES = [
-  { r: 'OK', t: '✓ OK', c: 'ok' }, { r: 'Reparo', t: 'Reparo', c: 'reparo' }, { r: 'Substituição', t: 'Trocar', c: 'troca' },
-  { r: 'Faltante', t: 'Falta', c: 'falta' }, { r: 'Não testado', t: 'N/T', c: 'neutro' }, { r: 'Não se aplica', t: 'N/A', c: 'neutro' },
-]
-const PROBLEMA = new Set(['Reparo', 'Substituição', 'Faltante'])
-/* Itens que, com problema, já entram como ação imediata */
-const IMEDIATOS = new Set(['Fiação visível', 'Tomadas e espelhos', 'Rede de frio', 'Energia e contingência', 'Registro de temperatura',
-  'Coletor de perfurocortantes', 'Autoclave', 'Guarda restrita', 'Sinalização e saída de emergência', 'Teto e forro', 'Luz de emergência'])
-const ACAO: Record<string, string> = { Reparo: 'Reparar', 'Substituição': 'Substituir', Faltante: 'Instalar ou repor' }
-const PRECISA: Record<string, string> = { Reparo: 'precisa de reparo', 'Substituição': 'precisa ser substituído', Faltante: 'está faltando' }
+const QUEM = ['Funcionário(a)', 'Agente de saúde', 'Gestor(a) da unidade', 'Paciente', 'Vistoriador(a)']
+const COR: Record<string, string> = { Bom: '🟢', Regular: '🟡', 'Péssimo': '🔴' }
 
-function ocorrenciaAutomatica(amb: Ambiente, chave: string, item: string, resposta: string): Ocorrencia {
-  return {
-    id: novoId(), check: chave, item, point: amb.name, issue: `${item} ${PRECISA[resposta]}.`,
-    action: `${ACAO[resposta]}: ${item.toLowerCase()}.`, reason: IMPACTOS[item] || 'Compromete o funcionamento do ambiente.',
-    priority: IMEDIATOS.has(item) ? 'Imediata' : resposta === 'Faltante' ? 'Prioritária' : 'Programável',
-    owner: '', due: '', media: [],
+/** O que ainda falta num ambiente para poder concluir (vazio = pronto). */
+export function faltasDoAmbiente(v: Vistoria, amb: Ambiente): string[] {
+  const f: string[] = []
+  if (!amb.situacao) f.push('s:' + amb.id)
+  if (precisaFoto(amb.situacao)) {
+    if (!amb.descricao?.trim()) f.push('d:' + amb.id)
+    if (!fotosDoAmbiente(v, amb.id).length) f.push('f:' + amb.id)
   }
+  for (const m of fotosDoAmbiente(v, amb.id)) if (!m.caption.trim()) f.push('l:' + m.id)
+  return f
+}
+/** O que falta numa observação: o texto e a descrição de cada foto. */
+export function faltasDaObservacao(v: Vistoria, o: Observacao): string[] {
+  const f: string[] = []
+  if (!o.texto.trim()) f.push('o:' + o.id)
+  for (const m of fotosDaObservacao(v, o.id)) if (!m.caption.trim()) f.push('l:' + m.id)
+  return f
 }
 
-/** Formulário de vistoria feito para o celular: quase tudo em botões. */
+/** Formulário de vistoria feito para o celular: cada ambiente é Bom, Regular ou Péssimo, com fotos descritas. */
 export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, salvar, concluir, excluir, faltas = [] }: Props) {
   const [outro, setOutro] = useState('')
   const [abertoAmb, setAbertoAmb] = useState<string>(v.rooms.at(-1)?.id ?? '')
-  const [detalhe, setDetalhe] = useState<string>('')
-  // campos que faltam (só enquanto continuarem vazios)
+  // só fica vermelho o que continua faltando
+  const pendentes = new Set([...v.rooms.flatMap((r) => faltasDoAmbiente(v, r)), ...(v.observacoes ?? []).flatMap((o) => faltasDaObservacao(v, o))])
   const falta = (k: string) => faltas.includes(k) && (
-    k === 'data' ? !v.inspected_on : k === 'vistoriador' ? !v.inspector.trim() : k === 'conteudo' ? !v.rooms.length && !(v.photos ?? []).length
-      : k === 'validacao' ? !v.general_by.trim() : !v.rooms.some((r) => r.findings.some((f) => 'o:' + f.id === k && f.issue.trim())))
-  // ao tentar concluir com falta: abre o ambiente e o problema em vermelho e rola até ele
+    k === 'data' ? !v.inspected_on : k === 'vistoriador' ? !v.inspector.trim() : k === 'conteudo' ? !v.rooms.length : pendentes.has(k))
+  const ambFalta = (amb: Ambiente) => faltas.length > 0 && faltasDoAmbiente(v, amb).some((k) => faltas.includes(k))
+
+  // ao tentar concluir com falta: abre o primeiro ambiente com pendência e rola até o campo em vermelho
   useEffect(() => {
     if (!faltas.length) return
-    const prob = faltas.find((k) => k.startsWith('o:'))
-    if (prob) {
-      const amb = v.rooms.find((r) => r.findings.some((f) => 'o:' + f.id === prob))
-      if (amb) { setAbertoAmb(amb.id); setDetalhe(prob.slice(2)) }
-    }
+    const amb = v.rooms.find((r) => faltasDoAmbiente(v, r).some((k) => faltas.includes(k)))
+    if (amb) setAbertoAmb(amb.id)
     setTimeout(() => document.querySelector('.form-vistoria .falta')?.scrollIntoView({ block: 'center' }), 350)
   }, [faltas])
+
   const atual = v.rooms.find((r) => r.id === abertoAmb)
   const sugeridos = [...AMBIENTES_SUGERIDOS, ...(u.kind === 'CAPS' ? ['Sala de convivência', 'Dormitório'] : [])]
+  const fotos = v.photos ?? []
+  const observacoes = v.observacoes ?? []
 
   // trocar de ambiente sempre leva ao topo do ambiente, para o vistoriador ver onde está
   function irPara(id: string) {
     setAbertoAmb(id)
     setTimeout(() => document.querySelector(id ? '.ambiente.aberto' : '.ambientes-bar')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60)
   }
-
   function trocarAmbiente(a: Ambiente) { mudar({ ...v, rooms: v.rooms.map((r) => (r.id === a.id ? a : r)) }) }
-
   function adicionarAmbiente(nome: string) {
     let final = nome.trim()
     if (!final) return
@@ -73,57 +73,40 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
       const n = v.rooms.filter((r) => r.name.replace(/\s*\d+$/, '') === base).length + 1
       final = `${base} ${String(n).padStart(2, '0')}`
     }
-    const novo: Ambiente = { id: novoId(), name: final, checks: {}, findings: [] }
+    const novo: Ambiente = { id: novoId(), name: final }
     mudar({ ...v, rooms: [...v.rooms, novo] })
-    setAbertoAmb(novo.id)
+    irPara(novo.id)
     setOutro('')
   }
-
-  function responder(amb: Ambiente, grupo: string, item: string, resposta: string) {
-    const chave = grupo + ' · ' + item
-    const atual = amb.checks[chave]
-    const nova = atual === resposta ? '' : resposta // tocar de novo desmarca
-    let findings = amb.findings.filter((f) => !(f.check === chave && !f.media.length && !PROBLEMA.has(nova)))
-    if (PROBLEMA.has(nova)) {
-      const existente = findings.find((f) => f.check === chave)
-      const auto = ocorrenciaAutomatica(amb, chave, item, nova)
-      findings = existente
-        ? findings.map((f) => (f.id === existente.id ? { ...f, issue: auto.issue, action: auto.action } : f))
-        : [...findings, auto]
-    }
-    trocarAmbiente({ ...amb, checks: { ...amb.checks, [chave]: nova }, findings })
-  }
-
-  function tudoOk(amb: Ambiente, grupo: string, itens: string[]) {
-    const checks = { ...amb.checks }
-    for (const it of itens) if (!checks[grupo + ' · ' + it]) checks[grupo + ' · ' + it] = 'OK'
-    trocarAmbiente({ ...amb, checks })
-  }
-
-  const fotos = v.photos ?? []
   function trocarFoto(m: Midia) { mudar({ ...v, photos: fotos.map((x) => (x.id === m.id ? m : x)) }) }
-
-  /** Foto da galeria que mostra um problema: vira um problema do ambiente (a foto vai junto, sem duplicar). */
-  function virarProblema(m: Midia) {
-    let rooms = v.rooms
-    let amb = rooms.find((r) => r.id === m.room)
-    if (!amb) {
-      amb = rooms.find((r) => r.name === 'Visão geral') ?? { id: novoId(), name: 'Visão geral', checks: {}, findings: [] }
-      if (!rooms.includes(amb)) rooms = [...rooms, amb]
-    }
-    const item = m.item || ''
-    const o: Ocorrencia = {
-      id: novoId(), item, point: amb.name, issue: m.caption || m.ai || 'Problema registrado na foto.',
-      action: item ? `Corrigir: ${item.toLowerCase()}.` : 'Verificar e corrigir o problema da foto.',
-      priority: 'Prioritária', reason: (item && IMPACTOS[item]) || '', owner: '', due: '', media: [m],
-    }
-    const alvo = amb.id
-    mudar({ ...v, photos: fotos.filter((x) => x.id !== m.id), rooms: rooms.map((r) => (r.id === alvo ? { ...r, findings: [...r.findings, o] } : r)) })
-    setAbertoAmb(alvo)
-    if (!m.caption && !m.ai) setDetalhe(o.id) // sem legenda: abre os detalhes para descrever, se quiser
+  function tirarFoto(m: Midia) { if (confirm('Tirar esta foto?')) mudar({ ...v, photos: fotos.filter((x) => x.id !== m.id) }) }
+  function trocarObs(o: Observacao) { mudar({ ...v, observacoes: observacoes.map((x) => (x.id === o.id ? o : x)) }) }
+  function novaObs() {
+    const o: Observacao = { id: novoId(), quem: '', texto: '' }
+    mudar({ ...v, observacoes: [...observacoes, o] })
+    setTimeout(() => document.getElementById('obs-' + o.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80)
   }
 
-  function mudarOcorrencia(amb: Ambiente, o: Ocorrencia) { trocarAmbiente({ ...amb, findings: amb.findings.map((f) => (f.id === o.id ? o : f)) }) }
+  const botaoFoto = (destino: Destino, texto: string, classe = '') => (
+    <label className={'btn-arquivo ' + classe}>{texto}<input type="file" multiple accept={TIPOS_ACEITOS.join(',')}
+      onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar(destino, l) }} /></label>
+  )
+  const listaFotos = (lista: Midia[], dica: string) => lista.length > 0 && (
+    <div className="fotos-desc">
+      {lista.map((m, n) => (
+        <div className={'foto-desc' + (falta('l:' + m.id) ? ' falta' : '')} key={m.id}>
+          <VerMidia media={m} />
+          <div className="foto-desc-campos">
+            <label>Foto {n + 1}: o que ela mostra? <b className="obrig">obrigatório</b>
+              <textarea value={m.caption} placeholder={dica} onChange={(e) => trocarFoto({ ...m, caption: e.target.value })} />
+            </label>
+            {falta('l:' + m.id) && <em className="falta-msg">Descreva esta foto para concluir</em>}
+            <button className="quiet" onClick={() => tirarFoto(m)}>🗑️ Tirar foto</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <div className="form-vistoria" data-pendente={pendente ? 'sim' : 'nao'}>
@@ -149,14 +132,16 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
         {/* Ambientes: um por vez. Os botões de cima trocam de ambiente; "+ Ambiente" cria outro. */}
         <div className={'panel ambientes-bar' + (falta('conteudo') ? ' falta' : '')}>
           <h2 className="passo">Ambientes desta vistoria</h2>
-          {falta('conteudo') && <p className="falta-msg">Adicione pelo menos um ambiente ou uma foto da visita para concluir.</p>}
+          {falta('conteudo') && <p className="falta-msg">Adicione pelo menos um ambiente para concluir.</p>}
+          <p className="dica">Toque em cada ambiente e diga como ele está. Todos precisam ter situação para concluir.</p>
           <div className="chips amb-chips">
             {v.rooms.map((r) => {
-              const tot = Object.values(checklistDoAmbiente(r.name)).flat().length
-              const fe = Object.values(r.checks).filter(Boolean).length
+              const pronto = !faltasDoAmbiente(v, r).length
               return (
-                <button key={r.id} className={'chip amb-chip' + (abertoAmb === r.id ? ' ativo' : '') + (fe >= tot ? ' completo' : '')} onClick={() => irPara(r.id)} aria-current={abertoAmb === r.id || undefined}>
-                  <span>{abertoAmb === r.id ? '📍 ' : fe >= tot ? '✅ ' : ''}{r.name}</span><small>{abertoAmb === r.id ? 'você está aqui' : `${fe}/${tot}${r.findings.length ? ` · ${r.findings.length}⚠️` : ''}`}</small>
+                <button key={r.id} className={'chip amb-chip' + (abertoAmb === r.id ? ' ativo' : '') + (pronto ? ' completo' : '') + (ambFalta(r) ? ' chip-falta' : '')}
+                  onClick={() => irPara(r.id)} aria-current={abertoAmb === r.id || undefined}>
+                  <span>{abertoAmb === r.id ? '📍 ' : ''}{r.name}</span>
+                  <small>{abertoAmb === r.id ? 'você está aqui' : r.situacao ? `${COR[r.situacao]} ${r.situacao}${pronto ? '' : ' · falta'}` : '⚪ sem situação'}</small>
                 </button>
               )
             })}
@@ -172,7 +157,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
               {sugeridos.filter((a) => !v.rooms.some((r) => r.name === a)).map((a) => <button key={a} className="chip" onClick={() => adicionarAmbiente(a)}>{a}</button>)}
             </div>
             <div className="criar-amb">
-              <label htmlFor="novo-amb"><b>➕ Criar ambiente</b> <small>(vem com todas as opções)</small></label>
+              <label htmlFor="novo-amb"><b>➕ Criar ambiente</b></label>
               <div className="row outro">
                 <input id="novo-amb" value={outro} placeholder="Ex.: Sala de curativo, Triagem, Almoxarifado" onChange={(e) => setOutro(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') adicionarAmbiente(outro) }} />
                 <button className="primary" disabled={!outro.trim()} onClick={() => adicionarAmbiente(outro)}>Criar</button>
@@ -181,12 +166,12 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
           </div>
         ) : (() => {
           const amb = atual
-          const grupos = checklistDoAmbiente(amb.name)
-          const total = Object.values(grupos).flat().length
-          const feitos = Object.values(amb.checks).filter(Boolean).length
           const i = v.rooms.findIndex((r) => r.id === amb.id)
           const proximo = v.rooms[i + 1]
           const anterior = v.rooms[i - 1]
+          const fotosAmb = fotosDoAmbiente(v, amb.id)
+          const ruim = precisaFoto(amb.situacao)
+          const pronto = !faltasDoAmbiente(v, amb).length
           return (
             <section className="panel ambiente aberto" key={amb.id}>
               {/* Fica preso no topo enquanto rola: o vistoriador sempre vê em que ambiente está */}
@@ -195,93 +180,50 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                 <div className="onde-texto">
                   <small>📍 Você está em · ambiente {i + 1} de {v.rooms.length}</small>
                   <strong>{amb.name}</strong>
-                  <small>{feitos}/{total} itens{amb.findings.length ? ` · ${amb.findings.length} ${amb.findings.length === 1 ? 'problema' : 'problemas'}` : ''}{feitos >= total ? ' · ✅ completo' : ''}</small>
+                  <small>{amb.situacao ? `${COR[amb.situacao]} ${amb.situacao}` : '⚪ Diga como está'} · {fotosAmb.length} {fotosAmb.length === 1 ? 'foto' : 'fotos'}{pronto ? ' · ✅ pronto' : ''}</small>
                 </div>
                 <button className="seta" onClick={() => irPara(proximo ? proximo.id : '')} aria-label={proximo ? `Ir para ${proximo.name}` : 'Outro ambiente'}>{proximo ? '▶' : '＋'}</button>
-                <i className="barra"><b style={{ width: `${(feitos / Math.max(1, total)) * 100}%` }} /></i>
               </div>
-              {maiorPrioridade(amb.findings) && <div className="amb-dir">Pior situação aqui: <Selo value={maiorPrioridade(amb.findings)} /></div>}
               <details className="amb-opcoes">
                 <summary>Renomear ou remover este ambiente</summary>
                 <div className="row renomear">
                   <Campo label="Nome do ambiente"><input value={amb.name} onChange={(e) => trocarAmbiente({ ...amb, name: e.target.value })} /></Campo>
-                  <button className="quiet" onClick={() => { if (confirm(`Tirar "${amb.name}" desta vistoria?`)) { mudar({ ...v, rooms: v.rooms.filter((r) => r.id !== amb.id) }); setAbertoAmb('') } }}>Remover ambiente</button>
+                  <button className="quiet" onClick={() => {
+                    if (!confirm(`Tirar "${amb.name}" desta vistoria? As fotos dele também saem.`)) return
+                    mudar({ ...v, rooms: v.rooms.filter((r) => r.id !== amb.id), photos: fotos.filter((m) => m.room !== amb.id || m.obs) }); setAbertoAmb('')
+                  }}>Remover ambiente</button>
                 </div>
               </details>
-                  {Object.entries(grupos).map(([grupo, itens]) => {
-                    const resp = itens.filter((it) => amb.checks[grupo + ' · ' + it]).length
-                    return (
-                      <div className="grupo" key={grupo}>
-                        <div className="grupo-topo">
-                          <h3><span className="grupo-amb">{amb.name} ›</span> {grupo} <small>{resp}/{itens.length}</small></h3>
-                          {resp < itens.length && <button className="tudo-ok" onClick={() => tudoOk(amb, grupo, itens)}>✓ Restante OK</button>}
-                        </div>
-                        {itens.map((it) => {
-                          const atual = amb.checks[grupo + ' · ' + it] ?? ''
-                          return (
-                            <div className="item-linha" key={it}>
-                              <span className="item-nome">{it}</span>
-                              <div className="botoes-resp" role="group" aria-label={it}>
-                                {BOTOES.map((b) => (
-                                  <button key={b.r} className={`resp ${b.c}${atual === b.r ? ' marcado' : ''}`} aria-pressed={atual === b.r}
-                                    onClick={() => responder(amb, grupo, it, b.r)}>{b.t}</button>
-                                ))}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })}
 
-                  <div className="grupo">
-                    <div className="grupo-topo">
-                      <h3>Problemas deste ambiente <small>{amb.findings.length}</small></h3>
-                      <button className="tudo-ok" onClick={() => {
-                        const o: Ocorrencia = { id: novoId(), item: '', point: amb.name, issue: '', action: '', priority: 'Prioritária', reason: '', owner: '', due: '', media: [] }
-                        trocarAmbiente({ ...amb, findings: [...amb.findings, o] }); setDetalhe(o.id)
-                      }}>+ Outro problema</button>
-                    </div>
-                    {!amb.findings.length && <p className="dica">Ao marcar Reparo, Trocar ou Falta, o problema entra aqui sozinho, já com a ação e o motivo.</p>}
-                    {amb.findings.map((o) => (
-                      <article className={'finding' + (falta('o:' + o.id) ? ' falta' : '')} key={o.id}>
-                        {falta('o:' + o.id) && <p className="falta-msg">Descreva este problema em “Problema observado” para concluir.</p>}
-                        <div className="heading"><strong>{o.item || 'Problema sem nome'}</strong><Selo value={o.priority} /></div>
-                        <p className="f-resumo">{o.issue || 'Descreva o problema em Detalhes.'}</p>
-                        <div className="botoes-resp" role="group" aria-label="Prioridade">
-                          {PRIORIDADES.map((p) => <button key={p} className={`resp prio-${p === 'Imediata' ? 'i' : p === 'Prioritária' ? 'p' : 'g'}${o.priority === p ? ' marcado' : ''}`}
-                            aria-pressed={o.priority === p} onClick={() => mudarOcorrencia(amb, { ...o, priority: p })}>{p}</button>)}
-                        </div>
-                        <div className="row acoes-f">
-                          <label className="btn-arquivo">📷 Foto deste problema<input type="file" multiple accept={TIPOS_ACEITOS.join(',')} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar({ roomId: amb.id, ocorrencia: o }, l) }} /></label>
-                          <button onClick={() => setDetalhe(detalhe === o.id ? '' : o.id)}>✏️ Detalhes</button>
-                          <button className="quiet" onClick={() => trocarAmbiente({ ...amb, findings: amb.findings.filter((f) => f.id !== o.id) })}>Remover</button>
-                        </div>
-                        {detalhe === o.id && (
-                          <div className="grid">
-                            <Campo label="Item"><input value={o.item} placeholder="Ex.: fechadura" onChange={(e) => mudarOcorrencia(amb, { ...o, item: e.target.value })} /></Campo>
-                            <Campo label="Local exato"><input value={o.point} onChange={(e) => mudarOcorrencia(amb, { ...o, point: e.target.value })} /></Campo>
-                            <Campo label="Problema observado" falta={falta('o:' + o.id)}><textarea value={o.issue} onChange={(e) => mudarOcorrencia(amb, { ...o, issue: e.target.value })} /></Campo>
-                            <Campo label="Ação indicada"><textarea value={o.action} onChange={(e) => mudarOcorrencia(amb, { ...o, action: e.target.value })} /></Campo>
-                            <Campo label="Justificativa e observações"><textarea value={o.reason} onChange={(e) => mudarOcorrencia(amb, { ...o, reason: e.target.value })} /></Campo>
-                            <Campo label="Setor responsável"><input value={o.owner} onChange={(e) => mudarOcorrencia(amb, { ...o, owner: e.target.value })} /></Campo>
-                            <Campo label="Prazo"><input type="date" value={o.due} onChange={(e) => mudarOcorrencia(amb, { ...o, due: e.target.value })} /></Campo>
-                          </div>
-                        )}
-                        {o.media.length > 0 && (
-                          <div className="media">
-                            {o.media.map((m) => (
-                              <div key={m.id}>
-                                <VerMidia media={m} />
-                                <input className="legenda-foto" value={m.caption} placeholder="Legenda (opcional)" onChange={(e) => mudarOcorrencia(amb, { ...o, media: o.media.map((x) => (x.id === m.id ? { ...x, caption: e.target.value } : x)) })} />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </article>
-                    ))}
-                  </div>
-              <small className="dica">Evite fotografar pacientes, prontuários ou telas.</small>
+              <div className={'situacao-bloco' + (falta('s:' + amb.id) ? ' falta' : '')}>
+                <h3>Como está {amb.name.toLowerCase().startsWith('área') ? 'a' : 'o ambiente'} {amb.name}?</h3>
+                {falta('s:' + amb.id) && <em className="falta-msg">Escolha a situação para concluir</em>}
+                <div className="botoes-situacao" role="group" aria-label="Situação do ambiente">
+                  {SITUACOES.map((b) => (
+                    <button key={b.s} className={`sit ${b.c}${amb.situacao === b.s ? ' marcado' : ''}`} aria-pressed={amb.situacao === b.s}
+                      onClick={() => trocarAmbiente({ ...amb, situacao: amb.situacao === b.s ? undefined : b.s })}>{b.t}</button>
+                  ))}
+                </div>
+                {ruim && <p className="aviso-obrig">Situação {amb.situacao?.toLowerCase()}: <b>descreva o que tem de ruim</b> e <b>anexe pelo menos uma foto</b>.</p>}
+              </div>
+
+              {amb.situacao && (
+                <Campo label={ruim ? 'O que tem de ruim neste ambiente? (obrigatório)' : 'Observação sobre o ambiente (opcional)'} falta={falta('d:' + amb.id)}>
+                  <textarea value={amb.descricao ?? ''} placeholder={ruim ? 'Ex.: infiltração no teto, mofo na parede, ar-condicionado sem funcionar' : 'Ex.: ambiente limpo e organizado'}
+                    onChange={(e) => trocarAmbiente({ ...amb, descricao: e.target.value })} />
+                </Campo>
+              )}
+
+              <div className={'fotos-amb' + (falta('f:' + amb.id) ? ' falta' : '')}>
+                <div className="grupo-topo">
+                  <h3>Fotos de {amb.name} <small>{fotosAmb.length}</small></h3>
+                  {botaoFoto({ roomId: amb.id }, '📷 Adicionar foto', ruim && !fotosAmb.length ? 'primary' : '')}
+                </div>
+                {falta('f:' + amb.id) && <em className="falta-msg">Anexe pelo menos uma foto para concluir</em>}
+                <p className="dica">Pode anexar quantas fotos quiser. Cada foto precisa de uma descrição. Evite fotografar pacientes, prontuários ou telas.</p>
+                {listaFotos(fotosAmb, 'Ex.: mofo no canto do teto, perto da janela')}
+              </div>
+
               <div className="amb-fim">
                 {proximo
                   ? <button className="primary" onClick={() => irPara(proximo.id)}>✓ Terminei {amb.name} · ir para {proximo.name}</button>
@@ -291,43 +233,42 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
           )
         })()}
 
-        <details className={'panel' + (falta('validacao') ? ' falta' : '')} open={falta('validacao') || undefined}>
-          <summary>A unidade inteira precisa de intervenção imediata?</summary>
-          <div className="grid">
-            <Campo label="Por quê"><textarea value={v.general_reason} onChange={(e) => mudar({ ...v, general_reason: e.target.value })} /></Campo>
-            <Campo label="Responsável pela validação" falta={falta('validacao')}><input value={v.general_by} onChange={(e) => mudar({ ...v, general_by: e.target.value })} /></Campo>
-          </div>
-        </details>
-
-        <section className="panel galeria">
+        {/* Observações: o que funcionários, agentes ou gestores relataram na visita */}
+        <section className="panel observacoes">
           <div className="grupo-topo">
-            <h2 className="passo">3. Fotos da visita <small>{fotos.length}</small></h2>
-            <label className="btn-arquivo primary">📷 Adicionar fotos<input type="file" multiple accept={TIPOS_ACEITOS.join(',')} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar({ roomId: abertoAmb || undefined }, l) }} /></label>
+            <h2 className="passo">💬 Observações <small>{observacoes.length}</small></h2>
+            <button className="primary" onClick={novaObs}>＋ Observação</button>
           </div>
-          <p className="dica">Tire quantas fotos quiser: elas vão direto para o PDF do relatório. O app não guarda fotos em lugar nenhum; elas ficam só no seu celular até o PDF. Se a foto mostrar um problema, toque em <b>⚠️ É um problema</b>.</p>
-          {fotos.length > 0 && (
-            <div className="galeria-grade">
-              {fotos.map((m) => (
-                <div className="galeria-item" key={m.id}>
-                  <VerMidia media={m} />
-                  <input className="legenda-foto" value={m.caption} placeholder="O que mostra a foto (opcional)" onChange={(e) => trocarFoto({ ...m, caption: e.target.value })} />
-                  <select className="legenda-foto" value={m.room ?? ''} onChange={(e) => trocarFoto({ ...m, room: e.target.value || undefined })} aria-label="Ambiente da foto">
-                    <option value="">Visão geral da unidade</option>
-                    {v.rooms.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-                  </select>
-                  <div className="row">
-                    <button className="virar" onClick={() => virarProblema(m)}>⚠️ É um problema</button>
-                    <button className="quiet" onClick={() => mudar({ ...v, photos: fotos.filter((x) => x.id !== m.id) })} aria-label="Tirar foto">🗑️</button>
-                  </div>
+          <p className="dica">Use para registrar outras demandas e situações relatadas por funcionários, agentes ou gestores da unidade. Cada observação pode ter fotos (com descrição).</p>
+          {observacoes.map((o, n) => {
+            const fotosObs = fotosDaObservacao(v, o.id)
+            return (
+              <article className={'obs' + (falta('o:' + o.id) ? ' falta' : '')} key={o.id} id={'obs-' + o.id}>
+                <div className="grupo-topo">
+                  <h3>Observação {n + 1}</h3>
+                  <button className="quiet" onClick={() => {
+                    if (!confirm('Tirar esta observação e as fotos dela?')) return
+                    mudar({ ...v, observacoes: observacoes.filter((x) => x.id !== o.id), photos: fotos.filter((m) => m.obs !== o.id) })
+                  }}>🗑️</button>
                 </div>
-              ))}
-            </div>
-          )}
+                <p className="rotulo">Quem relatou</p>
+                <div className="chips quebra">
+                  {QUEM.map((q) => <button key={q} className={'chip' + (o.quem === q ? ' ativo' : '')} onClick={() => trocarObs({ ...o, quem: o.quem === q ? '' : q })}>{q}</button>)}
+                </div>
+                <Campo label="Nome ou função (opcional)"><input value={QUEM.includes(o.quem) ? '' : o.quem} placeholder="Ex.: Maria, enfermeira" onChange={(e) => trocarObs({ ...o, quem: e.target.value })} /></Campo>
+                <Campo label="O que foi relatado (obrigatório)" falta={falta('o:' + o.id)}>
+                  <textarea value={o.texto} placeholder="Ex.: falta de insumos há duas semanas; a geladeira de vacinas desliga à noite" onChange={(e) => trocarObs({ ...o, texto: e.target.value })} />
+                </Campo>
+                <div className="row">{botaoFoto({ obsId: o.id }, '📎 Anexar foto')}</div>
+                {listaFotos(fotosObs, 'Ex.: caixa de insumos vazia')}
+              </article>
+            )
+          })}
         </section>
 
         <div className="barra-final no-print">
           <button className="barra-onde" onClick={() => irPara(abertoAmb)}>{atual ? <>📍 Você está em <b>{atual.name}</b></> : <>📍 Escolha o ambiente acima</>}</button>
-          <label className="btn-arquivo">📷 Foto<input type="file" multiple accept={TIPOS_ACEITOS.join(',')} onChange={(e) => { const l = Array.from(e.target.files ?? []); e.target.value = ''; anexar({ roomId: abertoAmb || undefined }, l) }} /></label>
+          {atual ? botaoFoto({ roomId: atual.id }, '📷 Foto') : <button disabled>📷 Foto</button>}
           <button disabled={!pendente} onClick={salvar}>Salvar</button>
           <button className="primary" onClick={concluir}>✓ Terminar<span className="so-pc"> vistoria</span></button>
         </div>

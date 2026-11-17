@@ -2,15 +2,23 @@ import unidadesJson from '../data/unidades.json'
 import { CFG } from '../config'
 
 export type Unidade = { id: number; name: string; district: string; kind: string; address: string; cnes: string; status: string }
-export type Midia = { id: string; type: string; name: string; caption: string; path?: string; ai?: string; room?: string; item?: string }
+export type Midia = { id: string; type: string; name: string; caption: string; path?: string; ai?: string; room?: string; item?: string; obs?: string }
 export type Ocorrencia = {
   id: string; check?: string; item: string; point: string; issue: string; action: string; priority: string
   reason: string; owner: string; due: string; media: Midia[]
 }
-export type Ambiente = { id: string; name: string; checks: Record<string, string>; findings: Ocorrencia[] }
+/** Como está o ambiente. Regular ou Péssimo exigem descrição e pelo menos uma foto. */
+export type Situacao = 'Bom' | 'Regular' | 'Péssimo'
+export const SITUACOES: { s: Situacao; t: string; c: string }[] = [
+  { s: 'Bom', t: '🟢 Bom', c: 'bom' }, { s: 'Regular', t: '🟡 Regular', c: 'regular' }, { s: 'Péssimo', t: '🔴 Péssimo', c: 'pessimo' },
+]
+/** checks/findings: só em vistorias do modelo antigo (checklist item a item). */
+export type Ambiente = { id: string; name: string; situacao?: Situacao; descricao?: string; checks?: Record<string, string>; findings?: Ocorrencia[] }
+/** Observação ouvida na visita (funcionário, agente…): texto obrigatório; fotos com descrição. */
+export type Observacao = { id: string; quem: string; texto: string }
 export type Vistoria = {
   id: string; unit_id: number; owner?: string; inspected_on: string; inspector: string
-  status: 'draft' | 'completed'; rooms: Ambiente[]; photos?: Midia[]; general_reason: string; general_by: string; updated_at?: string; created_at?: string
+  status: 'draft' | 'completed'; rooms: Ambiente[]; photos?: Midia[]; observacoes?: Observacao[]; general_reason: string; general_by: string; updated_at?: string; created_at?: string
   summary?: ResumoCompacto
 }
 /** Resumo de poucos bytes que fica para sempre; o relatório completo antigo é apagado para o banco não encher. */
@@ -90,11 +98,10 @@ export function maiorPrioridade(ocorrencias: Ocorrencia[]): string {
   return PRIORIDADES.find((p) => ocorrencias.some((o) => o.priority === p)) ?? ''
 }
 
-export function resumoPrioridade(v: Vistoria): string {
-  if (v.general_reason && v.general_by) return 'Intervenção imediata na unidade'
-  const todas = v.rooms.flatMap((r) => r.findings)
-  return maiorPrioridade(todas) === 'Imediata' ? 'Imediata localizada' : maiorPrioridade(todas)
-}
+/** Fotos de um ambiente ou de uma observação. */
+export const fotosDoAmbiente = (v: Vistoria, roomId: string) => (v.photos ?? []).filter((m) => m.room === roomId && !m.obs)
+export const fotosDaObservacao = (v: Vistoria, obsId: string) => (v.photos ?? []).filter((m) => m.obs === obsId)
+export const precisaFoto = (s?: string) => s === 'Regular' || s === 'Péssimo'
 
 export const TIPOS_ACEITOS = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif']
 export const LIMITE_BYTES = 50 * 1024 * 1024

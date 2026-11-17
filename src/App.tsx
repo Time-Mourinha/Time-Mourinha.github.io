@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Campo, Selo, VerMidia } from './ui'
 import marca from './assets/marca.png'
 import {
-  LIMITE_BYTES, PRIORIDADES, linkMapa, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, resumoPrioridade, semAcento,
-  type Ambiente, type Midia, type VisitaAntiga, type Ocorrencia, type Perfil, type Unidade, type Vistoria,
+  LIMITE_BYTES, SITUACOES, linkMapa, TIPOS_ACEITOS, UNIDADES, dataBR, hoje, novoId, semAcento,
+  type Ambiente, type Midia, type VisitaAntiga, type Perfil, type Unidade, type Vistoria,
 } from './lib/modelo'
 import {
   DEMO, apagarFotosLocais, excluirVistoria, carregarPerfil, carregarHistorico, carregarUnidades, carregarVistorias, gravarDemo, lerDemo,
@@ -11,7 +11,7 @@ import {
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
 import { Entrada } from './Entrada'
-import { Formulario } from './Formulario'
+import { Formulario, faltasDaObservacao, faltasDoAmbiente, type Destino } from './Formulario'
 import { Aparencia } from './Aparencia'
 import { Instalar } from './Instalar'
 import { Painel, type SecaoPainel } from './Painel'
@@ -91,7 +91,7 @@ export default function App() {
   const [distrito, setDistrito] = useState('')
   const [tipo, setTipo] = useState('')
   const [situacao, setSituacao] = useState('')
-  const [fPrioridade, setFPrioridade] = useState('')
+  const [fSituacao, setFSituacao] = useState('')
   const [fUnidade, setFUnidade] = useState('')
   const [fAmbiente, setFAmbiente] = useState('')
   const [fDe, setFDe] = useState('')
@@ -234,7 +234,7 @@ export default function App() {
 
 
   /** Anexa fotos (só fotos) à galeria da visita ou a um problema. Elas ficam só neste aparelho até o PDF. */
-  async function anexar(destino: { roomId?: string; ocorrencia?: Ocorrencia }, arquivos: File[]) {
+  async function anexar(destino: Destino, arquivos: File[]) {
     if (!aberta || !arquivos.length) return
     const base = aberta
     await executar(async () => {
@@ -246,19 +246,14 @@ export default function App() {
         setAviso(arquivos.length > 1 ? `Guardando ${n + 1} de ${arquivos.length}…` : 'Guardando a foto…')
         const arq = await reduzirImagem(original)
         // a foto fica só neste aparelho até o PDF; não vai para servidor nenhum
-        const m: Midia = { id: novoId(), type: arq.type, name: arq.name, caption: '', room: destino.roomId }
+        // toda foto pertence a um ambiente ou a uma observação
+        const m: Midia = { id: novoId(), type: arq.type, name: arq.name, caption: '', room: destino.roomId, obs: destino.obsId }
         await midiaDemo(m.id, arq)
-        const o = destino.ocorrencia
-        if (!o) atual = { ...atual, photos: [...(atual.photos ?? []), m] }
-        else atual = { ...atual, rooms: atual.rooms.map((r) => ({ ...r, findings: r.findings.map((f) => {
-          if (f.id !== o.id) return f
-          const g = { ...f, media: [...f.media, m] }
-          return g
-        }) })) }
+        atual = { ...atual, photos: [...(atual.photos ?? []), m] }
         setAberta(atual); setPendente(true)
         await gravar(atual); setPendente(false)
       }
-      setAviso(arquivos.length === 1 ? 'Foto anexada.' : `${arquivos.length} fotos anexadas.`)
+      setAviso(arquivos.length === 1 ? 'Foto anexada. Agora descreva o que ela mostra.' : `${arquivos.length} fotos anexadas. Agora descreva cada uma.`)
     })
   }
 
@@ -284,14 +279,22 @@ export default function App() {
     const lista: string[] = []
     if (!aberta.inspected_on) lista.push('data')
     if (!inspector) lista.push('vistoriador')
-    if (!aberta.rooms.length && !(aberta.photos ?? []).length) lista.push('conteudo')
-    for (const r of aberta.rooms) for (const f of r.findings) if (!f.issue.trim()) lista.push('o:' + f.id)
-    if (aberta.general_reason.trim() && !aberta.general_by.trim()) lista.push('validacao')
+    if (!aberta.rooms.length) lista.push('conteudo')
+    for (const r of aberta.rooms) lista.push(...faltasDoAmbiente(aberta, r))
+    for (const o of aberta.observacoes ?? []) lista.push(...faltasDaObservacao(aberta, o))
     setFaltas(lista)
     if (lista.length) {
-      const nomes = { data: 'a data', vistoriador: 'o nome do vistoriador', conteudo: 'um ambiente ou uma foto', validacao: 'o responsável pela validação' } as Record<string, string>
-      const probs = lista.filter((k) => k.startsWith('o:')).length
-      const partes = [...lista.filter((k) => nomes[k]).map((k) => nomes[k]), ...(probs ? [probs === 1 ? 'a descrição de 1 problema' : `a descrição de ${probs} problemas`] : [])]
+      const nomes = { data: 'a data', vistoriador: 'o nome do vistoriador', conteudo: 'pelo menos um ambiente' } as Record<string, string>
+      const conta = (p: string) => lista.filter((k) => k.startsWith(p)).length
+      const plural = (n: number, um: string, varios: string) => (n === 1 ? um : varios.replace('#', String(n)))
+      const partes = [
+        ...lista.filter((k) => nomes[k]).map((k) => nomes[k]),
+        ...(conta('s:') ? [plural(conta('s:'), 'a situação de 1 ambiente', 'a situação de # ambientes')] : []),
+        ...(conta('d:') ? [plural(conta('d:'), 'descrever o problema de 1 ambiente', 'descrever o problema de # ambientes')] : []),
+        ...(conta('f:') ? [plural(conta('f:'), 'foto em 1 ambiente regular/péssimo', 'foto em # ambientes regulares/péssimos')] : []),
+        ...(conta('l:') ? [plural(conta('l:'), 'a descrição de 1 foto', 'a descrição de # fotos')] : []),
+        ...(conta('o:') ? [plural(conta('o:'), 'o texto de 1 observação', 'o texto de # observações')] : []),
+      ]
       setErro(`Para concluir, falta: ${partes.join(', ')}. Está marcado em vermelho.`)
       return
     }
@@ -303,9 +306,7 @@ export default function App() {
     setConfirmarGerar(false)
     const inspector = aberta.inspector.trim() || perfil?.name || perfil?.email || ''
     await executar(async () => {
-      // ação em branco não trava: entra a ação padrão (dá para editar depois)
-      const rooms = aberta.rooms.map((r) => ({ ...r, findings: r.findings.map((f) => (f.action.trim() ? f : { ...f, action: 'Verificar e corrigir.' })) }))
-      const pronta: Vistoria = { ...aberta, rooms, inspector, status: 'completed' }
+      const pronta: Vistoria = { ...aberta, inspector, status: 'completed' }
       const v: Vistoria = { ...pronta, summary: compactar(pronta) }
       await gravar(v); setAberta(v); setPendente(false); setRelatorioId(v.id); ir('relatorios')
       setAviso('Vistoria concluída. Abrindo o PDF do relatório…')
@@ -352,9 +353,9 @@ export default function App() {
     && (!situacao
       || (situacao === 'nunca' && !vistorias.some((v) => v.unit_id === u.id))
       || (situacao === 'rascunho' && vistorias.some((v) => v.unit_id === u.id && v.status === 'draft'))
-      || (situacao === 'critica' && ultimaDe(u.id) && ['Crítica', 'Alta'].includes(resumir(ultimaDe(u.id)).nivel.nome))))
+      || (situacao === 'critica' && ultimaDe(u.id) && resumir(ultimaDe(u.id)!).nivel.nome !== 'Boa')))
   const rank = ranking(unidades, vistorias)
-  const imediatas = rank.reduce((s, l) => s + (l.resumo.porPrioridade['Imediata'] ?? 0), 0)
+  const imediatas = rank.reduce((s, l) => s + l.resumo.pessimos, 0)
   const problemasRede = problemasDaRede(rank, 99).length
   const meusRascunhos = vistorias.filter((v) => v.status === 'draft' && (DEMO || v.owner === perfil?.id))
   const relatorio = concluidas.find((v) => v.id === relatorioId)
@@ -363,9 +364,10 @@ export default function App() {
     return u && (!distrito || u.district === distrito) && (!fUnidade || String(u.id) === fUnidade)
       && (!fDe || v.inspected_on >= fDe) && (!fAte || v.inspected_on <= fAte)
   })
-  const acoes = recorte.flatMap((v) => v.rooms.flatMap((r) => r.findings.map((f) => ({ v, r, f, u: unidades.find((x) => x.id === v.unit_id)! }))))
-    .filter((x) => (!fPrioridade || x.f.priority === fPrioridade) && (!fAmbiente || semAcento(x.r.name).includes(semAcento(fAmbiente))))
-    .sort((a, b) => PRIORIDADES.indexOf(a.f.priority) - PRIORIDADES.indexOf(b.f.priority))
+  // ambientes regulares e péssimos de todas as vistorias do recorte (péssimos primeiro)
+  const acoes = recorte.flatMap((v) => v.rooms.filter((r) => r.situacao === 'Regular' || r.situacao === 'Péssimo').map((r) => ({ v, r, u: unidades.find((x) => x.id === v.unit_id)! })))
+    .filter((x) => (!fSituacao || x.r.situacao === fSituacao) && (!fAmbiente || semAcento(x.r.name).includes(semAcento(fAmbiente))))
+    .sort((a, b) => (a.r.situacao === b.r.situacao ? 0 : a.r.situacao === 'Péssimo' ? -1 : 1))
   const distritos = [...new Set(unidades.map((u) => u.district))]
   // rascunhos mexidos nas últimas 12 horas = gente em visita agora
   const emVisita = vistorias.filter((v) => v.status === 'draft' && v.updated_at && Date.now() - Date.parse(v.updated_at) < 12 * 3600e3)
@@ -376,10 +378,10 @@ export default function App() {
 
   function exportarCsv() {
     const cel = (t: string) => '"' + (/^[\s\u0000-\u001f]*[=+@-]/.test(t) ? "'" + t : t).replaceAll('"', '""') + '"'
-    const linhas = [['Unidade', 'Distrito', 'Data', 'Ambiente', 'Local', 'Problema', 'Ação', 'Prioridade', 'Responsável', 'Prazo'],
-      ...acoes.map(({ u, v, r, f }) => [u.name, u.district, v.inspected_on, r.name, f.point, f.issue, f.action, f.priority, f.owner, f.due])]
+    const linhas = [['Unidade', 'Distrito', 'Data', 'Classificação da unidade', 'Ambiente', 'Situação', 'Problema descrito'],
+      ...acoes.map(({ u, v, r }) => [u.name, u.district, v.inspected_on, resumir(v).nivel.nome, r.name, r.situacao ?? '', r.descricao ?? ''])]
     const url = URL.createObjectURL(new Blob(['﻿', linhas.map((l) => l.map(cel).join(';')).join('\r\n')], { type: 'text/csv;charset=utf-8' }))
-    const a = document.createElement('a'); a.href = url; a.download = 'acoes-vistoria.csv'; a.click()
+    const a = document.createElement('a'); a.href = url; a.download = 'ambientes-com-problema.csv'; a.click()
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
 
@@ -405,9 +407,11 @@ export default function App() {
                 <p>{unidades.find((u) => u.id === aberta.unit_id)?.name} · {dataBR(aberta.inspected_on)}</p>
                 <ul className="modal-resumo">
                   <li><b>{aberta.rooms.length}</b> {aberta.rooms.length === 1 ? 'ambiente' : 'ambientes'}</li>
-                  {((n) => <li><b>{n}</b> {n === 1 ? 'problema' : 'problemas'}</li>)(aberta.rooms.reduce((s, r) => s + r.findings.length, 0))}
-                  {((n) => <li><b>{n}</b> {n === 1 ? 'foto' : 'fotos'}</li>)((aberta.photos ?? []).length + aberta.rooms.reduce((s, r) => s + r.findings.reduce((t, f) => t + f.media.length, 0), 0))}
+                  {SITUACOES.map((b) => <li key={b.s}><b>{aberta.rooms.filter((r) => r.situacao === b.s).length}</b> {b.t}</li>)}
+                  {((n) => <li><b>{n}</b> {n === 1 ? 'foto' : 'fotos'}</li>)((aberta.photos ?? []).length)}
+                  {((n) => n > 0 && <li><b>{n}</b> {n === 1 ? 'observação' : 'observações'}</li>)((aberta.observacoes ?? []).length)}
                 </ul>
+                {((r) => <p className={'classif-modal nivel ' + r.nivel.classe}>Classificação da unidade: <b>{r.nivel.nome}</b></p>)(resumir(aberta))}
                 <p className="dica">Ao gerar, a vistoria é concluída e o PDF do relatório abre para salvar.</p>
                 <div className="modal-botoes">
                   <button onClick={() => setConfirmarGerar(false)}>✏️ Continuar editando</button>
@@ -457,7 +461,7 @@ export default function App() {
                     <Campo label="Distrito"><select value={distrito} onChange={(e) => setDistrito(e.target.value)}><option value="">Todos</option>{distritos.map((d) => <option key={d}>{d}</option>)}</select></Campo>
                     <Campo label="Unidade"><select value={fUnidade} onChange={(e) => setFUnidade(e.target.value)}><option value="">Todas</option>{unidades.map((u) => <option value={u.id} key={u.id}>{u.name}</option>)}</select></Campo>
                     <Campo label="Ambiente"><input value={fAmbiente} onChange={(e) => setFAmbiente(e.target.value)} /></Campo>
-                    <Campo label="Prioridade"><select value={fPrioridade} onChange={(e) => setFPrioridade(e.target.value)}><option value="">Todas</option>{PRIORIDADES.map((p) => <option key={p}>{p}</option>)}</select></Campo>
+                    <Campo label="Situação do ambiente"><select value={fSituacao} onChange={(e) => setFSituacao(e.target.value)}><option value="">Regular e péssimo</option><option>Péssimo</option><option>Regular</option></select></Campo>
                     <Campo label="De"><input type="date" value={fDe} onChange={(e) => setFDe(e.target.value)} /></Campo>
                     <Campo label="Até"><input type="date" value={fAte} onChange={(e) => setFAte(e.target.value)} /></Campo>
                   </div>
@@ -468,7 +472,7 @@ export default function App() {
                       <div className="result row" key={v.id}>
                         <strong>{unidades.find((u) => u.id === v.unit_id)?.name}</strong>
                         <span>{dataBR(v.inspected_on)}</span>
-                        {resumoPrioridade(v) && <Selo value={resumoPrioridade(v)} />}
+                        {((r) => <span className={'nivel ' + r.nivel.classe}>{r.nivel.nome}</span>)(resumir(v))}
                         <button className="no-print" onClick={() => setRelatorioId(v.id)}>Abrir relatório</button>
                         <button className="no-print" onClick={() => abrir(unidades.find((u) => u.id === v.unit_id)!, v)}>{DEMO || admin ? '✏️ Revisar' : 'Ver vistoria'}</button>
                         {podeExcluir(v) && <button className="no-print excluir" onClick={() => excluir(v)}>🗑️ Excluir</button>}
@@ -476,13 +480,13 @@ export default function App() {
                     ))}
                   </div>
                   <div className="panel">
-                    <h2>Ações por prioridade <small>{acoes.length}</small></h2>
-                    {!acoes.length && <p>Nenhuma ação neste recorte.</p>}
-                    {acoes.map(({ u, r, f, v }) => (
-                      <article className="result" key={v.id + f.id}>
-                        <div className="row"><Selo value={f.priority} /><strong>{f.action}</strong></div>
-                        <p>{u.name} · {r.name} · {f.point}</p>
-                        <p>{f.issue}{f.owner && ' · ' + f.owner}{f.due && ' · ' + dataBR(f.due)}</p>
+                    <h2>Ambientes com problema <small>{acoes.length}</small></h2>
+                    {!acoes.length && <p>Nenhum ambiente regular ou péssimo neste recorte.</p>}
+                    {acoes.map(({ u, r, v }) => (
+                      <article className="result" key={v.id + r.id}>
+                        <div className="row"><span className={'nivel ' + (r.situacao === 'Péssimo' ? 'critica' : 'alta')}>{r.situacao === 'Péssimo' ? '🔴' : '🟡'} {r.situacao}</span><strong>{r.name}</strong></div>
+                        <p>{u.name} · {dataBR(v.inspected_on)}</p>
+                        {r.descricao && <p>{r.descricao}</p>}
                       </article>
                     ))}
                   </div>
@@ -505,7 +509,7 @@ export default function App() {
                     return u && (
                       <div key={v.id} className="continuar-linha">
                         <button className="continuar-item" onClick={() => abrir(u, v)}>
-                          <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.reduce((s, r) => s + r.findings.length, 0)} problema(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
+                          <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.filter((r) => r.situacao).length} avaliado(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
                           <b>Retomar →</b>
                         </button>
                         <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho" title="Excluir rascunho">🗑️</button>
@@ -548,9 +552,9 @@ export default function App() {
               </div>
               <div className="atalhos">
                 <Atalho ic="📝" t="Nova vistoria" n={String(unidades.length)} e="Escolher a unidade e começar" onClick={() => ir('unidades')} destaque />
-                <Atalho ic="🏆" t="Ranking" n={String(rank.filter((l) => ['Crítica', 'Alta'].includes(l.resumo.nivel.nome)).length)} e="Unidades em pior situação" onClick={() => abrirPainel('ranking')} />
-                <Atalho ic="⚠️" t="Principais problemas" n={String(problemasRede)} e="O que mais se repete na rede e o que causa" onClick={() => abrirPainel('problemas')} />
-                <Atalho ic="🚨" t="Ações imediatas" n={String(imediatas)} e="O que precisa ser resolvido já" onClick={() => abrirPainel('imediatas')} alerta={imediatas > 0} />
+                <Atalho ic="🏆" t="Ranking" n={String(rank.filter((l) => l.resumo.nivel.nome === 'Péssima').length)} e="Unidades em pior situação (🔴 péssimas)" onClick={() => abrirPainel('ranking')} />
+                <Atalho ic="⚠️" t="Principais problemas" n={String(problemasRede)} e="Ambientes com mais problemas na rede" onClick={() => abrirPainel('problemas')} />
+                <Atalho ic="🚨" t="Ambientes péssimos" n={String(imediatas)} e="O que precisa ser resolvido primeiro" onClick={() => abrirPainel('imediatas')} alerta={imediatas > 0} />
                 <Atalho ic="🗺️" t="Por distrito" n={String(new Set(rank.map((l) => l.unidade.district)).size) + '/8'} e="Situação de cada distrito sanitário" onClick={() => abrirPainel('distritos')} />
                 <Atalho ic="📭" t="Sem vistoria" n={String(unidades.length - rank.length)} e="Unidades que ainda não foram vistoriadas" onClick={() => abrirPainel('sem')} />
                 <Atalho ic="📄" t="Relatórios" n={String(concluidas.length)} e="Vistorias concluídas, para imprimir em PDF" onClick={() => { setRelatorioId(''); ir('relatorios') }} />
@@ -564,7 +568,7 @@ export default function App() {
                   {distritos.map((d) => <button key={d} className={'chip' + (distrito === d ? ' ativo' : '')} onClick={() => setDistrito(distrito === d ? '' : d)}>Distrito {d}</button>)}
                 </div>
                 <div className="chips" role="group" aria-label="Situação">
-                  {[['', 'Todas'], ['nunca', 'Nunca vistoriadas'], ['rascunho', 'Com rascunho'], ['critica', 'Situação crítica ou alta']].map(([k, t]) => (
+                  {[['', 'Todas'], ['nunca', 'Nunca vistoriadas'], ['rascunho', 'Com rascunho'], ['critica', 'Situação péssima ou regular']].map(([k, t]) => (
                     <button key={k} className={'chip' + (situacao === k ? ' ativo' : '')} onClick={() => setSituacao(k)}>{t}</button>
                   ))}
                   <select className="chip-select" value={tipo} onChange={(e) => setTipo(e.target.value)} aria-label="Tipo de unidade"><option value="">Todos os tipos</option>{[...new Set(unidades.map((u) => u.kind))].sort().map((k) => <option key={k}>{k}</option>)}</select>

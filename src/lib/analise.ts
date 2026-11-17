@@ -1,9 +1,5 @@
-import { PRIORIDADES, checklistDoAmbiente, semAcento, type Ocorrencia, type ResumoCompacto, type Unidade, type Vistoria } from './modelo'
+import { fotosDoAmbiente, semAcento, type ResumoCompacto, type Situacao, type Unidade, type Vistoria } from './modelo'
 
-/* Respostas do checklist que indicam problema, da mais grave para a mais leve */
-export const RESPOSTAS_PROBLEMA = ['Faltante', 'Substituição', 'Reparo'] as const
-const PESO_RESPOSTA: Record<string, number> = { Faltante: 3, 'Substituição': 2, Reparo: 1 }
-const PESO_PRIORIDADE: Record<string, number> = { Imediata: 10, 'Prioritária': 5, 'Programável': 2 }
 
 /** O que cada problema causa no funcionamento da unidade (linguagem simples, para o relatório). */
 export const IMPACTOS: Record<string, string> = {
@@ -63,7 +59,7 @@ export const IMPACTOS: Record<string, string> = {
   'Guarda restrita': 'Risco de desvio de medicamentos controlados.',
 }
 
-/** Palavras do campo "Item" de uma ocorrência que levam ao impacto correspondente. */
+/** Palavras da descrição que levam ao impacto correspondente. */
 const PALAVRAS: [RegExp, string][] = [
   [/geladeira|camara fria|vacina|termometro/, 'Rede de frio'],
   [/fechadur|chave|cadeado/, 'Fechaduras e chaves'], [/macaneta|trinco/, 'Maçanetas e trincos'], [/dobradic/, 'Dobradiças'],
@@ -84,97 +80,68 @@ const PALAVRAS: [RegExp, string][] = [
 export function impactoDoItem(item: string): string {
   return IMPACTOS[item] ?? ''
 }
-/** Acha o item do catálogo de impactos: primeiro pelo nome do item, depois pelo problema descrito e pelo local. */
-function itemDaOcorrencia(o: Ocorrencia): string | undefined {
-  if (o.check) return o.check.split(' · ').pop()
-  for (const texto of [o.item, o.issue, o.point]) {
-    const t = semAcento(texto || '')
-    const achado = t && PALAVRAS.find(([re]) => re.test(t))
-    if (achado) return achado[1]
-  }
-  return undefined
-}
-export function impactoDaOcorrencia(o: Ocorrencia): string {
-  const item = itemDaOcorrencia(o)
-  return item ? IMPACTOS[item] ?? '' : ''
+/** O que o problema descrito causa: procura palavras da descrição (ex.: "mofo", "fiação") no catálogo de impactos. */
+export function impactosDoTexto(texto: string, limite = 2): string[] {
+  const t = semAcento(texto || '')
+  const achados = t ? PALAVRAS.filter(([re]) => re.test(t)).map(([, item]) => IMPACTOS[item]).filter(Boolean) : []
+  return [...new Set(achados)].slice(0, limite)
 }
 
 /* ---------------------------------------------------------------- números de uma vistoria */
-export type ProblemaChecklist = { ambiente: string; grupo: string; item: string; resposta: string; impacto: string; peso: number }
+export type AmbienteComProblema = { ambiente: string; situacao: Situacao; descricao: string; impacto: string[]; fotos: number; roomId: string }
+export type Nivel = { nome: 'Boa' | 'Regular' | 'Péssima'; classe: 'baixa' | 'alta' | 'critica'; cor: 'verde' | 'amarelo' | 'vermelho' }
 export type Resumo = {
-  ambientes: number; respondidos: number; total: number; ok: number; problemas: number; naoTestados: number; naoSeAplica: number
-  ocorrencias: number; porPrioridade: Record<string, number>; pontos: number; nivel: Nivel; listaChecklist: ProblemaChecklist[]
+  ambientes: number; avaliados: number; bons: number; regulares: number; pessimos: number; semAvaliacao: number
+  fotos: number; observacoes: number; problemas: number; pontos: number; nivel: Nivel; comProblema: AmbienteComProblema[]
 }
-export type Nivel = { nome: 'Crítica' | 'Alta' | 'Moderada' | 'Baixa'; classe: string }
-
-export function nivelDe(pontos: number, imediatas: number, geral: boolean): Nivel {
-  if (geral || imediatas >= 2 || pontos >= 60) return { nome: 'Crítica', classe: 'critica' }
-  if (imediatas >= 1 || pontos >= 30) return { nome: 'Alta', classe: 'alta' }
-  if (pontos >= 10) return { nome: 'Moderada', classe: 'moderada' }
-  return { nome: 'Baixa', classe: 'baixa' }
+export const NIVEIS: Record<Nivel['nome'], Nivel> = {
+  'Boa': { nome: 'Boa', classe: 'baixa', cor: 'verde' },
+  'Regular': { nome: 'Regular', classe: 'alta', cor: 'amarelo' },
+  'Péssima': { nome: 'Péssima', classe: 'critica', cor: 'vermelho' },
 }
+/**
+ * Classificação da unidade pela situação dos ambientes:
+ * 🔴 Péssima: 1/3 ou mais dos ambientes péssimos · 🟢 Boa: nenhum péssimo e no máximo 1/4 regular · 🟡 Regular: o resto.
+ */
+export function nivelDe(bons: number, regulares: number, pessimos: number): Nivel {
+  const n = bons + regulares + pessimos
+  if (!n) return NIVEIS['Regular']
+  if (pessimos / n >= 1 / 3) return NIVEIS['Péssima']
+  if (!pessimos && regulares / n <= 1 / 4) return NIVEIS['Boa']
+  return NIVEIS['Regular']
+}
+export const REGRA_CLASSIFICACAO = '🔴 Péssima: um terço ou mais dos ambientes em situação péssima. 🟢 Boa: nenhum ambiente péssimo e no máximo um quarto regular. 🟡 Regular: os demais casos.'
 
 export function resumir(v: Vistoria): Resumo {
-  const lista: ProblemaChecklist[] = []
-  let respondidos = 0, total = 0, ok = 0, naoTestados = 0, naoSeAplica = 0
+  let bons = 0, regulares = 0, pessimos = 0, semAvaliacao = 0
+  const comProblema: AmbienteComProblema[] = []
   for (const amb of v.rooms) {
-    // itens do tipo de ambiente + qualquer outro item que tenha sido respondido
-    const chaves = new Set(Object.entries(checklistDoAmbiente(amb.name)).flatMap(([g, its]) => its.map((it) => g + ' · ' + it)))
-    for (const k of Object.keys(amb.checks)) if (amb.checks[k]) chaves.add(k)
-    for (const chave of chaves) {
-      {
-        const [grupo, item] = chave.split(' · ')
-        total++
-        const r = amb.checks[chave]
-        if (!r) continue
-        respondidos++
-        if (r === 'OK') ok++
-        else if (r === 'Não testado') naoTestados++
-        else if (r === 'Não se aplica') naoSeAplica++
-        else if (PESO_RESPOSTA[r]) lista.push({ ambiente: amb.name, grupo, item, resposta: r, impacto: impactoDoItem(item), peso: PESO_RESPOSTA[r] })
-      }
+    const s = amb.situacao
+    if (s === 'Bom') bons++
+    else if (s === 'Regular') regulares++
+    else if (s === 'Péssimo') pessimos++
+    else semAvaliacao++
+    if (s === 'Regular' || s === 'Péssimo') {
+      const fotos = fotosDoAmbiente(v, amb.id)
+      comProblema.push({ ambiente: amb.name, situacao: s, descricao: amb.descricao?.trim() ?? '', roomId: amb.id, fotos: fotos.length,
+        impacto: impactosDoTexto([amb.descricao, ...fotos.map((f) => f.caption)].join(' '), 2) })
     }
   }
-  const ocorr = v.rooms.flatMap((r) => r.findings)
-  const porPrioridade = Object.fromEntries(PRIORIDADES.map((p) => [p, ocorr.filter((o) => o.priority === p).length]))
-  const geral = Boolean(v.general_reason && v.general_by)
-  const pontos = lista.reduce((s, p) => s + p.peso, 0) + ocorr.reduce((s, o) => s + (PESO_PRIORIDADE[o.priority] ?? 0), 0) + (geral ? 20 : 0)
-  lista.sort((a, b) => b.peso - a.peso)
+  comProblema.sort((a, b) => (a.situacao === b.situacao ? 0 : a.situacao === 'Péssimo' ? -1 : 1))
+  const avaliados = bons + regulares + pessimos
+  // índice de 0 a 100: 0 = tudo bom; 100 = tudo péssimo
+  const pontos = avaliados ? Math.round(((regulares + 2 * pessimos) / (2 * avaliados)) * 100) : 0
   return {
-    ambientes: v.rooms.length, respondidos, total, ok, problemas: lista.length, naoTestados, naoSeAplica,
-    ocorrencias: ocorr.length, porPrioridade, pontos, nivel: nivelDe(pontos, porPrioridade['Imediata'] ?? 0, geral), listaChecklist: lista,
+    ambientes: v.rooms.length, avaliados, bons, regulares, pessimos, semAvaliacao, fotos: (v.photos ?? []).length,
+    observacoes: (v.observacoes ?? []).length, problemas: regulares + pessimos, pontos, nivel: nivelDe(bons, regulares, pessimos), comProblema,
   }
 }
 
 /** Resumo pequeno guardado junto do relatório (e que fica quando o relatório antigo é apagado). */
 export function compactar(v: Vistoria): ResumoCompacto {
   const r = resumir(v)
-  return { nivel: r.nivel.nome, pontos: r.pontos, problemas: r.problemas + r.ocorrencias, imediatas: r.porPrioridade['Imediata'] ?? 0,
-    principais: principaisProblemas(v, 5).map((p) => p.titulo) }
-}
-
-/** Principais problemas de uma vistoria: ocorrências (pela prioridade) e itens do checklist, agrupados com o impacto. */
-export type Principal = { titulo: string; onde: string[]; gravidade: string; impacto: string; peso: number }
-export function principaisProblemas(v: Vistoria, limite = 8): Principal[] {
-  const mapa = new Map<string, Principal>()
-  for (const amb of v.rooms) {
-    for (const o of amb.findings) {
-      const titulo = o.item.trim() || o.issue.trim().slice(0, 60) || 'Ocorrência'
-      const chave = o.check ? 'c:' + o.check.split(' · ').pop() : 'o:' + semAcento(titulo)
-      const atual = mapa.get(chave)
-      const peso = PESO_PRIORIDADE[o.priority] ?? 1
-      const onde = `${amb.name}${o.point ? ' · ' + o.point : ''}`
-      if (atual) { atual.onde.push(onde); if (peso > atual.peso) { atual.peso = peso; atual.gravidade = o.priority } }
-      else mapa.set(chave, { titulo, onde: [onde], gravidade: o.priority, impacto: impactoDaOcorrencia(o) || o.reason, peso: peso + 0.5 })
-    }
-  }
-  for (const p of resumir(v).listaChecklist) {
-    const chave = 'c:' + p.item
-    const atual = mapa.get(chave)
-    if (atual) { atual.onde.push(p.ambiente); atual.peso += p.peso / 2 }
-    else mapa.set(chave, { titulo: p.item, onde: [p.ambiente], gravidade: p.resposta, impacto: p.impacto, peso: p.peso })
-  }
-  return [...mapa.values()].sort((a, b) => b.peso - a.peso || b.onde.length - a.onde.length).slice(0, limite)
+  return { nivel: r.nivel.nome, pontos: r.pontos, problemas: r.problemas, imediatas: r.pessimos,
+    principais: r.comProblema.slice(0, 5).map((p) => `${p.ambiente} (${p.situacao.toLowerCase()})`) }
 }
 
 /* ---------------------------------------------------------------- rede inteira (painel) */
@@ -188,33 +155,27 @@ export function ranking(unidades: Unidade[], vistorias: Vistoria[]): LinhaRankin
     const a = ultima.get(v.unit_id)
     if (!a || v.inspected_on > a.inspected_on) ultima.set(v.unit_id, v)
   }
+  const ordem = { critica: 0, alta: 1, baixa: 2 }
   return [...ultima.values()].map((v) => ({ unidade: unidades.find((u) => u.id === v.unit_id)!, vistoria: v, resumo: resumir(v) }))
     .filter((l) => l.unidade)
-    .sort((a, b) => b.resumo.pontos - a.resumo.pontos)
+    .sort((a, b) => ordem[a.resumo.nivel.classe] - ordem[b.resumo.nivel.classe] || b.resumo.pontos - a.resumo.pontos || b.resumo.pessimos - a.resumo.pessimos)
 }
 
+/** Tipo do ambiente: "Consultório 03" e "Consultório 01" contam juntos. */
+export const tipoDoAmbiente = (nome: string) => nome.replace(/\s*\d+$/, '').trim()
+
 export type ProblemaRede = { item: string; unidades: Set<number>; respostas: Record<string, number>; impacto: string }
-/** Itens com problema mais frequentes na rede (contando cada unidade uma vez). */
+/** Tipos de ambiente com mais problemas na rede (cada unidade conta uma vez por tipo). */
 export function problemasDaRede(linhas: LinhaRanking[], limite = 10): ProblemaRede[] {
   const mapa = new Map<string, ProblemaRede>()
   for (const l of linhas) {
-    for (const p of l.resumo.listaChecklist) {
-      const r = mapa.get(p.item) ?? { item: p.item, unidades: new Set<number>(), respostas: {}, impacto: p.impacto }
-      r.unidades.add(l.unidade.id)
-      r.respostas[p.resposta] = (r.respostas[p.resposta] ?? 0) + 1
-      mapa.set(p.item, r)
-    }
-    for (const amb of l.vistoria.rooms) {
-      for (const o of amb.findings) {
-        if (o.check) continue // já contado pelo checklist
-        const item = itemDaOcorrencia(o)
-        if (!item) continue
-        const r = mapa.get(item) ?? { item, unidades: new Set<number>(), respostas: {}, impacto: IMPACTOS[item] ?? '' }
-        r.unidades.add(l.unidade.id)
-        r.respostas['Ocorrência'] = (r.respostas['Ocorrência'] ?? 0) + 1
-        mapa.set(item, r)
-      }
+    for (const p of l.resumo.comProblema) {
+      const tipo = tipoDoAmbiente(p.ambiente)
+      const r = mapa.get(semAcento(tipo)) ?? { item: tipo, unidades: new Set<number>(), respostas: {}, impacto: '' }
+      if (!r.unidades.has(l.unidade.id)) { r.unidades.add(l.unidade.id); r.respostas[p.situacao] = (r.respostas[p.situacao] ?? 0) + 1 }
+      if (!r.impacto && p.impacto[0]) r.impacto = p.impacto[0]
+      mapa.set(semAcento(tipo), r)
     }
   }
-  return [...mapa.values()].sort((a, b) => b.unidades.size - a.unidades.size).slice(0, limite)
+  return [...mapa.values()].sort((a, b) => b.unidades.size - a.unidades.size || (b.respostas['Péssimo'] ?? 0) - (a.respostas['Péssimo'] ?? 0)).slice(0, limite)
 }

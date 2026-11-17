@@ -143,7 +143,7 @@ export async function excluirVistoria(v: Vistoria) {
 }
 
 /** Ids de todas as fotos de uma vistoria (galeria + problemas). */
-export const fotosDa = (v: Vistoria) => [...(v.photos ?? []), ...v.rooms.flatMap((r) => r.findings.flatMap((f) => f.media))]
+export const fotosDa = (v: Vistoria) => [...(v.photos ?? []), ...v.rooms.flatMap((r) => (r.findings ?? []).flatMap((f) => f.media))]
 
 /** Apaga deste aparelho as fotos de uma vistoria. Nunca dá erro. */
 export async function apagarFotosLocais(v: Vistoria) {
