@@ -259,7 +259,7 @@ export default function App() {
     const rel = v.status === 'completed'
     if (!confirm(rel
       ? `Excluir o relatório da vistoria em ${u?.name ?? 'unidade'} de ${dataBR(v.inspected_on)}? Ele sai do painel, do ranking e da lista de relatórios. Não dá para desfazer.`
-      : `Excluir o rascunho da vistoria em ${u?.name ?? 'unidade'}? As fotos dele também saem. Não dá para desfazer.`)) return
+      : `Excluir o rascunho da vistoria em ${u?.name ?? 'unidade'}${v.owner && v.owner !== perfil?.id && v.inspector ? ` (de ${v.inspector})` : ''}? Não dá para desfazer.`)) return
     void executar(async () => {
       await excluirVistoria(v)
       setVistorias((l) => l.filter((x) => x.id !== v.id))
@@ -360,6 +360,10 @@ export default function App() {
   const distritos = [...new Set(unidades.map((u) => u.district))]
   // rascunhos mexidos nas últimas 12 horas = gente em visita agora
   const emVisita = vistorias.filter((v) => v.status === 'draft' && v.updated_at && Date.now() - Date.parse(v.updated_at) < 12 * 3600e3)
+  // administração: rascunhos de outras pessoas (para excluir os abandonados)
+  const rascunhosEquipe = (admin || DEMO) ? vistorias.filter((v) => v.status === 'draft' && v.owner && v.owner !== perfil?.id && !meusRascunhos.includes(v))
+    .sort((a, b) => (a.updated_at ?? '').localeCompare(b.updated_at ?? '')) : []
+  const diasParado = (v: Vistoria) => Math.floor((Date.now() - Date.parse(v.updated_at ?? v.created_at ?? '')) / 864e5)
 
   function exportarCsv() {
     const cel = (t: string) => '"' + (/^[\s\u0000-\u001f]*[=+@-]/.test(t) ? "'" + t : t).replaceAll('"', '""') + '"'
@@ -505,6 +509,24 @@ export default function App() {
                   <h2>🟢 Em visita agora <small>{emVisita.length}</small></h2>
                   {!emVisita.length && <p className="dica">Ninguém em visita neste momento.</p>}
                   {emVisita.map((x) => <p key={x.id}><strong>{x.inspector || 'Vistoriador'}</strong> · {unidades.find((u) => u.id === x.unit_id)?.name} · desde {new Date(x.created_at ?? x.updated_at ?? '').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Maceio' })}</p>)}
+                </div>
+              )}
+              {rascunhosEquipe.length > 0 && (
+                <div className="panel rascunhos-equipe">
+                  <h2>📝 Rascunhos da equipe <small>{rascunhosEquipe.length}</small></h2>
+                  <p className="dica">Só a administração vê. Exclua os rascunhos abandonados para não ficarem parados.</p>
+                  {rascunhosEquipe.map((v) => {
+                    const u = unidades.find((x) => x.id === v.unit_id)
+                    const d = diasParado(v)
+                    return (
+                      <div key={v.id} className="linha">
+                        <div><strong>{v.inspector || 'Sem nome'}</strong> · {u?.name}
+                          <small>Começou em {dataBR(v.inspected_on)} · <span className={d >= 3 ? 'parado' : ''}>{d <= 0 ? 'mexido hoje' : d === 1 ? 'parado há 1 dia' : `parado há ${d} dias`}</span></small></div>
+                        {u && <button onClick={() => abrir(u, v)}>Abrir</button>}
+                        <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho">🗑️</button>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
               <div className="stats">

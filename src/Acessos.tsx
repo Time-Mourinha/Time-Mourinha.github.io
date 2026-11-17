@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { carregarAcessos, salvarAcesso, sb, type Atribuicao } from './lib/armazenamento'
+import { carregarAcessos, removerUsuario, salvarAcesso, sb, type Atribuicao } from './lib/armazenamento'
 import { ativarAvisos, avisosAtivos, avisosSuportados, ehIos, instalado } from './lib/pwa'
 import type { Perfil, Unidade } from './lib/modelo'
 
@@ -64,6 +64,13 @@ function EditorAcesso(props: {
     } catch (e) { props.falhou((e as Error).message) } finally { setOcupado(false) }
   }
 
+  async function remover() {
+    if (!confirm(`Remover ${perfil.name || perfil.email}?\n\nA pessoa perde o acesso e a conta é apagada. Os rascunhos dela são excluídos; os relatórios já concluídos continuam. Não dá para desfazer.`)) return
+    setOcupado(true)
+    try { await removerUsuario(perfil.id); props.salvo(`${perfil.name || perfil.email} foi removido(a).`) }
+    catch (e) { props.falhou((e as Error).message) } finally { setOcupado(false) }
+  }
+
   return (
     <article className="panel">
       <div className="heading">
@@ -79,6 +86,10 @@ function EditorAcesso(props: {
             <label className="field">Papel<select value={papel} onChange={(e) => setPapel(e.target.value as Perfil['role'])}><option value="inspector">Vistoriador</option><option value="admin">Administração (aprova acessos)</option></select></label>
           </div>
           <div className="row"><button className="primary" onClick={() => void salvar()}>Salvar acesso</button></div>
+          <div className="remover-usuario">
+            <button className="excluir" onClick={() => void remover()}>🗑️ Remover usuário</button>
+            <small>A conta deixa de existir e os rascunhos dela são apagados. Os relatórios concluídos continuam no app.</small>
+          </div>
         </fieldset>
       ))}
     </article>

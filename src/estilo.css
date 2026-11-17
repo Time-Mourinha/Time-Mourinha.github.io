@@ -313,3 +313,9 @@ header .instalar+.quiet{margin-left:0}
 .ambiente.aberto>.amb-dir{padding:0 1rem}
 .onde-estou small{color:#fff!important;opacity:.85}
 .amb-chip.ativo small{color:#fff;opacity:.9}
+
+.remover-usuario{margin-top:1rem;padding-top:.8rem;border-top:1px dashed var(--border);display:grid;gap:.3rem;justify-items:start}
+.remover-usuario small{color:#4f6476}
+.rascunhos-equipe .linha{display:grid;grid-template-columns:1fr auto auto;gap:.5rem;align-items:center;padding:.55rem 0;border-top:1px solid var(--border)}
+.rascunhos-equipe .linha small{display:block;color:#4f6476}
+.rascunhos-equipe .parado{color:#b3261e;font-weight:700}

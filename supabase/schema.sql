@@ -46,6 +46,10 @@ create table if not exists public.inspections (
 );
 create index if not exists inspections_unit on public.inspections(unit_id, inspected_on desc);
 alter table public.inspections add column if not exists photos jsonb not null default '[]'::jsonb;  -- galeria de fotos da visita
+-- Usuário removido: os relatórios dele ficam (sem dono); só o vínculo some.
+alter table public.inspections alter column owner drop not null;
+alter table public.inspections drop constraint if exists inspections_owner_fkey;
+alter table public.inspections add constraint inspections_owner_fkey foreign key (owner) references public.profiles(id) on delete set null;
 
 -- Configuração privada (sem regras de acesso: só o banco lê). Guarda o e-mail da primeira administração.
 create table if not exists public.private_config (key text primary key, value text not null);
@@ -135,7 +139,8 @@ begin
   if tg_op = 'INSERT' then
     new.owner := auth.uid();
   else
-    new.owner := old.owner;
+    -- dono não troca (só vira vazio quando a administração remove o usuário)
+    if not (new.owner is null and old.owner::text = coalesce(current_setting('app.removendo', true), '')) then new.owner := old.owner; end if;
     new.unit_id := old.unit_id;
     if old.status = 'completed' and not public.is_admin() then raise exception 'Vistoria concluída: só a administração pode alterar.'; end if;
   end if;
@@ -144,6 +149,27 @@ begin
 end $$;
 drop trigger if exists guard_inspection on public.inspections;
 create trigger guard_inspection before insert or update on public.inspections for each row execute function public.guard_inspection();
+
+-- ------------------------------------------------------------------ remover usuário
+-- Só a administração. Apaga a conta e os rascunhos dela; os relatórios concluídos ficam.
+create or replace function public.remover_usuario(alvo uuid) returns void language plpgsql security definer set search_path = public, auth as $$
+declare principal text;
+begin
+  if not public.is_admin() then raise exception 'Só a administração pode remover usuários.'; end if;
+  if alvo = auth.uid() then raise exception 'Você não pode remover a própria conta.'; end if;
+  select value into principal from private_config where key = 'admin_email';
+  if principal is not null and exists (select 1 from profiles where id = alvo and lower(email) = lower(principal)) then
+    raise exception 'A conta principal da administração não pode ser removida.';
+  end if;
+  delete from inspections where owner = alvo and status = 'draft';
+  perform set_config('app.removendo', alvo::text, true);
+  update inspections set owner = null where owner = alvo;
+  perform set_config('app.removendo', '', true);
+  delete from auth.users where id = alvo;
+  delete from profiles where id = alvo;
+end $$;
+revoke all on function public.remover_usuario(uuid) from public, anon;
+grant execute on function public.remover_usuario(uuid) to authenticated;
 
 -- ------------------------------------------------------------------ regras de acesso (RLS)
 alter table public.units enable row level security;

@@ -91,6 +91,12 @@ export async function salvarAcesso(perfil: Perfil, unidades: number[]) {
   }
 }
 
+/** Administração: remove a conta (os relatórios concluídos dela ficam). */
+export async function removerUsuario(id: string) {
+  const { error } = await sb!.rpc('remover_usuario', { alvo: id })
+  falhou(error)
+}
+
 /** Primeira administradora: confirma o código de segurança enviado ao e-mail. */
 export async function pedirCodigoAdmin() {
   const { error } = await sb!.auth.reauthenticate()

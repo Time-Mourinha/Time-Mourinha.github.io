@@ -16,6 +16,7 @@ senha = secrets.token_urlsafe(16)
 r = requests.post(f"{URL}/auth/v1/admin/users", headers=srv, json={"email": email, "password": senha, "email_confirm": True, "user_metadata": {"nome": "Teste Automático"}}, timeout=60)
 r.raise_for_status()
 uid = r.json()["id"]
+extras: list[str] = []
 try:
     sql(f"update public.profiles set approved = true where id = '{uid}'")
     tok = requests.post(f"{URL}/auth/v1/token", params={"grant_type": "password"}, headers={"apikey": c["publica"]}, json={"email": email, "password": senha}, timeout=60).json()["access_token"]
@@ -38,7 +39,30 @@ try:
     requests.post(f"{URL}/rest/v1/inspections", headers=usr, json=rascunho, timeout=60)
     r5 = requests.delete(f"{URL}/rest/v1/inspections", headers=usr, params={"id": f"eq.{rascunho['id']}"}, timeout=60)
     print("Excluir rascunho:", r5.status_code)
+
+    # --- administração: excluir rascunho de outra pessoa e remover usuário
+    email2 = f"teste-adm-{secrets.token_hex(4)}@exemplo.com"
+    r = requests.post(f"{URL}/auth/v1/admin/users", headers=srv, json={"email": email2, "password": senha, "email_confirm": True, "user_metadata": {"nome": "Adm Teste"}}, timeout=60)
+    r.raise_for_status(); uid2 = r.json()["id"]; extras.append(uid2)
+    sql(f"update public.profiles set approved = true, role = 'admin' where id = '{uid2}'")
+    tok2 = requests.post(f"{URL}/auth/v1/token", params={"grant_type": "password"}, headers={"apikey": c["publica"]}, json={"email": email2, "password": senha}, timeout=60).json()["access_token"]
+    adm = {**usr, "Authorization": f"Bearer {tok2}"}
+    outro = dict(corpo, id=str(uuid.uuid4()), status="draft")
+    requests.post(f"{URL}/rest/v1/inspections", headers=usr, json=outro, timeout=60)
+    r6 = requests.delete(f"{URL}/rest/v1/inspections", headers={**adm, "Prefer": "return=representation"}, params={"id": f"eq.{outro['id']}"}, timeout=60)
+    print("Adm exclui rascunho de outra pessoa:", r6.status_code, "linhas apagadas:", len(r6.json()) if r6.ok else r6.text[:200])
+    outro2 = dict(corpo, id=str(uuid.uuid4()), status="draft")
+    requests.post(f"{URL}/rest/v1/inspections", headers=usr, json=outro2, timeout=60)
+    r7 = requests.post(f"{URL}/rest/v1/rpc/remover_usuario", headers=adm, json={"alvo": uid}, timeout=60)
+    print("Remover usuário:", r7.status_code, "" if r7.ok else r7.text[:300])
+    fica = sql(f"select status, owner from public.inspections where id in ('{vid}', '{outro2['id']}')")
+    print("Depois de remover: relatório concluído continua =", any(x["status"] == "completed" and x["owner"] is None for x in fica),
+          "| rascunho apagado =", not any(x["status"] == "draft" for x in fica))
+    print("Conta removida =", not sql(f"select 1 from auth.users where id = '{uid}'"))
+    r8 = requests.post(f"{URL}/rest/v1/rpc/remover_usuario", headers=adm, json={"alvo": uid2}, timeout=60)
+    print("Remover a própria conta (deve recusar):", r8.status_code)
 finally:
-    sql(f"delete from public.inspections where owner = '{uid}'")
-    requests.delete(f"{URL}/auth/v1/admin/users/{uid}", headers=srv, timeout=60)
+    sql(f"delete from public.inspections where id = '{vid}' or owner = '{uid}'")
+    for x in [uid, *extras]:
+        requests.delete(f"{URL}/auth/v1/admin/users/{x}", headers=srv, timeout=60)
     print("Teste limpo.")
