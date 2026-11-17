@@ -81,6 +81,7 @@ export default function App() {
   const versao = useRef(0)
   const fila = useRef<Promise<void>>(Promise.resolve())
   const imprimirDepois = useRef(false)
+  const [faltas, setFaltas] = useState<string[]>([])
 
   const admin = !DEMO && perfil?.role === 'admin' && perfil.approved
   const unidadeAberta = unidades.find((u) => u.id === aberta?.unit_id)
@@ -253,15 +254,26 @@ export default function App() {
 
   async function concluir() {
     if (!aberta) return
+    // Só o essencial é obrigatório; o que faltar fica em vermelho no próprio campo.
+    const inspector = aberta.inspector.trim() || perfil?.name || perfil?.email || ''
+    const lista: string[] = []
+    if (!aberta.inspected_on) lista.push('data')
+    if (!inspector) lista.push('vistoriador')
+    if (!aberta.rooms.length && !(aberta.photos ?? []).length) lista.push('conteudo')
+    for (const r of aberta.rooms) for (const f of r.findings) if (!f.issue.trim()) lista.push('o:' + f.id)
+    if (aberta.general_reason.trim() && !aberta.general_by.trim()) lista.push('validacao')
+    setFaltas(lista)
+    if (lista.length) {
+      const nomes = { data: 'a data', vistoriador: 'o nome do vistoriador', conteudo: 'um ambiente ou uma foto', validacao: 'o responsável pela validação' } as Record<string, string>
+      const probs = lista.filter((k) => k.startsWith('o:')).length
+      const partes = [...lista.filter((k) => nomes[k]).map((k) => nomes[k]), ...(probs ? [probs === 1 ? 'a descrição de 1 problema' : `a descrição de ${probs} problemas`] : [])]
+      setErro(`Para concluir, falta: ${partes.join(', ')}. Está marcado em vermelho.`)
+      return
+    }
     await executar(async () => {
-      if (!aberta.inspected_on) throw new Error('Falta a data da vistoria (no topo do formulário).')
-      const inspector = aberta.inspector.trim() || perfil?.name || perfil?.email || ''
-      if (!inspector) throw new Error('Falta o nome do vistoriador (no topo do formulário).')
-      if (!aberta.rooms.length && !(aberta.photos ?? []).length) throw new Error('Adicione pelo menos um ambiente ou uma foto da visita antes de concluir.')
-      const incompleto = aberta.rooms.find((r) => r.findings.some((f) => !f.issue.trim() || !f.action.trim()))
-      if (incompleto) throw new Error(`Em "${incompleto.name}", há problema sem descrição ou sem ação. Toque em ✏️ Detalhes para completar.`)
-      if (aberta.general_reason && !aberta.general_by) throw new Error('Registre o responsável pela validação do alcance geral.')
-      const v: Vistoria = { ...aberta, inspector, status: 'completed' }
+      // ação em branco não trava: entra a ação padrão (dá para editar depois)
+      const rooms = aberta.rooms.map((r) => ({ ...r, findings: r.findings.map((f) => (f.action.trim() ? f : { ...f, action: 'Verificar e corrigir.' })) }))
+      const v: Vistoria = { ...aberta, rooms, inspector, status: 'completed' }
       await gravar(v); setAberta(v); setPendente(false); setRelatorioId(v.id); ir('relatorios')
       setAviso('Vistoria concluída. Abrindo o PDF do relatório…')
       imprimirDepois.current = true
@@ -356,7 +368,7 @@ export default function App() {
           {tela === 'acessos' && admin ? <Acessos unidades={unidades} euId={perfil!.id} aoMudar={(n) => setPedidos(n)} /> :
 
           tela === 'vistoria' && aberta && unidadeAberta ? (
-            <Formulario v={aberta} u={unidadeAberta} ocupado={ocupado} bloqueada={bloqueada} pendente={pendente} mudar={mudar}
+            <Formulario v={aberta} u={unidadeAberta} ocupado={ocupado} bloqueada={bloqueada} pendente={pendente} mudar={mudar} faltas={faltas}
               anexar={(destino, l) => void anexar(destino, l)} concluir={() => void concluir()}
               excluir={aberta.status === 'draft' && (DEMO || admin || aberta.owner === perfil?.id || !aberta.owner) ? () => excluir(aberta) : undefined}
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />

@@ -180,3 +180,9 @@ main{padding:clamp(1rem,3vw,2.2rem)}
 .notice.toast{background:#e4f5ec;color:#15513d;border:1px solid #9fd3b5}
 @media (width<=650px){.toast{top:64px}}
 @media print{.toast{display:none!important}}
+
+/* Campos que faltam para concluir */
+.field.falta{color:#b3261e}
+.field.falta input,.field.falta textarea,.field.falta select{border:2px solid #d93025;background:#fff5f5}
+.panel.falta,.finding.falta{border:2px solid #d93025;background:#fff8f8}
+.falta-msg{display:block;color:#b3261e;font-weight:700;font-style:normal;font-size:.85rem;margin:.2rem 0}

@@ -2,8 +2,8 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { midiaDemo, urlMidia, DEMO } from './lib/armazenamento'
 import type { Midia } from './lib/modelo'
 
-export function Campo({ label, children }: { label: string; children: ReactNode }) {
-  return <label className="field">{label}{children}</label>
+export function Campo({ label, children, falta }: { label: string; children: ReactNode; falta?: boolean }) {
+  return <label className={'field' + (falta ? ' falta' : '')}>{label}{falta && <em className="falta-msg">Preencha aqui para concluir</em>}{children}</label>
 }
 
 export function Selo({ value }: { value: string }) {

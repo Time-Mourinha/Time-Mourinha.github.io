@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IMPACTOS } from './lib/analise'
 import {
   AMBIENTES_SUGERIDOS, CHECKLIST, PRIORIDADES, TIPOS_ACEITOS, itensDoAmbiente, maiorPrioridade, novoId,
@@ -10,7 +10,7 @@ type Props = {
   v: Vistoria; u: Unidade; ocupado: boolean; bloqueada: boolean; pendente: boolean
   mudar: (v: Vistoria) => void
   anexar: (destino: { roomId?: string; ocorrencia?: Ocorrencia }, arquivos: File[]) => void
-  salvar: () => void; concluir: () => void; excluir?: () => void
+  salvar: () => void; concluir: () => void; excluir?: () => void; faltas?: string[]
 }
 
 /* Botões de resposta: rótulo curto no botão, resposta gravada igual ao relatório */
@@ -35,10 +35,24 @@ function ocorrenciaAutomatica(amb: Ambiente, chave: string, item: string, respos
 }
 
 /** Formulário de vistoria feito para o celular: quase tudo em botões. */
-export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, salvar, concluir, excluir }: Props) {
+export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, salvar, concluir, excluir, faltas = [] }: Props) {
   const [outro, setOutro] = useState('')
   const [abertoAmb, setAbertoAmb] = useState<string>(v.rooms.at(-1)?.id ?? '')
   const [detalhe, setDetalhe] = useState<string>('')
+  // campos que faltam (só enquanto continuarem vazios)
+  const falta = (k: string) => faltas.includes(k) && (
+    k === 'data' ? !v.inspected_on : k === 'vistoriador' ? !v.inspector.trim() : k === 'conteudo' ? !v.rooms.length && !(v.photos ?? []).length
+      : k === 'validacao' ? !v.general_by.trim() : !v.rooms.some((r) => r.findings.some((f) => 'o:' + f.id === k && f.issue.trim())))
+  // ao tentar concluir com falta: abre o ambiente e o problema em vermelho e rola até ele
+  useEffect(() => {
+    if (!faltas.length) return
+    const prob = faltas.find((k) => k.startsWith('o:'))
+    if (prob) {
+      const amb = v.rooms.find((r) => r.findings.some((f) => 'o:' + f.id === prob))
+      if (amb) { setAbertoAmb(amb.id); setDetalhe(prob.slice(2)) }
+    }
+    setTimeout(() => document.querySelector('.form-vistoria .falta')?.scrollIntoView({ block: 'center' }), 350)
+  }, [faltas])
   const sugeridos = [...AMBIENTES_SUGERIDOS, ...(u.kind === 'CAPS' ? ['Sala de convivência', 'Dormitório'] : [])]
 
   function trocarAmbiente(a: Ambiente) { mudar({ ...v, rooms: v.rooms.map((r) => (r.id === a.id ? a : r)) }) }
@@ -121,12 +135,13 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
 
       <fieldset disabled={ocupado || bloqueada} className="plain">
         <div className="panel grid">
-          <Campo label="Data"><input type="date" value={v.inspected_on} onChange={(e) => mudar({ ...v, inspected_on: e.target.value })} /></Campo>
-          <Campo label="Vistoriador(a)"><input value={v.inspector} onChange={(e) => mudar({ ...v, inspector: e.target.value })} /></Campo>
+          <Campo label="Data" falta={falta('data')}><input type="date" value={v.inspected_on} onChange={(e) => mudar({ ...v, inspected_on: e.target.value })} /></Campo>
+          <Campo label="Vistoriador(a)" falta={falta('vistoriador')}><input value={v.inspector} onChange={(e) => mudar({ ...v, inspector: e.target.value })} /></Campo>
         </div>
 
-        <div className="panel">
+        <div className={'panel' + (falta('conteudo') ? ' falta' : '')}>
           <h2 className="passo">1. Em que ambiente ou setor você está?</h2>
+          {falta('conteudo') && <p className="falta-msg">Adicione pelo menos um ambiente ou uma foto da visita para concluir.</p>}
           <p className="dica">Toque num dos mais comuns ou escreva o nome do setor do jeito que ele é chamado na unidade.</p>
           <div className="row outro">
             <input value={outro} placeholder="Nome do setor (ex.: Sala de curativo, Triagem, Almoxarifado)" onChange={(e) => setOutro(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') adicionarAmbiente(outro) }} />
@@ -192,7 +207,8 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                     </div>
                     {!amb.findings.length && <p className="dica">Ao marcar Reparo, Trocar ou Falta, o problema entra aqui sozinho, já com a ação e o motivo.</p>}
                     {amb.findings.map((o) => (
-                      <article className="finding" key={o.id}>
+                      <article className={'finding' + (falta('o:' + o.id) ? ' falta' : '')} key={o.id}>
+                        {falta('o:' + o.id) && <p className="falta-msg">Descreva este problema em “Problema observado” para concluir.</p>}
                         <div className="heading"><strong>{o.item || 'Problema sem nome'}</strong><Selo value={o.priority} /></div>
                         <p className="f-resumo">{o.issue || 'Descreva o problema em Detalhes.'}</p>
                         <div className="botoes-resp" role="group" aria-label="Prioridade">
@@ -208,7 +224,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
                           <div className="grid">
                             <Campo label="Item"><input value={o.item} placeholder="Ex.: fechadura" onChange={(e) => mudarOcorrencia(amb, { ...o, item: e.target.value })} /></Campo>
                             <Campo label="Local exato"><input value={o.point} onChange={(e) => mudarOcorrencia(amb, { ...o, point: e.target.value })} /></Campo>
-                            <Campo label="Problema observado"><textarea value={o.issue} onChange={(e) => mudarOcorrencia(amb, { ...o, issue: e.target.value })} /></Campo>
+                            <Campo label="Problema observado" falta={falta('o:' + o.id)}><textarea value={o.issue} onChange={(e) => mudarOcorrencia(amb, { ...o, issue: e.target.value })} /></Campo>
                             <Campo label="Ação indicada"><textarea value={o.action} onChange={(e) => mudarOcorrencia(amb, { ...o, action: e.target.value })} /></Campo>
                             <Campo label="Justificativa e observações"><textarea value={o.reason} onChange={(e) => mudarOcorrencia(amb, { ...o, reason: e.target.value })} /></Campo>
                             <Campo label="Setor responsável"><input value={o.owner} onChange={(e) => mudarOcorrencia(amb, { ...o, owner: e.target.value })} /></Campo>
@@ -235,11 +251,11 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
           )
         })}
 
-        <details className="panel">
+        <details className={'panel' + (falta('validacao') ? ' falta' : '')} open={falta('validacao') || undefined}>
           <summary>A unidade inteira precisa de intervenção imediata?</summary>
           <div className="grid">
             <Campo label="Por quê"><textarea value={v.general_reason} onChange={(e) => mudar({ ...v, general_reason: e.target.value })} /></Campo>
-            <Campo label="Responsável pela validação"><input value={v.general_by} onChange={(e) => mudar({ ...v, general_by: e.target.value })} /></Campo>
+            <Campo label="Responsável pela validação" falta={falta('validacao')}><input value={v.general_by} onChange={(e) => mudar({ ...v, general_by: e.target.value })} /></Campo>
           </div>
         </details>
 
