@@ -1,0 +1,51 @@
+name: Manter banco ativo
+# O plano gratuito do Supabase pausa o projeto depois de 7 dias sem uso.
+# A cada 3 dias este robô consulta o banco para ele nunca pausar. Se mesmo assim
+# estiver pausado, pede para religar. Não guarda nada e não tem custo.
+
+on:
+  schedule:
+    - cron: "17 11 */3 * *"   # 08:17 em Maceió, a cada 3 dias
+  workflow_dispatch:
+
+permissions:
+  actions: write   # para manter este agendamento ligado (o GitHub desliga agendamentos de repositórios parados há 60 dias)
+
+jobs:
+  manter:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      REF: apqkewsdzwawtiajbmyl
+    steps:
+      - name: Religar se estiver pausado
+        run: |
+          estado=$(curl -sS -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$REF" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))")
+          echo "Situação do banco: $estado"
+          if [ "$estado" = "INACTIVE" ] || [ "$estado" = "PAUSED" ]; then
+            curl -sS -X POST -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$REF/restore"
+            echo "Pedido para religar enviado. Pode levar alguns minutos."
+            for i in $(seq 1 40); do
+              sleep 15
+              estado=$(curl -sS -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$REF" | python3 -c "import sys,json; print(json.load(sys.stdin).get('status',''))")
+              echo "  $estado"; [ "$estado" = "ACTIVE_HEALTHY" ] && break
+            done
+          fi
+
+      - name: Consultar o banco
+        run: |
+          # consulta direta no Postgres
+          curl -sS -f -X POST -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            -d '{"query":"select count(*) as unidades from public.units"}' \
+            "https://api.supabase.com/v1/projects/$REF/database/query" -o /tmp/r.json
+          echo "Unidades no banco: $(python3 -c "import json; print(json.load(open('/tmp/r.json'))[0]['unidades'])")"
+          # e uma chamada pela API pública, como o app faz
+          chave=$(curl -sS -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" "https://api.supabase.com/v1/projects/$REF/api-keys?reveal=true" \
+            | python3 -c "import sys,json; ks=json.load(sys.stdin); print(next((k['api_key'] for k in ks if k.get('type')=='publishable' and k.get('api_key')), next((k['api_key'] for k in ks if k.get('name')=='anon'), '')))")
+          echo "::add-mask::$chave"
+          curl -sS -o /dev/null -w "API pública respondeu: %{http_code}\n" -H "apikey: $chave" "https://$REF.supabase.co/rest/v1/units?select=id&limit=1"
+
+      - name: Manter este agendamento ligado
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow enable manter-ativo.yml -R "$GITHUB_REPOSITORY" || true
