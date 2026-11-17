@@ -92,13 +92,14 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
     }
     const item = m.item || ''
     const o: Ocorrencia = {
-      id: novoId(), item, point: amb.name, issue: m.caption || m.ai || '', action: item ? `Corrigir: ${item.toLowerCase()}.` : '',
+      id: novoId(), item, point: amb.name, issue: m.caption || m.ai || 'Problema registrado na foto.',
+      action: item ? `Corrigir: ${item.toLowerCase()}.` : 'Verificar e corrigir o problema da foto.',
       priority: 'Prioritária', reason: (item && IMPACTOS[item]) || '', owner: '', due: '', media: [m],
     }
     const alvo = amb.id
     mudar({ ...v, photos: fotos.filter((x) => x.id !== m.id), rooms: rooms.map((r) => (r.id === alvo ? { ...r, findings: [...r.findings, o] } : r)) })
     setAbertoAmb(alvo)
-    if (!o.issue || !o.action) setDetalhe(o.id)
+    if (!m.caption && !m.ai) setDetalhe(o.id) // sem legenda: abre os detalhes para descrever, se quiser
   }
 
   function mudarOcorrencia(amb: Ambiente, o: Ocorrencia) { trocarAmbiente({ ...amb, findings: amb.findings.map((f) => (f.id === o.id ? o : f)) }) }

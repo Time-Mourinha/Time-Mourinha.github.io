@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import { problemasDaRede, ranking } from './lib/analise'
-import { dataBR, type Unidade, type Vistoria } from './lib/modelo'
-import { Campo } from './ui'
+import { PRIORIDADES, dataBR, type Unidade, type Vistoria } from './lib/modelo'
+import { Campo, Selo } from './ui'
+
+export type SecaoPainel = 'ranking' | 'problemas' | 'imediatas' | 'distritos' | 'sem'
 
 /** Painel da rede: piores unidades, problemas mais frequentes e situação por distrito. */
-export function Painel({ unidades, vistorias, abrirRelatorio }: { unidades: Unidade[]; vistorias: Vistoria[]; abrirRelatorio: (id: string) => void }) {
+export function Painel({ unidades, vistorias, abrirRelatorio, secao, mudarSecao }: {
+  unidades: Unidade[]; vistorias: Vistoria[]; abrirRelatorio: (id: string) => void; secao: SecaoPainel; mudarSecao: (s: SecaoPainel) => void
+}) {
   const [distrito, setDistrito] = useState('')
   const [de, setDe] = useState('')
   const [ate, setAte] = useState('')
@@ -19,6 +23,14 @@ export function Painel({ unidades, vistorias, abrirRelatorio }: { unidades: Unid
   const verificados = linhas.reduce((s, l) => s + l.resumo.respondidos, 0)
   const comProblema = linhas.reduce((s, l) => s + l.resumo.problemas, 0)
   const criticas = linhas.filter((l) => l.resumo.nivel.nome === 'Crítica').length
+  const listaImediatas = linhas.flatMap((l) => l.vistoria.rooms.flatMap((amb) => amb.findings
+    .filter((o) => o.priority === PRIORIDADES[0]).map((o) => ({ l, amb, o }))))
+  const semVistoria = doDistrito.filter((u) => !linhas.some((l) => l.unidade.id === u.id))
+  const SECOES: [SecaoPainel, string, string, number][] = [
+    ['ranking', '🏆', 'Ranking', linhas.length], ['problemas', '⚠️', 'Problemas', problemas.length],
+    ['imediatas', '🚨', 'Ações imediatas', listaImediatas.length], ['distritos', '🗺️', 'Por distrito', distritos.length],
+    ['sem', '📭', 'Sem vistoria', semVistoria.length],
+  ]
 
   return (
     <>
@@ -42,9 +54,18 @@ export function Painel({ unidades, vistorias, abrirRelatorio }: { unidades: Unid
         <div><strong>{verificados ? Math.round((comProblema / verificados) * 100) : 0}%</strong><span>dos itens verificados com problema</span></div>
       </div>
 
-      {!linhas.length ? <div className="panel"><p>Ainda não há vistorias concluídas neste recorte. O painel se monta sozinho conforme as vistorias forem concluídas.</p></div> : (
+      <div className="secoes" role="tablist" aria-label="O que ver">
+        {SECOES.map(([id, ic, t, n]) => (
+          <button key={id} role="tab" aria-selected={secao === id} className={'secao-btn' + (secao === id ? ' ativo' : '')} onClick={() => mudarSecao(id)}>
+            <span aria-hidden="true">{ic}</span>{t}<small>{n}</small>
+          </button>
+        ))}
+      </div>
+
+      {!linhas.length && secao !== 'sem' && secao !== 'distritos' ? <div className="panel"><p>Ainda não há vistorias concluídas neste recorte. O painel se monta sozinho conforme as vistorias forem concluídas.</p></div> : (
         <>
-          <section className="panel">
+          {secao === 'ranking' && (
+            <section className="panel">
             <h2>Ranking: unidades em pior situação</h2>
             <p className="legenda">Índice de criticidade: ação imediata vale 10 pontos, prioritária 5, programável 2; item faltante 3, substituição 2, reparo 1; intervenção na unidade inteira, 20.</p>
             <ol className="ranking">
@@ -61,8 +82,9 @@ export function Painel({ unidades, vistorias, abrirRelatorio }: { unidades: Unid
                 </li>
               ))}
             </ol>
-          </section>
-
+            </section>
+          )}
+          {secao === 'problemas' && (
           <section className="panel">
             <h2>Principais problemas na rede</h2>
             <p className="legenda">Itens com problema mais frequentes, contando cada unidade uma vez, e o que eles causam no atendimento.</p>
@@ -77,7 +99,23 @@ export function Painel({ unidades, vistorias, abrirRelatorio }: { unidades: Unid
               ))}
             </div>
           </section>
-
+          )}
+          {secao === 'imediatas' && (
+          <section className="panel">
+            <h2>Ações imediatas pedidas</h2>
+            <p className="legenda">Problemas marcados como Imediata na última vistoria de cada unidade.</p>
+            {!listaImediatas.length && <p>Nenhuma ação imediata pendente neste recorte.</p>}
+            {listaImediatas.map(({ l, amb, o }) => (
+              <article className="result" key={o.id}>
+                <div className="r-topo"><strong>{l.unidade.name}</strong><Selo value={o.priority} /></div>
+                <p>{amb.name}{o.point && o.point !== amb.name ? ' · ' + o.point : ''} — {o.item && <b>{o.item}: </b>}{o.issue}</p>
+                <p><b>Ação:</b> {o.action}{o.owner && ` · ${o.owner}`}{o.due && ` · prazo ${dataBR(o.due)}`}</p>
+                <button className="no-print" onClick={() => abrirRelatorio(l.vistoria.id)}>Relatório</button>
+              </article>
+            ))}
+          </section>
+          )}
+          {secao === 'distritos' && (
           <section className="panel">
             <h2>Por distrito sanitário</h2>
             <table className="rel-tabela">
@@ -99,11 +137,15 @@ export function Painel({ unidades, vistorias, abrirRelatorio }: { unidades: Unid
               </tbody>
             </table>
           </section>
-
+          )}
+          {secao === 'sem' && (
           <section className="panel">
-            <h2>Unidades ainda sem vistoria concluída <small>{doDistrito.length - linhas.length}</small></h2>
-            <p className="legenda">{doDistrito.filter((u) => !linhas.some((l) => l.unidade.id === u.id)).map((u) => u.name).join(' · ') || 'Todas as unidades já foram vistoriadas.'}</p>
+            <h2>Unidades ainda sem vistoria concluída <small>{semVistoria.length}</small></h2>
+            {!semVistoria.length ? <p>Todas as unidades já foram vistoriadas.</p> : (
+              <ul className="lista-sem">{semVistoria.map((u) => <li key={u.id}><b>{u.name}</b><small>Distrito {u.district} · {u.kind}</small></li>)}</ul>
+            )}
           </section>
+          )}
         </>
       )}
     </>

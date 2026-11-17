@@ -14,12 +14,23 @@ import { Entrada } from './Entrada'
 import { Formulario } from './Formulario'
 import { Aparencia } from './Aparencia'
 import { Instalar } from './Instalar'
-import { Painel } from './Painel'
+import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
-import { IMPACTOS, resumir } from './lib/analise'
+import { IMPACTOS, problemasDaRede, ranking, resumir } from './lib/analise'
 import { reduzirImagem } from './lib/imagem'
 
-type Tela = 'unidades' | 'painel' | 'vistoria' | 'relatorios' | 'acessos'
+type Tela = 'inicio' | 'unidades' | 'painel' | 'vistoria' | 'relatorios' | 'acessos'
+
+function Atalho({ ic, t, n, e, onClick, destaque, alerta }: { ic: string; t: string; n: string; e: string; onClick: () => void; destaque?: boolean; alerta?: boolean }) {
+  return (
+    <button className={'atalho' + (destaque ? ' destaque' : '') + (alerta ? ' alerta' : '')} onClick={onClick}>
+      <span className="a-ic" aria-hidden="true">{ic}</span>
+      <span className="a-num">{n}</span>
+      <span className="a-tit">{t}</span>
+      <span className="a-desc">{e}</span>
+    </button>
+  )
+}
 
 function PedirNome({ aoSalvar }: { aoSalvar: (nome: string) => void }) {
   const [nome, setNome] = useState('')
@@ -46,7 +57,8 @@ export default function App() {
   const [carregando, setCarregando] = useState(!DEMO)
   const [unidades, setUnidades] = useState<Unidade[]>(DEMO ? UNIDADES : [])
   const [vistorias, setVistorias] = useState<Vistoria[]>(DEMO ? lerDemo() : [])
-  const [tela, setTela] = useState<Tela>((location.hash.slice(1) as Tela) || 'unidades')
+  const [tela, setTela] = useState<Tela>((location.hash.slice(1) as Tela) || 'inicio')
+  const [secaoPainel, setSecaoPainel] = useState<SecaoPainel>('ranking')
   const [aberta, setAberta] = useState<Vistoria | null>(null)
   const [relatorioId, setRelatorioId] = useState('')
   const [busca, setBusca] = useState('')
@@ -68,15 +80,17 @@ export default function App() {
   })
   const versao = useRef(0)
   const fila = useRef<Promise<void>>(Promise.resolve())
+  const imprimirDepois = useRef(false)
 
   const admin = !DEMO && perfil?.role === 'admin' && perfil.approved
   const unidadeAberta = unidades.find((u) => u.id === aberta?.unit_id)
   const bloqueada = aberta?.status === 'completed' && !DEMO && !admin
 
-  function ir(t: Tela) { location.hash = t; setTela(t); setErro(''); setAviso('') }
+  function ir(t: Tela) { location.hash = t; setTela(t); setErro(''); setAviso(''); window.scrollTo(0, 0) }
+  function abrirPainel(s: SecaoPainel) { setSecaoPainel(s); ir('painel') }
 
   useEffect(() => {
-    const f = () => setTela((location.hash.slice(1) as Tela) || 'unidades')
+    const f = () => setTela((location.hash.slice(1) as Tela) || 'inicio')
     window.addEventListener('hashchange', f)
     return () => window.removeEventListener('hashchange', f)
   }, [])
@@ -136,6 +150,21 @@ export default function App() {
     fila.current = p
     await p
   }
+
+  // depois de concluir: relatório na tela, espera as fotos carregarem e abre "Imprimir / Salvar como PDF"
+  useEffect(() => {
+    if (!imprimirDepois.current || tela !== 'relatorios' || !relatorioId) return
+    imprimirDepois.current = false
+    const t = window.setTimeout(async () => {
+      const imgs = [...document.querySelectorAll<HTMLImageElement>('.relatorio img')]
+      await Promise.race([Promise.all(imgs.map((i) => (i.complete ? null : new Promise((ok) => { i.onload = i.onerror = ok })))), new Promise((ok) => setTimeout(ok, 4000))])
+      window.print()
+    }, 700)
+    return () => clearTimeout(t)
+  }, [tela, relatorioId])
+
+  // mensagens somem sozinhas
+  useEffect(() => { if (!aviso) return; const t = setTimeout(() => setAviso(''), 6000); return () => clearTimeout(t) }, [aviso])
 
   // salvamento automático do rascunho
   useEffect(() => {
@@ -217,7 +246,7 @@ export default function App() {
     void executar(async () => {
       await excluirVistoria(v)
       setVistorias((l) => l.filter((x) => x.id !== v.id))
-      if (aberta?.id === v.id) { setAberta(null); setPendente(false); ir('unidades') }
+      if (aberta?.id === v.id) { setAberta(null); setPendente(false); ir('inicio') }
       setAviso('Rascunho excluído.')
     })
   }
@@ -225,12 +254,17 @@ export default function App() {
   async function concluir() {
     if (!aberta) return
     await executar(async () => {
-      if (!aberta.inspected_on || !aberta.inspector.trim() || !aberta.rooms.length) throw new Error('Preencha data, vistoriador e pelo menos um ambiente.')
+      if (!aberta.inspected_on) throw new Error('Falta a data da vistoria (no topo do formulário).')
+      const inspector = aberta.inspector.trim() || perfil?.name || perfil?.email || ''
+      if (!inspector) throw new Error('Falta o nome do vistoriador (no topo do formulário).')
+      if (!aberta.rooms.length && !(aberta.photos ?? []).length) throw new Error('Adicione pelo menos um ambiente ou uma foto da visita antes de concluir.')
       const incompleto = aberta.rooms.find((r) => r.findings.some((f) => !f.issue.trim() || !f.action.trim()))
       if (incompleto) throw new Error(`Em "${incompleto.name}", há problema sem descrição ou sem ação. Toque em ✏️ Detalhes para completar.`)
       if (aberta.general_reason && !aberta.general_by) throw new Error('Registre o responsável pela validação do alcance geral.')
-      const v: Vistoria = { ...aberta, status: 'completed' }
+      const v: Vistoria = { ...aberta, inspector, status: 'completed' }
       await gravar(v); setAberta(v); setPendente(false); setRelatorioId(v.id); ir('relatorios')
+      setAviso('Vistoria concluída. Abrindo o PDF do relatório…')
+      imprimirDepois.current = true
     })
   }
 
@@ -239,7 +273,7 @@ export default function App() {
       if (pendente && aberta && !bloqueada) { await gravar(aberta); setPendente(false) }
       const { error } = await sb!.auth.signOut()
       if (error) throw error
-      setAberta(null); setUnidades([]); setVistorias([]); setPerfil(null); setRelatorioId(''); ir('unidades')
+      setAberta(null); setUnidades([]); setVistorias([]); setPerfil(null); setRelatorioId(''); ir('inicio')
     })
   }
 
@@ -274,6 +308,9 @@ export default function App() {
       || (situacao === 'nunca' && !vistorias.some((v) => v.unit_id === u.id))
       || (situacao === 'rascunho' && vistorias.some((v) => v.unit_id === u.id && v.status === 'draft'))
       || (situacao === 'critica' && ultimaDe(u.id) && ['Crítica', 'Alta'].includes(resumir(ultimaDe(u.id)).nivel.nome))))
+  const rank = ranking(unidades, vistorias)
+  const imediatas = rank.reduce((s, l) => s + (l.resumo.porPrioridade['Imediata'] ?? 0), 0)
+  const problemasRede = problemasDaRede(rank, 99).length
   const meusRascunhos = vistorias.filter((v) => v.status === 'draft' && (DEMO || v.owner === perfil?.id))
   const relatorio = concluidas.find((v) => v.id === relatorioId)
   const recorte = concluidas.filter((v) => {
@@ -303,6 +340,7 @@ export default function App() {
       {cabecalho}
       <div className="layout">
         <nav aria-label="Navegação principal">
+          <button className={tela === 'inicio' ? 'active' : ''} onClick={() => ir('inicio')}><i aria-hidden="true">🏠</i>Início</button>
           <button className={tela === 'unidades' ? 'active' : ''} onClick={() => ir('unidades')}><i aria-hidden="true">🏥</i>Unidades</button>
           {aberta && <button className={'aberta ' + (tela === 'vistoria' ? 'active' : '')} onClick={() => ir('vistoria')}><i aria-hidden="true">📝</i>Vistoria</button>}
           <button className={tela === 'painel' ? 'active' : ''} onClick={() => ir('painel')}><i aria-hidden="true">📊</i>Painel</button>
@@ -311,8 +349,8 @@ export default function App() {
         </nav>
         <main>
           {DEMO && <div className="banner no-print">Modo de demonstração · Use dados fictícios. As vistorias e mídias ficam neste navegador.</div>}
-          {erro && <div role="alert" className="error">{erro}</div>}
-          {aviso && <div role="status" className="notice">{aviso}</div>}
+          {erro && <div role="alert" className="error toast" onClick={() => setErro('')}>⚠️ {erro}<small>Toque para fechar</small></div>}
+          {aviso && <div role="status" className="notice toast" onClick={() => setAviso('')}>{aviso}</div>}
           {admin && pedidos > 0 && tela !== 'acessos' && <div className="banner no-print">{pedidos === 1 ? 'Há 1 pedido de acesso' : `Há ${pedidos} pedidos de acesso`} esperando a sua aprovação. <a href="#acessos" onClick={() => ir('acessos')}>Ver pedidos</a></div>}
 
           {tela === 'acessos' && admin ? <Acessos unidades={unidades} euId={perfil!.id} aoMudar={(n) => setPedidos(n)} /> :
@@ -324,7 +362,51 @@ export default function App() {
               salvar={() => void executar(async () => { await gravar(aberta); setPendente(false); setAviso('Vistoria salva.') })} />
           ) :
 
-          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} /> :
+          tela === 'inicio' ? (
+            <>
+              <div className="hero">
+                <p className="eyebrow">SECRETARIA EXECUTIVA · GABINETE DO PREFEITO</p>
+                <h1>{perfil?.name ? `Olá, ${perfil.name.split(' ')[0]}!` : 'Vistorias das unidades'}</h1>
+                <p>Fiscalização das unidades da rede municipal de saúde. Escolha a unidade e toque em <b>Nova vistoria</b>; tudo é salvo sozinho enquanto você preenche.</p>
+              </div>
+              {!DEMO && perfil && !perfil.name && <PedirNome aoSalvar={(n) => setPerfil({ ...perfil, name: n })} />}
+              {meusRascunhos.length > 0 && (
+                <div className="panel continuar">
+                  <h2>Continue de onde parou</h2>
+                  {meusRascunhos.map((v) => {
+                    const u = unidades.find((x) => x.id === v.unit_id)
+                    return u && (
+                      <div key={v.id} className="continuar-linha">
+                        <button className="continuar-item" onClick={() => abrir(u, v)}>
+                          <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.reduce((s, r) => s + r.findings.length, 0)} problema(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
+                          <b>Retomar →</b>
+                        </button>
+                        <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho" title="Excluir rascunho">🗑️</button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+              {emVisita.length > 0 && (
+                <div className="panel em-visita-lista">
+                  <h2>🟢 Em visita agora <small>{emVisita.length}</small></h2>
+                  {emVisita.map((x) => <p key={x.id}><strong>{x.inspector || 'Vistoriador'}</strong> · {unidades.find((u) => u.id === x.unit_id)?.name} · desde {new Date(x.created_at ?? x.updated_at ?? '').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Maceio' })}</p>)}
+                </div>
+              )}
+              <div className="atalhos">
+                <Atalho ic="📝" t="Nova vistoria" n={String(unidades.length)} e="Escolher a unidade e começar" onClick={() => ir('unidades')} destaque />
+                <Atalho ic="🏆" t="Ranking" n={String(rank.filter((l) => ['Crítica', 'Alta'].includes(l.resumo.nivel.nome)).length)} e="Unidades em pior situação" onClick={() => abrirPainel('ranking')} />
+                <Atalho ic="⚠️" t="Principais problemas" n={String(problemasRede)} e="O que mais se repete na rede e o que causa" onClick={() => abrirPainel('problemas')} />
+                <Atalho ic="🚨" t="Ações imediatas" n={String(imediatas)} e="O que precisa ser resolvido já" onClick={() => abrirPainel('imediatas')} alerta={imediatas > 0} />
+                <Atalho ic="🗺️" t="Por distrito" n={String(new Set(rank.map((l) => l.unidade.district)).size) + '/8'} e="Situação de cada distrito sanitário" onClick={() => abrirPainel('distritos')} />
+                <Atalho ic="📭" t="Sem vistoria" n={String(unidades.length - rank.length)} e="Unidades que ainda não foram vistoriadas" onClick={() => abrirPainel('sem')} />
+                <Atalho ic="📄" t="Relatórios" n={String(concluidas.length)} e="Vistorias concluídas, para imprimir em PDF" onClick={() => { setRelatorioId(''); ir('relatorios') }} />
+                {admin && <Atalho ic="👥" t="Acessos" n={String(pedidos)} e="Pedidos de acesso para aprovar" onClick={() => ir('acessos')} alerta={pedidos > 0} />}
+              </div>
+            </>
+          ) :
+
+          tela === 'painel' ? <Painel unidades={unidades} vistorias={vistorias} secao={secaoPainel} mudarSecao={setSecaoPainel} abrirRelatorio={(id) => { setRelatorioId(id); ir('relatorios') }} /> :
 
           tela === 'relatorios' ? (
             <>
@@ -382,40 +464,11 @@ export default function App() {
             </>
           ) : (
             <>
-              <div className="hero">
-                <p className="eyebrow">SECRETARIA EXECUTIVA · GABINETE DO PREFEITO</p>
-                <h1>{perfil?.name ? `Olá, ${perfil.name.split(' ')[0]}!` : 'Vistorias das unidades'}</h1>
-                <p>Fiscalização das unidades da rede municipal de saúde. Escolha a unidade e toque em <b>Nova vistoria</b>; tudo é salvo sozinho enquanto você preenche.</p>
-              </div>
-              {!DEMO && perfil && !perfil.name && <PedirNome aoSalvar={(n) => setPerfil({ ...perfil, name: n })} />}
-              {meusRascunhos.length > 0 && (
-                <div className="panel continuar">
-                  <h2>Continue de onde parou</h2>
-                  {meusRascunhos.map((v) => {
-                    const u = unidades.find((x) => x.id === v.unit_id)
-                    return u && (
-                      <div key={v.id} className="continuar-linha">
-                        <button className="continuar-item" onClick={() => abrir(u, v)}>
-                          <span><strong>{u.name}</strong><small>{v.rooms.length} ambiente(s) · {v.rooms.reduce((s, r) => s + r.findings.length, 0)} problema(s) · iniciada em {dataBR(v.inspected_on)}</small></span>
-                          <b>Retomar →</b>
-                        </button>
-                        <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho" title="Excluir rascunho">🗑️</button>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-              {emVisita.length > 0 && (
-                <div className="panel em-visita-lista">
-                  <h2>🟢 Em visita agora <small>{emVisita.length}</small></h2>
-                  {emVisita.map((x) => <p key={x.id}><strong>{x.inspector || 'Vistoriador'}</strong> · {unidades.find((u) => u.id === x.unit_id)?.name} · desde {new Date(x.created_at ?? x.updated_at ?? '').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Maceio' })}</p>)}
-                </div>
-              )}
-              <div className="stats">
-                <div><strong>{unidades.length}</strong><span>Unidades disponíveis</span></div>
-                <div><strong>{vistorias.filter((v) => v.status === 'draft').length}</strong><span>Rascunhos</span></div>
-                <div><strong>{concluidas.length}</strong><span>Vistorias concluídas</span></div>
-              </div>
+              <div className="heading"><div>
+                <p className="eyebrow">UNIDADES · {unidades.length}</p>
+                <h1>Escolha a unidade</h1>
+                <p>Toque em <b>Nova vistoria</b> na unidade onde você está.</p>
+              </div></div>
               <div className="panel busca">
                 <input type="search" className="busca-campo" placeholder="🔎 Buscar por nome, bairro, CNES ou endereço" value={busca} onChange={(e) => setBusca(e.target.value)} aria-label="Buscar unidade" />
                 <div className="chips" role="group" aria-label="Distrito">

@@ -146,3 +146,37 @@ main{padding:clamp(1rem,3vw,2.2rem)}
 .continuar-linha .continuar-item{margin:0}
 .excluir{background:#fff;border-color:#f1b8b8;color:#a11d1d}
 .topo-acoes{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
+
+/* Início em botões e seções do painel */
+.atalhos{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:.75rem;margin:1rem 0}
+.atalho{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"ic num" "tit tit" "desc desc";align-items:center;gap:.15rem .6rem;text-align:left;padding:1rem;border-radius:18px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);min-height:120px}
+.atalho:hover{border-color:var(--blue)}
+.a-ic{grid-area:ic;font-size:1.6rem}
+.a-num{grid-area:num;justify-self:end;font-size:1.7rem;font-weight:800;color:var(--navy)}
+.a-tit{grid-area:tit;font-size:1.05rem;font-weight:800;color:var(--navy)}
+.a-desc{grid-area:desc;font-size:.85rem;font-weight:500;color:var(--muted)}
+.atalho.destaque{background:linear-gradient(135deg,#ed890d,#f6a63a);border-color:#ed890d}
+.atalho.destaque .a-num,.atalho.destaque .a-tit,.atalho.destaque .a-desc{color:#fff}
+.atalho.alerta .a-num{color:#b3261e}
+.secoes{display:flex;gap:.5rem;overflow-x:auto;margin:0 0 1rem;padding-bottom:.2rem;scrollbar-width:none}
+.secoes::-webkit-scrollbar{display:none}
+.secao-btn{flex:none;display:flex;align-items:center;gap:.4rem;border-radius:999px;padding:.55rem .9rem;background:var(--card)}
+.secao-btn small{background:#eef4f9;border-radius:999px;padding:0 .45rem;font-weight:700}
+.secao-btn.ativo{background:var(--navy);border-color:var(--navy);color:#fff}
+.secao-btn.ativo small{background:#ffffff30;color:#fff}
+.lista-sem{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:.5rem}
+.lista-sem li{border:1px solid var(--line);border-radius:10px;padding:.55rem .7rem;display:grid}
+.lista-sem small{color:var(--muted)}
+@media (width<=650px){.atalhos{grid-template-columns:1fr 1fr}.atalho{min-height:112px;padding:.8rem}.a-desc{font-size:.78rem}}
+[data-tema=sol] .atalho{border:2px solid #000}
+[data-tema=sol] .atalho.destaque{background:#ffd400}
+[data-tema=sol] .atalho.destaque .a-num,[data-tema=sol] .atalho.destaque .a-tit,[data-tema=sol] .atalho.destaque .a-desc{color:#000}
+[data-tema=sol] .secao-btn.ativo{background:#000;color:#ffd400}
+
+/* Avisos flutuantes: aparecem onde a pessoa estiver */
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:84px;z-index:60;width:min(560px,92vw);box-shadow:0 10px 30px #10365640;border-radius:14px;padding:.85rem 1rem;font-weight:650;cursor:pointer}
+.toast small{display:block;font-weight:500;opacity:.75;margin-top:.2rem}
+.error.toast{background:#fde6e6;color:#7a1420;border:1px solid #f1b8b8}
+.notice.toast{background:#e4f5ec;color:#15513d;border:1px solid #9fd3b5}
+@media (width<=650px){.toast{top:64px}}
+@media print{.toast{display:none!important}}
