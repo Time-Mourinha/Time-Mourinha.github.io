@@ -58,6 +58,13 @@ export async function salvarArquivosRelatorio(a: ArquivosRelatorio) {
   const { error } = await sb.from('report_files').upsert(a)
   if (error) throw new Error('Não deu para guardar os links do Drive: ' + error.message)
 }
+/** Quais destes relatórios já estão no Drive. */
+export async function jaNoDrive(ids: string[]): Promise<Set<string>> {
+  if (!sb || !ids.length) return new Set(ids)
+  const { data, error } = await sb.from('report_files').select('inspection_id').in('inspection_id', ids)
+  if (error) return new Set(ids) // na dúvida, não reenvia
+  return new Set((data ?? []).map((x: { inspection_id: string }) => x.inspection_id))
+}
 export async function carregarArquivosRelatorio(id: string): Promise<ArquivosRelatorio | null> {
   if (!sb) return null
   const { data } = await sb.from('report_files').select('*').eq('inspection_id', id).maybeSingle()

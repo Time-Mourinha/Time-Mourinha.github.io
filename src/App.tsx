@@ -17,7 +17,7 @@ import { Instalar } from './Instalar'
 import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
 import { compactar, problemasDaRede, ranking, resumir } from './lib/analise'
-import { DRIVE_LIGADO, apagarDoDrive, carregarArquivosRelatorio, enviarAoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
+import { DRIVE_LIGADO, apagarDoDrive, carregarArquivosRelatorio, enviarAoDrive, jaNoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
 import { gerarPdf, type ResultadoPdf } from './lib/pdf'
 import { reduzirImagem } from './lib/imagem'
 import { CFG } from './config'
@@ -170,7 +170,10 @@ export default function App() {
       if (p?.approved) {
         const [u, v] = await Promise.all([carregarUnidades(), carregarVistorias()])
         setUnidades(u); setVistorias(v); setHistoricoAte('')
-        void limparFotosAntigas(v)
+        void (DRIVE_LIGADO && !DEMO
+          // com o Drive ligado, só apaga do aparelho o que já subiu (nada se perde se o envio falhou)
+          ? jaNoDrive(v.filter((x) => x.status === 'completed').map((x) => x.id)).then((ok) => limparFotosAntigas(v.filter((x) => ok.has(x.id))))
+          : limparFotosAntigas(v))
         if (p.role === 'admin') {
           const { count } = await sb!.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false).eq('needs_code', false)
           setPedidos(count ?? 0)
@@ -221,6 +224,28 @@ export default function App() {
       await entregarPdf(p)
     })
   }
+  // Nenhum relatório fica de fora do Drive: se o envio falhou (sem internet), tenta de novo sozinho
+  // quando o app abre, a partir do celular que tem as fotos.
+  const reenvioFeito = useRef(false)
+  useEffect(() => {
+    if (!DRIVE_LIGADO || DEMO || !perfil || reenvioFeito.current || !vistorias.length) return
+    reenvioFeito.current = true
+    void (async () => {
+      const minhas = vistorias.filter((v) => v.status === 'completed' && v.owner === perfil.id)
+      const feitos = await jaNoDrive(minhas.map((v) => v.id))
+      for (const v of minhas) {
+        if (feitos.has(v.id) || !(await temFotosLocais(v))) continue
+        try {
+          const u = unidades.find((x) => x.id === v.unit_id)
+          const a = await enviarAoDrive(v, u, await gerarPdf(v, u), () => undefined)
+          await salvarArquivosRelatorio(a)
+          await apagarFotosLocais(v)
+          setAviso(`☁️ Relatório de ${u?.name ?? 'unidade'} enviado ao Google Drive.`)
+        } catch { /* tenta de novo na próxima vez que o app abrir */ }
+      }
+    })()
+  }, [vistorias, perfil])
+
   /** Monta o PDF e manda PDF + fotos para o Google Drive; no app fica só o link. Depois tira as fotos do aparelho. */
   async function enviarRelatorio(v: Vistoria) {
     await executar(async () => {
