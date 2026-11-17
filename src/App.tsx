@@ -17,7 +17,7 @@ import { Instalar } from './Instalar'
 import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
 import { compactar, problemasDaRede, ranking, resumir } from './lib/analise'
-import { DRIVE_LIGADO, apagarDoDrive, carregarArquivosRelatorio, enviarAoDrive, jaNoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
+import { DRIVE_LIGADO, carregarArquivosRelatorio, enviarAoDrive, jaNoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
 import { gerarPdf, type ResultadoPdf } from './lib/pdf'
 import { reduzirImagem } from './lib/imagem'
 import { CFG } from './config'
@@ -326,11 +326,11 @@ export default function App() {
     const u = unidades.find((x) => x.id === v.unit_id)
     const rel = v.status === 'completed'
     if (!confirm(rel
-      ? `Excluir o relatório da vistoria em ${u?.name ?? 'unidade'} de ${dataBR(v.inspected_on)}? Ele sai do painel, do ranking e da lista de relatórios. Não dá para desfazer.`
+      ? `Excluir o relatório da vistoria em ${u?.name ?? 'unidade'} de ${dataBR(v.inspected_on)}? Ele sai do app (painel, ranking e lista). O PDF e as fotos continuam no Google Drive.`
       : `Excluir o rascunho da vistoria em ${u?.name ?? 'unidade'}${v.owner && v.owner !== perfil?.id && v.inspector ? ` (de ${v.inspector})` : ''}? Não dá para desfazer.`)) return
     void executar(async () => {
       await excluirVistoria(v)
-      if (rel) void apagarDoDrive(v.id)
+      // o que está no Google Drive nunca é apagado pelo app (a administração apaga lá quando quiser)
       setVistorias((l) => l.filter((x) => x.id !== v.id))
       if (aberta?.id === v.id) { setAberta(null); setPendente(false); ir(rel ? 'relatorios' : 'inicio') }
       if (relatorioId === v.id) setRelatorioId('')
