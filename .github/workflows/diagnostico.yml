@@ -14,10 +14,11 @@ jobs:
           ref = json.load(open("modelo.config.json"))["supabase_ref"]
           sql = """select u.name as unidade, i.inspected_on as data, i.status, to_char(i.updated_at at time zone 'America/Maceio','DD/MM HH24:MI') as atualizado,
                    jsonb_array_length(coalesce(i.photos,'[]')) as fotos_registradas,
+                   (select count(*) from jsonb_array_elements(coalesce(i.photos,'[]')) f where f ? 'drive') as fotos_ja_no_drive,
                    (select count(*) from jsonb_array_elements(i.rooms) r where r->>'situacao' is not null) as ambientes_avaliados,
                    rf.pdf_url <> '' as no_drive, coalesce((select count(*) from jsonb_object_keys(rf.fotos)),0) as fotos_no_drive
                    from public.inspections i join public.units u on u.id = i.unit_id left join public.report_files rf on rf.inspection_id = i.id
-                   order by i.updated_at desc limit 8"""
+                   order by (i.status = 'draft') desc, i.updated_at desc limit 12"""
           req = urllib.request.Request(f"https://api.supabase.com/v1/projects/{ref}/database/query", data=json.dumps({"query": sql}).encode(), method="POST",
               headers={"Authorization": "Bearer " + os.environ["SUPABASE_ACCESS_TOKEN"], "Content-Type": "application/json"})
           for r in json.load(urllib.request.urlopen(req)):
