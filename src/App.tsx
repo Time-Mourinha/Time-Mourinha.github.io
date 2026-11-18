@@ -65,8 +65,8 @@ function PainelPdf({ v, arquivos, enviar, baixar, ocupado }: {
   )
 }
 
-function PedirNome({ aoSalvar }: { aoSalvar: (nome: string) => void }) {
-  const [nome, setNome] = useState('')
+function PedirNome({ aoSalvar, inicial = '', cancelar }: { aoSalvar: (nome: string) => void; inicial?: string; cancelar?: () => void }) {
+  const [nome, setNome] = useState(inicial)
   const [erro, setErro] = useState('')
   return (
     <form className="panel continuar" onSubmit={async (e) => {
@@ -76,9 +76,10 @@ function PedirNome({ aoSalvar }: { aoSalvar: (nome: string) => void }) {
       const { error } = await sb!.from('profiles').update({ name: nome.trim() }).eq('id', data.user!.id)
       if (error) setErro(error.message); else aoSalvar(nome.trim())
     }}>
-      <h2>Como você quer aparecer nos relatórios?</h2>
-      <div className="row"><input className="busca-campo" style={{ flex: 1 }} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome e sobrenome" autoComplete="name" />
-        <button className="primary">Salvar</button></div>
+      <h2>{inicial ? 'Editar meu nome' : 'Como você quer aparecer nos relatórios?'}</h2>
+      {inicial && <p className="dica">É o nome que aparece em "Em visita agora", nos rascunhos e como vistoriador(a) das próximas vistorias.</p>}
+      <div className="row"><input className="busca-campo" style={{ flex: 1 }} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome e sobrenome" autoComplete="name" autoFocus={Boolean(inicial)} />
+        <button className="primary">Salvar</button>{cancelar && <button type="button" onClick={cancelar}>Cancelar</button>}</div>
       {erro && <p className="error">{erro}</p>}
     </form>
   )
@@ -91,6 +92,7 @@ export default function App() {
   const [unidades, setUnidades] = useState<Unidade[]>(DEMO ? UNIDADES : [])
   const [vistorias, setVistorias] = useState<Vistoria[]>(DEMO ? lerDemo() : [])
   const [historico, setHistorico] = useState<VisitaAntiga[]>([])
+  const [editandoNome, setEditandoNome] = useState(false)
   // '' = ainda não baixado · data = baixado desde essa data · 'tudo' = baixado inteiro
   const [historicoAte, setHistoricoAte] = useState('')
   function baixarHistorico(tudo: boolean) {
@@ -505,7 +507,7 @@ export default function App() {
       <span className="titulo-app"><b>{CFG.secretaria}</b><small>{CFG.vinculo} · {CFG.titulo}</small></span>
       <Instalar />
       <Aparencia />
-      {!DEMO && sessao && perfil && <span className="quem" title={perfil.email}>{(perfil.name || perfil.email).split(/[ @]/)[0]}</span>}
+      {!DEMO && sessao && perfil && <button className="quiet quem-btn" title="Editar meu nome" onClick={() => setEditandoNome(true)}>👤<span className="quem">{(perfil.name || perfil.email).split(/[ @]/)[0]}</span></button>}
       {!DEMO && sessao && <button className="quiet" disabled={ocupado} onClick={() => void sair()}>Sair</button>}
     </header>
   )
@@ -596,6 +598,14 @@ export default function App() {
             </div>
           )}
           {envio && <div className="envio-fundo no-print" role="status">☁️ {envio}<small>Pode continuar usando o app. Não feche até terminar.</small></div>}
+          {editandoNome && perfil && (
+            <div className="modal-fundo no-print" role="dialog" aria-modal="true" onClick={() => setEditandoNome(false)}>
+              <div className="modal" onClick={(e) => e.stopPropagation()}>
+                <PedirNome inicial={perfil.name || ''} cancelar={() => setEditandoNome(false)}
+                  aoSalvar={(n) => { setPerfil({ ...perfil, name: n }); setEditandoNome(false); setAviso('Nome atualizado.') }} />
+              </div>
+            </div>
+          )}
           {erro && <div role="alert" className="error toast" onClick={() => setErro('')}>⚠️ {erro}<small>Toque para fechar</small></div>}
           {aviso && <div role="status" className="notice toast" onClick={() => setAviso('')}>{aviso}</div>}
           {admin && pedidos > 0 && tela !== 'acessos' && <div className="banner no-print">{pedidos === 1 ? 'Há 1 pedido de acesso' : `Há ${pedidos} pedidos de acesso`} esperando a sua aprovação. <a href="#acessos" onClick={() => ir('acessos')}>Ver pedidos</a></div>}

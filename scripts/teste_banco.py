@@ -80,6 +80,9 @@ try:
     print("Ajudar no rascunho de outra pessoa:", r9.status_code, "linhas:", len(r9.json()) if r9.ok else r9.text[:200], "| dono continua =", dono_ok[0]["ok"] if dono_ok else None, "| fotos =", dono_ok[0]["n"] if dono_ok else None)
     sql(f"delete from public.inspections where id = '{rasc['id']}'")
 
+    rn_ = requests.patch(f"{URL}/rest/v1/profiles", headers={**ajuda, "Prefer": "return=representation"}, params={"id": f"eq.{uid3}"}, json={"name": "Nome Novo Teste"}, timeout=60)
+    print("Usuário edita o próprio nome:", rn_.status_code, "linhas:", len(rn_.json()) if rn_.ok else rn_.text[:150])
+
     # --- Google Drive: o script aceita quem está aprovado e consegue usar o Drive?
     cfg = CFG
     if cfg.get("drive_url"):

@@ -401,3 +401,5 @@ a.data-antiga{text-decoration:none}
 .envio-fundo small{font-weight:500;opacity:.85}
 @media (min-width:701px){.envio-fundo{left:auto;right:1rem;bottom:1rem;width:360px}}
 .filtro-nivel{margin:.2rem 0 .6rem}.filtro-nivel .chip small{opacity:.75;margin-left:.2rem}
+.quem-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .6rem}
+.modal .panel.continuar{box-shadow:none;border:0;padding:0;margin:0}
