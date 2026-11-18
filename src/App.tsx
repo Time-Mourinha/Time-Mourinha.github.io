@@ -280,6 +280,26 @@ export default function App() {
   }, [perfil])
 
   /** Monta o PDF e manda PDF + fotos para o Google Drive; no app fica só o link. Depois tira as fotos do aparelho. */
+  /** Depois de concluir: envia ao Drive em segundo plano; o vistoriador já pode seguir para a próxima unidade. */
+  const [envio, setEnvio] = useState('')
+  async function enviarEmSegundoPlano(v: Vistoria) {
+    const u = unidades.find((x) => x.id === v.unit_id)
+    if (!DRIVE_LIGADO || DEMO) { await enviarRelatorio(v); return }
+    const nome = u?.name ?? 'unidade'
+    try {
+      setEnvio(`Montando o PDF de ${nome}…`)
+      const p = await gerarPdf(v, u)
+      const a = await enviarAoDrive(v, u, p, (t) => setEnvio(`${nome}: ${t}`))
+      await salvarArquivosRelatorio(a)
+      setArquivos((atual) => (relatorioIdRef.current === v.id ? a : atual))
+      await apagarFotosLocais(v)
+      setAviso(p.fotosSemArquivo ? `⚠️ ${nome}: no Drive, mas ${p.fotosSemArquivo} foto(s) não foram encontradas.` : `✅ ${nome}: relatório no Google Drive com todas as fotos.`)
+    } catch {
+      setAviso(`☁️ ${nome}: sem internet agora. O app envia ao Drive sozinho quando a conexão voltar.`)
+    } finally { setEnvio('') }
+  }
+  const relatorioIdRef = useRef(''); relatorioIdRef.current = relatorioId
+
   async function enviarRelatorio(v: Vistoria) {
     await executar(async () => {
       const u = unidades.find((x) => x.id === v.unit_id)
@@ -427,7 +447,7 @@ export default function App() {
       await gravar(v); setAberta(v); setPendente(false); setRelatorioId(v.id); ir('relatorios')
       concluida = v
     })
-    if (concluida) await enviarRelatorio(concluida)
+    if (concluida) { setAviso('✓ Vistoria concluída. O relatório está indo para o Drive; pode seguir para a próxima unidade.'); void enviarEmSegundoPlano(concluida) }
   }
 
   async function sair() {
@@ -536,6 +556,7 @@ export default function App() {
               </div>
             </div>
           )}
+          {envio && <div className="envio-fundo no-print" role="status">☁️ {envio}<small>Pode continuar usando o app. Não feche até terminar.</small></div>}
           {erro && <div role="alert" className="error toast" onClick={() => setErro('')}>⚠️ {erro}<small>Toque para fechar</small></div>}
           {aviso && <div role="status" className="notice toast" onClick={() => setAviso('')}>{aviso}</div>}
           {admin && pedidos > 0 && tela !== 'acessos' && <div className="banner no-print">{pedidos === 1 ? 'Há 1 pedido de acesso' : `Há ${pedidos} pedidos de acesso`} esperando a sua aprovação. <a href="#acessos" onClick={() => ir('acessos')}>Ver pedidos</a></div>}
