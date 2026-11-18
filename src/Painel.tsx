@@ -13,6 +13,9 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
   const [distrito, setDistrito] = useState('')
   const [de, setDe] = useState('')
   const [ate, setAte] = useState('')
+  // filtro do ranking por classificação: '' = todas, ou Péssima / Regular / Boa
+  const [nivel, setNivel] = useState('')
+  const verRanking = (n: string) => { setNivel(n); mudarSecao('ranking') }
   const distritos = [...new Set(unidades.map((u) => u.district))]
   const recorte = vistorias.filter((v) => (!de || v.inspected_on >= de) && (!ate || v.inspected_on <= ate))
   const todas = ranking(unidades, recorte)
@@ -64,9 +67,9 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
           <i className="barra"><b style={{ width: `${(linhas.length / Math.max(1, doDistrito.length)) * 100}%` }} /></i>
           <em>Ver as visitadas e as datas</em></button>
         <button className="k-falta" onClick={() => mudarSecao('sem')}><strong>{semVistoria.length}</strong><span>faltam vistoriar</span><em>Ver quais faltam</em></button>
-        <button className="k-critica" onClick={() => mudarSecao('ranking')}><strong>{pessimas}</strong><span>🔴 unidades péssimas</span><em>Ver o ranking</em></button>
-        <button className="k-imediata" onClick={() => mudarSecao('ranking')}><strong>{regulares}</strong><span>🟡 unidades regulares</span><em>Ver o ranking</em></button>
-        <button className="k-boa" onClick={() => mudarSecao('ranking')}><strong>{boas}</strong><span>🟢 unidades boas</span><em>Ver o ranking</em></button>
+        <button className="k-critica" onClick={() => verRanking('Péssima')}><strong>{pessimas}</strong><span>🔴 unidades péssimas</span><em>Ver quais</em></button>
+        <button className="k-imediata" onClick={() => verRanking('Regular')}><strong>{regulares}</strong><span>🟡 unidades regulares</span><em>Ver quais</em></button>
+        <button className="k-boa" onClick={() => verRanking('Boa')}><strong>{boas}</strong><span>🟢 unidades boas</span><em>Ver quais</em></button>
         <button onClick={() => mudarSecao('problemas')}><strong>{avaliados ? Math.round((comProblema / avaliados) * 100) : 0}%</strong><span>dos ambientes avaliados estão regulares ou péssimos</span><em>Ver os problemas</em></button>
       </div>
 
@@ -109,9 +112,15 @@ export function Painel({ unidades, vistorias, historico = [], historicoDesde = '
           {secao === 'ranking' && (
             <section className="panel">
             <h2>Ranking: da pior para a melhor</h2>
+            <div className="chips filtro-nivel" role="group" aria-label="Filtrar por classificação">
+              {[['', 'Todas', linhas.length], ['Péssima', '🔴 Péssimas', pessimas], ['Regular', '🟡 Regulares', regulares], ['Boa', '🟢 Boas', boas]].map(([n, t, q]) => (
+                <button key={String(n)} className={'chip' + (nivel === n ? ' ativo' : '')} aria-pressed={nivel === n} onClick={() => setNivel(String(n))}>{t} <small>{q}</small></button>
+              ))}
+            </div>
             <p className="legenda">{REGRA_CLASSIFICACAO} Dentro de cada cor, vem primeiro quem tem o maior índice (0 = todos os ambientes bons; 100 = todos péssimos).</p>
+            {nivel && !linhas.some((l) => l.resumo.nivel.nome === nivel) && <p>Nenhuma unidade {nivel.toLowerCase()} neste recorte.</p>}
             <ol className="ranking">
-              {linhas.map((l, i) => (
+              {linhas.map((l, i) => (!nivel || l.resumo.nivel.nome === nivel) && (
                 <li key={l.unidade.id}>
                   <span className="pos">{i + 1}º</span>
                   <div className="r-corpo">
