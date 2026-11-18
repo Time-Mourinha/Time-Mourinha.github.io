@@ -72,11 +72,12 @@ try:
     tok3 = requests.post(f"{URL}/auth/v1/token", params={"grant_type": "password"}, headers={"apikey": c["publica"]}, json={"email": email3, "password": senha}, timeout=60).json()["access_token"]
     ajuda = {**usr, "Authorization": f"Bearer {tok3}"}
     rasc = dict(corpo, id=str(uuid.uuid4()), status="draft", photos=[{"id": "f1", "type": "image/jpeg", "name": "a.jpg", "caption": "do dono"}])
-    requests.post(f"{URL}/rest/v1/inspections", headers=usr, json=rasc, timeout=60)
+    ri = requests.post(f"{URL}/rest/v1/inspections", headers=usr, json=rasc, timeout=60)
+    print("Rascunho do dono criado:", ri.status_code, "" if ri.ok else ri.text[:200])
     r9 = requests.patch(f"{URL}/rest/v1/inspections", headers={**ajuda, "Prefer": "return=representation"}, params={"id": f"eq.{rasc['id']}"},
                         json={"photos": rasc["photos"] + [{"id": "f2", "type": "image/jpeg", "name": "b.jpg", "caption": "da ajuda"}], "observacoes": [{"id": "o1", "quem": "", "texto": "teste"}]}, timeout=60)
     dono_ok = sql(f"select owner = '{uid}' as ok, jsonb_array_length(photos) as n from public.inspections where id = '{rasc['id']}'")
-    print("Ajudar no rascunho de outra pessoa:", r9.status_code, "| dono continua =", dono_ok[0]["ok"] if dono_ok else None, "| fotos =", dono_ok[0]["n"] if dono_ok else None)
+    print("Ajudar no rascunho de outra pessoa:", r9.status_code, "linhas:", len(r9.json()) if r9.ok else r9.text[:200], "| dono continua =", dono_ok[0]["ok"] if dono_ok else None, "| fotos =", dono_ok[0]["n"] if dono_ok else None)
     sql(f"delete from public.inspections where id = '{rasc['id']}'")
 
     # --- Google Drive: o script aceita quem está aprovado e consegue usar o Drive?
