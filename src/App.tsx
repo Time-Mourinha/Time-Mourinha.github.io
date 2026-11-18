@@ -17,7 +17,7 @@ import { Instalar } from './Instalar'
 import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
 import { compactar, problemasDaRede, ranking, resumir } from './lib/analise'
-import { DRIVE_LIGADO, carregarArquivosRelatorio, enviarAoDrive, enviarFoto, jaNoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
+import { DRIVE_LIGADO, carregarArquivosRelatorio, enviarAoDrive, enviarFoto, arquivosNoDrive, enviandoAgora, jaNoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
 import { gerarPdf, type ResultadoPdf } from './lib/pdf'
 import { reduzirImagem } from './lib/imagem'
 import { CFG } from './config'
@@ -230,36 +230,46 @@ export default function App() {
       await entregarPdf(p)
     })
   }
-  // Nenhum relatório fica de fora do Drive: se o envio falhou (sem internet), tenta de novo sozinho
-  // quando o app abre, a partir do celular que tem as fotos.
-  const reenvioFeito = useRef(false)
+  // Nenhum relatório fica de fora do Drive. A cada 3 minutos (e ao abrir o app):
+  //  • relatório concluído sem PDF no Drive → monta o PDF (fotos do celular ou do Drive) e envia;
+  //  • relatório no Drive, mas com fotos que só este celular tem → envia as fotos e refaz o PDF.
+  // Quem tenta: quem fez a vistoria e a administração (o PDF sai igual em qualquer celular).
+  const reenviando = useRef(false)
   useEffect(() => {
-    if (!DRIVE_LIGADO || DEMO || !perfil || reenvioFeito.current || !vistorias.length) return
-    reenvioFeito.current = true
-    void (async () => {
-      const minhas = vistorias.filter((v) => v.status === 'completed' && v.owner === perfil.id)
-      const feitos = await jaNoDrive(minhas.map((v) => v.id))
-      // fotos de rascunhos que ainda não subiram
-      for (const v of vistorias.filter((x) => x.status === 'draft' && x.owner === perfil.id)) {
-        for (const m of (v.photos ?? []).filter((p) => !p.drive)) {
-          const blob = await midiaDemo(m.id)
-          if (blob) await subirFoto(v.id, m, blob)
-        }
-      }
-      for (const v of minhas) {
-        // dá para refazer o PDF se as fotos estão neste celular ou já subiram ao Drive
-        const fotos = v.photos ?? []
-        if (feitos.has(v.id) || !(fotos.every((m) => m.drive) || (await temFotosLocais(v)))) continue
-        try {
+    if (!DRIVE_LIGADO || DEMO || !perfil) return
+    const tentar = async () => {
+      if (reenviando.current || enviandoAgora()) return
+      reenviando.current = true
+      try {
+        const lista = vistoriasRef.current.filter((v) => v.status === 'completed' && (v.owner === perfil.id || admin))
+        if (!lista.length) return
+        const noDrive = await arquivosNoDrive(lista.map((v) => v.id))
+        for (const v of lista) {
+          const rf = noDrive.get(v.id)
+          const fotos = v.photos ?? []
+          const faltam = fotos.filter((m) => !m.drive && !rf?.[m.id])
+          const locais = (await Promise.all(faltam.map((m) => midiaDemo(m.id)))).filter(Boolean).length
+          const idadeMin = (Date.now() - Date.parse(v.updated_at ?? '')) / 60000
+          const enviar = rf ? locais > 0 : (faltam.length === 0 || locais > 0 || idadeMin > 15)
+          if (!enviar) continue
           const u = unidades.find((x) => x.id === v.unit_id)
-          const a = await enviarAoDrive(v, u, await gerarPdf(v, u), () => undefined)
-          await salvarArquivosRelatorio(a)
-          await apagarFotosLocais(v)
-          setAviso(`☁️ Relatório de ${u?.name ?? 'unidade'} enviado ao Google Drive.`)
-        } catch { /* tenta de novo na próxima vez que o app abrir */ }
-      }
-    })()
-  }, [vistorias, perfil])
+          try {
+            // fotos que já subiram (registradas no relatório do Drive) não sobem de novo
+            const comIds: Vistoria = { ...v, photos: fotos.map((m) => (m.drive || !rf?.[m.id] ? m : { ...m, drive: rf[m.id] })) }
+            setEnvio(`${u?.name ?? 'Relatório'}: enviando ao Drive…`)
+            const a = await enviarAoDrive(comIds, u, await gerarPdf(comIds, u), () => undefined)
+            await salvarArquivosRelatorio(a)
+            if (v.owner === perfil.id) await apagarFotosLocais(v)
+            if (relatorioIdRef.current === v.id) setArquivos(a)
+            setAviso(`☁️ ${u?.name ?? 'Relatório'}: enviado ao Google Drive.`)
+          } catch { /* tenta de novo daqui a 3 minutos */ } finally { setEnvio('') }
+        }
+      } finally { reenviando.current = false }
+    }
+    const t = setInterval(() => void tentar(), 180_000)
+    const primeira = setTimeout(() => void tentar(), 8_000)
+    return () => { clearInterval(t); clearTimeout(primeira) }
+  }, [perfil, admin])
 
   // Rascunho aberto: a cada 20 s traz o que outra pessoa acrescentou (fotos, ambientes, observações)
   useEffect(() => {
