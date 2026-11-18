@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { Midia, Perfil, Unidade, VisitaAntiga, Vistoria } from './modelo'
 import { CFG } from '../config'
 
-const URL_SUPABASE = import.meta.env.VITE_SUPABASE_URL as string | undefined
+export const URL_SUPABASE = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const CHAVE_PUBLICA = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
 
 /** Com as variáveis de ambiente, usa o Supabase; sem elas, abre o modo de demonstração. */

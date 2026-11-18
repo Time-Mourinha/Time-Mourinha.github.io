@@ -1,2 +1,5 @@
 [functions.avisar]
 verify_jwt = false
+
+[functions.foto]
+verify_jwt = true

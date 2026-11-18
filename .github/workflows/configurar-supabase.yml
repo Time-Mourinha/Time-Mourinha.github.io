@@ -27,5 +27,8 @@ jobs:
           python scripts/supabase_setup.py
       - uses: supabase/setup-cli@v1
         with: { version: latest }
-      - name: Publicar a função de avisos
-        run: supabase functions deploy avisar --project-ref "$(python3 -c "import json;print(json.load(open('modelo.config.json'))['supabase_ref'])")" --no-verify-jwt --use-api --yes
+      - name: Publicar as funções (avisos e fotos do Drive)
+        run: |
+          REF="$(python3 -c "import json;print(json.load(open('modelo.config.json'))['supabase_ref'])")"
+          supabase functions deploy avisar --project-ref "$REF" --no-verify-jwt --use-api --yes
+          supabase functions deploy foto --project-ref "$REF" --use-api --yes

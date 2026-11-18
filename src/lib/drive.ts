@@ -1,5 +1,5 @@
 import { CFG } from '../config'
-import { midiaDemo, sb } from './armazenamento'
+import { URL_SUPABASE, midiaDemo, sb } from './armazenamento'
 import type { Midia, Unidade, Vistoria } from './modelo'
 
 /*
@@ -45,10 +45,19 @@ export async function enviarFoto(v: Vistoria, u: Unidade | undefined, m: Midia, 
   })
 }
 
-/** Busca no Drive uma foto que não está neste celular (para o PDF sair completo em qualquer aparelho). */
+/** Busca no Drive uma foto que não está neste celular (para o PDF sair completo em qualquer aparelho).
+ *  Passa pela função "foto" do servidor do app; se não der, tenta pelo Apps Script. */
 export async function baixarFoto(id: string): Promise<Blob | null> {
   try {
+    const sessao = (await sb?.auth.getSession())?.data.session
+    if (URL_SUPABASE && sessao) {
+      const r = await fetch(`${URL_SUPABASE}/functions/v1/foto?id=${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${sessao.access_token}` } })
+      if (r.ok && (r.headers.get('content-type') ?? '').startsWith('image/')) return await r.blob()
+    }
+  } catch { /* tenta o outro caminho */ }
+  try {
     const r = (await chamar({ acao: 'baixar', id })) as unknown as { tipo: string; base64: string }
+    if (!r.base64) return null
     const bin = atob(r.base64)
     const bytes = new Uint8Array(bin.length)
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
