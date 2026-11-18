@@ -271,7 +271,7 @@ drop policy if exists insp_insert on public.inspections;
 create policy insp_insert on public.inspections for insert to authenticated with check (public.can_access_unit(unit_id));
 drop policy if exists insp_update on public.inspections;
 create policy insp_update on public.inspections for update to authenticated
-  using (public.can_access_unit(unit_id) and (owner = auth.uid() or public.is_admin()))
+  using (public.can_access_unit(unit_id) and (owner = auth.uid() or public.is_admin() or (status = 'draft' and public.is_approved())))  -- rascunho: qualquer pessoa aprovada pode ajudar
   with check (public.can_access_unit(unit_id));
 drop policy if exists insp_delete on public.inspections;
 create policy insp_delete on public.inspections for delete to authenticated

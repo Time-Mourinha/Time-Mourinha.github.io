@@ -89,10 +89,49 @@ export async function carregarHistorico(desde?: string): Promise<VisitaAntiga[]>
   return (data ?? []) as VisitaAntiga[]
 }
 
-export async function salvarVistoria(v: Vistoria) {
-  const { owner: _dono, updated_at: _quando, created_at: _criada, ...resto } = v
+/* ---- trabalho em dupla no mesmo rascunho: ninguém apaga o que o outro fez ---- */
+const removidos = new Map<string, Set<string>>()
+/** Guarda o que ESTE celular tirou de propósito (para não voltar na junção). */
+export function marcarRemovidos(vid: string, ids: string[]) {
+  if (!ids.length) return
+  const s = removidos.get(vid) ?? new Set<string>()
+  ids.forEach((i) => s.add(i)); removidos.set(vid, s)
+}
+type ComId = { id: string }
+function juntarLista<T extends ComId>(local: T[] = [], remoto: T[] = [], fora: Set<string>, preencher?: (l: T, r: T) => T): T[] {
+  const doRemoto = new Map(remoto.map((x) => [x.id, x]))
+  const out = local.map((l) => (preencher && doRemoto.has(l.id) ? preencher(l, doRemoto.get(l.id)!) : l))
+  const tem = new Set(local.map((x) => x.id))
+  for (const r of remoto) if (!tem.has(r.id) && !fora.has(r.id)) out.push(r)
+  return out
+}
+/** Junta o rascunho deste celular com o que está no servidor (outra pessoa pode ter anexado fotos ou criado ambientes). */
+export function juntarRascunho(local: Vistoria, remoto: Pick<Vistoria, 'rooms' | 'photos' | 'observacoes'>): Vistoria {
+  const fora = removidos.get(local.id) ?? new Set<string>()
+  return {
+    ...local,
+    rooms: juntarLista(local.rooms, remoto.rooms ?? [], fora, (l, r) => ({ ...r, ...l, situacao: l.situacao ?? r.situacao, descricao: l.descricao || r.descricao })),
+    photos: juntarLista(local.photos ?? [], remoto.photos ?? [], fora, (l, r) => ({ ...l, drive: l.drive ?? r.drive, caption: l.caption || r.caption })),
+    observacoes: juntarLista(local.observacoes ?? [], remoto.observacoes ?? [], fora, (l, r) => ({ ...l, texto: l.texto || r.texto, quem: l.quem || r.quem })),
+  }
+}
+export async function lerRascunhoNoServidor(id: string) {
+  if (!sb) return null
+  const { data } = await sb.from('inspections').select('rooms,photos,observacoes,status').eq('id', id).maybeSingle()
+  return (data as (Pick<Vistoria, 'rooms' | 'photos' | 'observacoes' | 'status'>) | null) ?? null
+}
+
+/** Salva; num rascunho, antes junta com o que está no servidor. Devolve a versão salva. */
+export async function salvarVistoria(v: Vistoria): Promise<Vistoria> {
+  let final = v
+  try {
+    const remoto = await lerRascunhoNoServidor(v.id)
+    if (remoto && remoto.status === 'draft') final = juntarRascunho(v, remoto)
+  } catch { /* sem leitura: salva o que tem */ }
+  const { owner: _dono, updated_at: _quando, created_at: _criada, ...resto } = final
   const { error } = await sb!.from('inspections').upsert(resto)
   falhou(error)
+  return final
 }
 
 /* Acessos (administração) */

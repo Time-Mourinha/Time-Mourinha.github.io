@@ -7,7 +7,7 @@ import {
 } from './lib/modelo'
 import {
   DEMO, apagarFotosLocais, excluirVistoria, carregarPerfil, carregarHistorico, carregarUnidades, carregarVistorias, gravarDemo, lerDemo,
-  limparFotosAntigas, midiaDemo, salvarVistoria, sb, temFotosLocais,
+  juntarRascunho, lerRascunhoNoServidor, limparFotosAntigas, marcarRemovidos, midiaDemo, salvarVistoria, sb, temFotosLocais,
 } from './lib/armazenamento'
 import { Acessos } from './Acessos'
 import { Entrada } from './Entrada'
@@ -194,9 +194,15 @@ export default function App() {
 
   async function gravar(v: Vistoria) {
     const p = fila.current.catch(() => {}).then(async () => {
-      if (DEMO) gravarDemo(v); else await salvarVistoria(v)
+      let salvo = v
+      if (DEMO) gravarDemo(v); else salvo = await salvarVistoria(v)
       const agora = new Date().toISOString()
-      lembrar({ ...v, updated_at: agora, created_at: v.created_at ?? agora })
+      lembrar({ ...salvo, updated_at: agora, created_at: v.created_at ?? agora })
+      // trouxe algo que outra pessoa fez? põe na tela sem perder o que está sendo digitado
+      if (salvo !== v && abertaRef.current?.id === v.id) {
+        const n = juntarRascunho(abertaRef.current, salvo)
+        abertaRef.current = n; setAberta(n)
+      }
     })
     fila.current = p
     await p
@@ -254,6 +260,21 @@ export default function App() {
       }
     })()
   }, [vistorias, perfil])
+
+  // Rascunho aberto: a cada 20 s traz o que outra pessoa acrescentou (fotos, ambientes, observações)
+  useEffect(() => {
+    if (DEMO || tela !== 'vistoria' || !aberta || aberta.status !== 'draft') return
+    const id = aberta.id
+    const t = setInterval(async () => {
+      const r = await lerRascunhoNoServidor(id).catch(() => null)
+      const atual = abertaRef.current
+      if (!r || r.status !== 'draft' || !atual || atual.id !== id) return
+      const n = juntarRascunho(atual, r)
+      const conta = (x: Vistoria) => x.rooms.length + (x.photos ?? []).length + (x.observacoes ?? []).length
+      if (conta(n) !== conta(atual) || (n.photos ?? []).some((m, i) => m.drive !== atual.photos?.[i]?.drive)) { abertaRef.current = n; setAberta(n) }
+    }, 20_000)
+    return () => clearInterval(t)
+  }, [tela, aberta?.id, aberta?.status])
 
   // Fotos de rascunho que ainda não subiram: tenta de novo a cada minuto e sempre que o app volta para a tela
   const subindoPendentes = useRef(false)
@@ -337,7 +358,15 @@ export default function App() {
     return () => window.removeEventListener('beforeunload', f)
   }, [pendente])
 
-  function mudar(v: Vistoria) { versao.current++; setAberta(v); setPendente(true) }
+  function mudar(v: Vistoria) {
+    const antes = abertaRef.current
+    if (antes && antes.id === v.id) {
+      const ids = (x: Vistoria) => [...x.rooms.map((r) => r.id), ...(x.photos ?? []).map((m) => m.id), ...(x.observacoes ?? []).map((o) => o.id)]
+      const agora = new Set(ids(v))
+      marcarRemovidos(v.id, ids(antes).filter((i) => !agora.has(i)))
+    }
+    versao.current++; setAberta(v); setPendente(true)
+  }
 
   // ---- cada foto sobe para o Drive assim que é anexada: não depende de o celular guardar a foto
   const abertaRef = useRef<Vistoria | null>(null); abertaRef.current = aberta
@@ -508,7 +537,7 @@ export default function App() {
   // rascunhos mexidos nas últimas 12 horas = gente em visita agora
   const emVisita = vistorias.filter((v) => v.status === 'draft' && v.updated_at && Date.now() - Date.parse(v.updated_at) < 12 * 3600e3)
   // administração: rascunhos de outras pessoas (para excluir os abandonados)
-  const rascunhosEquipe = (admin || DEMO) ? vistorias.filter((v) => v.status === 'draft' && v.owner && v.owner !== perfil?.id && !meusRascunhos.includes(v))
+  const rascunhosEquipe = (perfil?.approved || admin || DEMO) ? vistorias.filter((v) => v.status === 'draft' && v.owner && v.owner !== perfil?.id && !meusRascunhos.includes(v))
     .sort((a, b) => (a.updated_at ?? '').localeCompare(b.updated_at ?? '')) : []
   const diasParado = (v: Vistoria) => Math.floor((Date.now() - Date.parse(v.updated_at ?? v.created_at ?? '')) / 864e5)
 
@@ -668,7 +697,7 @@ export default function App() {
               {rascunhosEquipe.length > 0 && (
                 <div className="panel rascunhos-equipe">
                   <h2>📝 Rascunhos da equipe <small>{rascunhosEquipe.length}</small></h2>
-                  <p className="dica">Só a administração vê. Exclua os rascunhos abandonados para não ficarem parados.</p>
+                  <p className="dica">Vistorias que outras pessoas começaram. Toque em <b>Ajudar</b> para trabalhar junto na mesma visita: as fotos de cada um vão para o mesmo relatório.{admin ? ' A administração também pode excluir os abandonados.' : ''}</p>
                   {rascunhosEquipe.map((v) => {
                     const u = unidades.find((x) => x.id === v.unit_id)
                     const d = diasParado(v)
@@ -676,8 +705,8 @@ export default function App() {
                       <div key={v.id} className="linha">
                         <div><strong>{v.inspector || 'Sem nome'}</strong> · {u?.name}
                           <small>Começou em {dataBR(v.inspected_on)} · <span className={d >= 3 ? 'parado' : ''}>{d <= 0 ? 'mexido hoje' : d === 1 ? 'parado há 1 dia' : `parado há ${d} dias`}</span></small></div>
-                        {u && <button onClick={() => abrir(u, v)}>Abrir</button>}
-                        <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho">🗑️</button>
+                        {u && <button onClick={() => abrir(u, v)}>Ajudar</button>}
+                        {podeExcluir(v) && <button className="excluir" onClick={() => excluir(v)} aria-label="Excluir rascunho">🗑️</button>}
                       </div>
                     )
                   })}
