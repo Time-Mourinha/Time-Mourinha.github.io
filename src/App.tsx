@@ -17,7 +17,7 @@ import { Instalar } from './Instalar'
 import { Painel, type SecaoPainel } from './Painel'
 import { ESTILOS_RELATORIO, Relatorio, type EstiloRelatorio } from './Relatorio'
 import { compactar, problemasDaRede, ranking, resumir } from './lib/analise'
-import { DRIVE_LIGADO, carregarArquivosRelatorio, enviarAoDrive, jaNoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
+import { DRIVE_LIGADO, carregarArquivosRelatorio, enviarAoDrive, enviarFoto, jaNoDrive, salvarArquivosRelatorio, type ArquivosRelatorio } from './lib/drive'
 import { gerarPdf, type ResultadoPdf } from './lib/pdf'
 import { reduzirImagem } from './lib/imagem'
 import { CFG } from './config'
@@ -233,8 +233,17 @@ export default function App() {
     void (async () => {
       const minhas = vistorias.filter((v) => v.status === 'completed' && v.owner === perfil.id)
       const feitos = await jaNoDrive(minhas.map((v) => v.id))
+      // fotos de rascunhos que ainda não subiram
+      for (const v of vistorias.filter((x) => x.status === 'draft' && x.owner === perfil.id)) {
+        for (const m of (v.photos ?? []).filter((p) => !p.drive)) {
+          const blob = await midiaDemo(m.id)
+          if (blob) await subirFoto(v.id, m, blob)
+        }
+      }
       for (const v of minhas) {
-        if (feitos.has(v.id) || !(await temFotosLocais(v))) continue
+        // dá para refazer o PDF se as fotos estão neste celular ou já subiram ao Drive
+        const fotos = v.photos ?? []
+        if (feitos.has(v.id) || !(fotos.every((m) => m.drive) || (await temFotosLocais(v)))) continue
         try {
           const u = unidades.find((x) => x.id === v.unit_id)
           const a = await enviarAoDrive(v, u, await gerarPdf(v, u), () => undefined)
@@ -253,12 +262,13 @@ export default function App() {
       setAviso('Montando o PDF…')
       const p = await gerarPdf(v, u)
       if (!DRIVE_LIGADO || DEMO) { setAviso('PDF pronto.'); await entregarPdf(p); return }
-      if (p.fotosSemArquivo) throw new Error(`${p.fotosSemArquivo} foto(s) não estão neste aparelho. Envie ao Drive pelo celular que tirou as fotos.`)
       const a = await enviarAoDrive(v, u, p, setAviso)
       await salvarArquivosRelatorio(a)
       setArquivos(a)
       await apagarFotosLocais(v)
-      setAviso('✅ Relatório guardado no Google Drive (PDF e fotos). As fotos saíram deste aparelho.')
+      setAviso(p.fotosSemArquivo
+        ? `⚠️ Relatório no Drive, mas ${p.fotosSemArquivo} foto(s) não foram encontradas (nem no celular nem no Drive).`
+        : '✅ Relatório guardado no Google Drive com todas as fotos.')
     })
   }
 
@@ -284,6 +294,22 @@ export default function App() {
   }, [pendente])
 
   function mudar(v: Vistoria) { versao.current++; setAberta(v); setPendente(true) }
+
+  // ---- cada foto sobe para o Drive assim que é anexada: não depende de o celular guardar a foto
+  const abertaRef = useRef<Vistoria | null>(null); abertaRef.current = aberta
+  const vistoriasRef = useRef<Vistoria[]>([]); vistoriasRef.current = vistorias
+  useEffect(() => { document.body.dataset.ocupado = ocupado ? 'sim' : 'nao' }, [ocupado])
+  async function subirFoto(vid: string, m: Midia, blob: Blob) {
+    if (!DRIVE_LIGADO || DEMO) return
+    const base = abertaRef.current?.id === vid ? abertaRef.current : vistoriasRef.current.find((x) => x.id === vid)
+    if (!base) return
+    try {
+      const driveId = await enviarFoto(base, unidades.find((u) => u.id === base.unit_id), m, blob)
+      const marcar = (x: Vistoria): Vistoria => ({ ...x, photos: (x.photos ?? []).map((p) => (p.id === m.id ? { ...p, drive: driveId } : p)) })
+      if (abertaRef.current?.id === vid) { const n = marcar(abertaRef.current); abertaRef.current = n; setAberta(n); setPendente(true) }
+      else { const v = vistoriasRef.current.find((x) => x.id === vid); if (v && v.status === 'draft') await gravar(marcar(v)) }
+    } catch { /* sem internet: sobe depois (ao gerar o relatório ou ao abrir o app) */ }
+  }
 
   function abrir(u: Unidade, existente?: Vistoria) {
     void executar(async () => {
@@ -317,6 +343,7 @@ export default function App() {
         atual = { ...atual, photos: [...(atual.photos ?? []), m] }
         setAberta(atual); setPendente(true)
         await gravar(atual); setPendente(false)
+        void subirFoto(atual.id, m, arq)
       }
       setAviso(arquivos.length === 1 ? 'Foto anexada. Agora descreva o que ela mostra.' : `${arquivos.length} fotos anexadas. Agora descreva cada uma.`)
     })

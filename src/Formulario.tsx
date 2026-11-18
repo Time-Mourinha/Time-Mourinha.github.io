@@ -4,6 +4,7 @@ import {
   type Ambiente, type Midia, type Observacao, type Unidade, type Vistoria,
 } from './lib/modelo'
 import { Campo, Selo, VerMidia } from './ui'
+import { urlFotoDrive } from './lib/drive'
 
 export type Destino = { roomId?: string; obsId?: string }
 type Props = {
@@ -89,7 +90,7 @@ export function Formulario({ v, u, ocupado, bloqueada, pendente, mudar, anexar, 
     <div className="fotos-desc">
       {lista.map((m, n) => (
         <div className={'foto-desc' + (falta('l:' + m.id) ? ' falta' : '')} key={m.id}>
-          <VerMidia media={m} />
+          <VerMidia media={m} remoto={m.drive ? urlFotoDrive(m.drive) : undefined} />
           <div className="foto-desc-campos">
             <label>Foto {n + 1}: o que ela mostra?{' '}
               <small className="opc">(opcional)</small>

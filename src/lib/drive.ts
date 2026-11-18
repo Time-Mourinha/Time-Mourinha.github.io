@@ -1,6 +1,6 @@
 import { CFG } from '../config'
 import { midiaDemo, sb } from './armazenamento'
-import type { Unidade, Vistoria } from './modelo'
+import type { Midia, Unidade, Vistoria } from './modelo'
 
 /*
  * Relatórios e fotos vão para o Google Drive da Secretaria (por um Apps Script da própria conta do Drive).
@@ -25,23 +25,57 @@ async function chamar(corpo: Record<string, unknown>) {
   return d as { id: string; url: string; pasta: string }
 }
 
-/** Envia as fotos e o PDF; devolve os links para guardar. */
-export async function enviarAoDrive(v: Vistoria, u: Unidade | undefined, pdf: { bytes: Uint8Array; nome: string }, progresso: (t: string) => void): Promise<ArquivosRelatorio> {
-  const base = { acao: 'enviar', vistoria: v.id, unidade: u?.name ?? `Unidade ${v.unit_id}`, data: v.inspected_on }
-  const fotos: Record<string, string> = {}
-  const lista = v.photos ?? []
-  for (const [i, m] of lista.entries()) {
-    progresso(`Enviando ao Drive: foto ${i + 1} de ${lista.length}…`)
-    const blob = await midiaDemo(m.id)
-    if (!blob) continue
+/** Marca que há envio em andamento (o app não se atualiza sozinho no meio de um envio). */
+let enviando = 0
+export const enviandoAgora = () => enviando > 0
+async function comEnvio<T>(f: () => Promise<T>): Promise<T> {
+  enviando++
+  let trava: { release: () => Promise<void> } | null = null
+  try { trava = await (navigator as unknown as { wakeLock?: { request: (t: string) => Promise<{ release: () => Promise<void> }> } }).wakeLock?.request('screen') ?? null } catch { /* sem trava de tela */ }
+  try { return await f() } finally { enviando--; void trava?.release().catch(() => {}) }
+}
+
+/** Sobe UMA foto para o Drive assim que é anexada (assim ela nunca se perde no celular). Devolve o id no Drive. */
+export async function enviarFoto(v: Vistoria, u: Unidade | undefined, m: Midia, blob: Blob): Promise<string> {
+  return comEnvio(async () => {
     const ext = blob.type.includes('png') ? 'png' : 'jpg'
-    const r = await chamar({ ...base, nome: `Foto ${String(i + 1).padStart(2, '0')} - ${(m.caption || 'sem descrição').slice(0, 60)}.${ext}`, tipo: blob.type || 'image/jpeg',
-      base64: base64(new Uint8Array(await blob.arrayBuffer())) })
-    fotos[m.id] = r.id
-  }
-  progresso('Enviando o PDF ao Drive…')
-  const r = await chamar({ ...base, nome: pdf.nome, tipo: 'application/pdf', base64: base64(pdf.bytes) })
-  return { inspection_id: v.id, pasta_url: r.pasta, pdf_url: r.url, pdf_id: r.id, fotos }
+    const r = await chamar({ acao: 'enviar', vistoria: v.id, unidade: u?.name ?? `Unidade ${v.unit_id}`, data: v.inspected_on,
+      nome: `Foto ${m.id.slice(0, 6)}.${ext}`, tipo: blob.type || 'image/jpeg', base64: base64(new Uint8Array(await blob.arrayBuffer())) })
+    return r.id
+  })
+}
+
+/** Busca no Drive uma foto que não está neste celular (para o PDF sair completo em qualquer aparelho). */
+export async function baixarFoto(id: string): Promise<Blob | null> {
+  try {
+    const r = (await chamar({ acao: 'baixar', id })) as unknown as { tipo: string; base64: string }
+    const bin = atob(r.base64)
+    const bytes = new Uint8Array(bin.length)
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+    return new Blob([bytes], { type: r.tipo || 'image/jpeg' })
+  } catch { return null }
+}
+
+/** Envia o que faltar (fotos ainda não enviadas) e o PDF; devolve os links para guardar. */
+export async function enviarAoDrive(v: Vistoria, u: Unidade | undefined, pdf: { bytes: Uint8Array; nome: string }, progresso: (t: string) => void): Promise<ArquivosRelatorio> {
+  return comEnvio(async () => {
+    const base = { acao: 'enviar', vistoria: v.id, unidade: u?.name ?? `Unidade ${v.unit_id}`, data: v.inspected_on }
+    const fotos: Record<string, string> = {}
+    const lista = v.photos ?? []
+    for (const [i, m] of lista.entries()) {
+      if (m.drive) { fotos[m.id] = m.drive; continue }
+      progresso(`Enviando ao Drive: foto ${i + 1} de ${lista.length}…`)
+      const blob = await midiaDemo(m.id)
+      if (!blob) continue
+      const ext = blob.type.includes('png') ? 'png' : 'jpg'
+      const r = await chamar({ ...base, nome: `Foto ${String(i + 1).padStart(2, '0')} - ${(m.caption || 'sem descrição').slice(0, 60)}.${ext}`, tipo: blob.type || 'image/jpeg',
+        base64: base64(new Uint8Array(await blob.arrayBuffer())) })
+      fotos[m.id] = r.id
+    }
+    progresso('Enviando o PDF ao Drive…')
+    const r = await chamar({ ...base, nome: pdf.nome, tipo: 'application/pdf', base64: base64(pdf.bytes) })
+    return { inspection_id: v.id, pasta_url: r.pasta, pdf_url: r.url, pdf_id: r.id, fotos }
+  })
 }
 
 /** Manda a pasta da vistoria para a lixeira do Drive (recuperável por 30 dias). */

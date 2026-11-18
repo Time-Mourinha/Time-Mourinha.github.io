@@ -26,6 +26,8 @@ export function gravarDemo(v: Vistoria) {
 // aí as fotos ficam só na memória enquanto o app está aberto. Nunca pode travar o app.
 const memoria = new Map<string, Blob>()
 let idbFalhou = false
+/** Fotos guardadas só na memória (celular sem IndexedDB): o app não pode recarregar enquanto houver alguma. */
+export const fotosSoNaMemoria = () => (idbFalhou || typeof indexedDB === 'undefined' || !indexedDB) && memoria.size > 0
 function abrirIdb(): Promise<IDBDatabase | null> {
   if (idbFalhou || typeof indexedDB === 'undefined' || !indexedDB) return Promise.resolve(null)
   return new Promise((ok) => {

@@ -3,6 +3,7 @@ import marcaUrl from '../assets/marca.png'
 import { CFG } from '../config'
 import { REGRA_CLASSIFICACAO, impactosDoTexto, resumir } from './analise'
 import { midiaDemo } from './armazenamento'
+import { baixarFoto } from './drive'
 import { dataBR, descricaoDoAmbiente, fotosDaObservacao, fotosDoAmbiente, obsComConteudo, precisaFoto, type Midia, type Unidade, type Vistoria } from './modelo'
 
 /* Relatório em PDF de verdade (A4), montado no próprio celular: não depende da janela de impressão. */
@@ -190,7 +191,7 @@ export async function gerarPdf(v: Vistoria, u: Unidade | undefined): Promise<Res
   const desenharFotos = async (lista: Midia[]) => {
     const imgs: { m: Midia; img: PDFImage | null }[] = []
     for (const m of lista) {
-      const blob = await midiaDemo(m.id)
+      const blob = (await midiaDemo(m.id)) ?? (m.drive ? await baixarFoto(m.drive) : null)
       const bytes = blob ? await fotoParaJpeg(blob) : null
       if (!bytes) semArquivo++
       imgs.push({ m, img: bytes ? await doc.embedJpg(bytes) : null })

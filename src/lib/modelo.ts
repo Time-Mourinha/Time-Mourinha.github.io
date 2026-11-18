@@ -2,7 +2,7 @@ import unidadesJson from '../data/unidades.json'
 import { CFG } from '../config'
 
 export type Unidade = { id: number; name: string; district: string; kind: string; address: string; cnes: string; status: string }
-export type Midia = { id: string; type: string; name: string; caption: string; path?: string; ai?: string; room?: string; item?: string; obs?: string }
+export type Midia = { id: string; type: string; name: string; caption: string; path?: string; ai?: string; room?: string; item?: string; obs?: string; drive?: string }
 export type Ocorrencia = {
   id: string; check?: string; item: string; point: string; issue: string; action: string; priority: string
   reason: string; owner: string; due: string; media: Midia[]

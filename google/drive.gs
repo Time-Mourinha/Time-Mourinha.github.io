@@ -29,6 +29,12 @@ function doPost(e) {
       if (p) p.setTrashed(true);
       return json_({ ok: true });
     }
+    if (d.acao === 'baixar') {
+      // devolve a foto para o app montar o PDF em qualquer celular
+      var f = DriveApp.getFileById(d.id);
+      var b = f.getBlob();
+      return json_({ tipo: b.getContentType(), base64: Utilities.base64Encode(b.getBytes()) });
+    }
     if (d.acao === 'teste') return json_({ ok: true, pasta: raiz_().getUrl() });
     return json_({ erro: 'ação desconhecida' });
   } catch (err) {

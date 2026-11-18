@@ -16,7 +16,7 @@ const hojeBR = () => new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Macei
 
 /** Relatório de visita técnica: pronto para imprimir em PDF ou apresentar. */
 export function Relatorio({ vistoria: v, unidade: u, estilo, remotas }: { vistoria: Vistoria; unidade?: Unidade; estilo: EstiloRelatorio; remotas?: Record<string, string> }) {
-  const remoto = (id: string) => (remotas?.[id] ? urlFotoDrive(remotas[id]) : undefined)
+  const remoto = (m: Midia) => { const id = remotas?.[m.id] ?? m.drive; return id ? urlFotoDrive(id) : undefined }
   const r = resumir(v)
   const numero = v.id.slice(0, 8).toUpperCase()
   const ordemSit: Record<string, number> = { 'Péssimo': 0, Regular: 1, Bom: 2 }
@@ -105,7 +105,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo, remotas }: { vistor
               <h3>{amb.name} <small>{amb.situacao}</small></h3>
               <div className="rel-fotos">
                 {fotos.map(({ m, num }) => (
-                  <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} remoto={remoto(m.id)} /></div>
+                  <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} remoto={remoto(m)} /></div>
                 ))}
               </div>
             </div>
@@ -122,7 +122,7 @@ export function Relatorio({ vistoria: v, unidade: u, estilo, remotas }: { vistor
               <p><strong>{i + 1}. {o.room ? (v.rooms.find((r) => r.id === o.room)?.name ?? 'Ambiente') : 'Geral'}</strong>{o.quem ? ` · relatado por ${o.quem}` : ''}{o.texto.trim() ? ': ' + o.texto : ''}</p>
               {fotos.length > 0 && (
                 <div className="rel-fotos">
-                  {fotos.map(({ m, num }) => <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} remoto={remoto(m.id)} /></div>)}
+                  {fotos.map(({ m, num }) => <div className="rel-foto" key={m.id}><span className="f-num">Foto {num}</span><VerMidia media={m} remoto={remoto(m)} /></div>)}
                 </div>
               )}
             </div>
