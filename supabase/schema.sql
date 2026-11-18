@@ -46,6 +46,7 @@ create table if not exists public.inspections (
 );
 create index if not exists inspections_unit on public.inspections(unit_id, inspected_on desc);
 alter table public.inspections add column if not exists photos jsonb not null default '[]'::jsonb;  -- galeria de fotos da visita
+alter table public.inspections add column if not exists observacoes jsonb not null default '[]'::jsonb;  -- observações da visita (gerais e por ambiente)
 alter table public.inspections add column if not exists summary jsonb;  -- resumo pequeno (situação, pontos, principais problemas)
 
 -- Visitas antigas compactadas: o relatório completo é apagado e fica só esta linha (poucos bytes).
