@@ -255,6 +255,30 @@ export default function App() {
     })()
   }, [vistorias, perfil])
 
+  // Fotos de rascunho que ainda não subiram: tenta de novo a cada minuto e sempre que o app volta para a tela
+  const subindoPendentes = useRef(false)
+  useEffect(() => {
+    if (!DRIVE_LIGADO || DEMO || !perfil) return
+    const tentar = async () => {
+      if (subindoPendentes.current) return
+      subindoPendentes.current = true
+      try {
+        const lista = [...(abertaRef.current ? [abertaRef.current] : []), ...vistoriasRef.current.filter((x) => x.id !== abertaRef.current?.id)]
+        for (const v of lista.filter((x) => x.status === 'draft' && x.owner === perfil.id)) {
+          for (const m of (v.photos ?? []).filter((p) => !p.drive)) {
+            const blob = await midiaDemo(m.id)
+            if (blob) await subirFoto(v.id, m, blob)
+          }
+        }
+      } finally { subindoPendentes.current = false }
+    }
+    const t = setInterval(() => void tentar(), 60_000)
+    const vis = () => { if (document.visibilityState === 'visible') void tentar() }
+    document.addEventListener('visibilitychange', vis)
+    void tentar()
+    return () => { clearInterval(t); document.removeEventListener('visibilitychange', vis) }
+  }, [perfil])
+
   /** Monta o PDF e manda PDF + fotos para o Google Drive; no app fica só o link. Depois tira as fotos do aparelho. */
   async function enviarRelatorio(v: Vistoria) {
     await executar(async () => {
